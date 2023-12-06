@@ -28,6 +28,9 @@ public class User implements UserDetails{
     private String lastname;
     private String email;
     private String password;
+    private String phoneNumber;
+    private String address;
+    private Boolean emailConfirmed;
     @Enumerated(EnumType.STRING)
     private Role role;
     @Override

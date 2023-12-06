@@ -1,4 +1,4 @@
-package com.example.mobilnetestiranjebackend.auth;
+package com.example.mobilnetestiranjebackend.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

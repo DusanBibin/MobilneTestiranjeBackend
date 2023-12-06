@@ -1,4 +1,4 @@
-package com.example.mobilnetestiranjebackend.auth;
+package com.example.mobilnetestiranjebackend.DTOs;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
