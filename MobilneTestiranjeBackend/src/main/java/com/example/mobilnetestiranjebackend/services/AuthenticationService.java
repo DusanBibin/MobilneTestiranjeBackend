@@ -1,8 +1,8 @@
 package com.example.mobilnetestiranjebackend.services;
 
-import com.example.mobilnetestiranjebackend.DTOs.AuthenticationRequest;
-import com.example.mobilnetestiranjebackend.DTOs.AuthenticationResponse;
-import com.example.mobilnetestiranjebackend.DTOs.RegisterRequest;
+import com.example.mobilnetestiranjebackend.DTOs.AuthenticationRequestDTO;
+import com.example.mobilnetestiranjebackend.DTOs.AuthenticationResponseDTO;
+import com.example.mobilnetestiranjebackend.DTOs.RegisterRequestDTO;
 import com.example.mobilnetestiranjebackend.enums.Role;
 import com.example.mobilnetestiranjebackend.model.User;
 import com.example.mobilnetestiranjebackend.repositories.UserRepository;
@@ -27,7 +27,7 @@ public class AuthenticationService {
         return userWrapper.isPresent();
     }
 
-    public void register(RegisterRequest request) {
+    public void register(RegisterRequestDTO request) {
 
         var user = User.builder()
                 .firstName(request.getFirstName())
@@ -43,7 +43,7 @@ public class AuthenticationService {
         userRepository.save(user);
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+    public AuthenticationResponseDTO authenticate(AuthenticationRequestDTO request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -54,7 +54,7 @@ public class AuthenticationService {
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(); //TODO dodaj custom exception
         var jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder()
+        return AuthenticationResponseDTO.builder()
                 .token(jwtToken)
                 .build();
     }

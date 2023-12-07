@@ -1,9 +1,9 @@
 package com.example.mobilnetestiranjebackend.controllers;
 
 
-import com.example.mobilnetestiranjebackend.DTOs.AuthenticationRequest;
-import com.example.mobilnetestiranjebackend.DTOs.AuthenticationResponse;
-import com.example.mobilnetestiranjebackend.DTOs.RegisterRequest;
+import com.example.mobilnetestiranjebackend.DTOs.AuthenticationRequestDTO;
+import com.example.mobilnetestiranjebackend.DTOs.AuthenticationResponseDTO;
+import com.example.mobilnetestiranjebackend.DTOs.RegisterRequestDTO;
 import com.example.mobilnetestiranjebackend.enums.Role;
 import com.example.mobilnetestiranjebackend.services.AuthenticationService;
 import jakarta.validation.Valid;
@@ -22,7 +22,7 @@ public class AuthenticationController {
     private final AuthenticationService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request){
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO request){
 
         if(!request.getPassword().equals(request.getRepeatPassword()))
             return ResponseEntity.badRequest().body("Passwords do not match");
@@ -39,8 +39,8 @@ public class AuthenticationController {
 
 
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> register(
-            @RequestBody AuthenticationRequest request
+    public ResponseEntity<AuthenticationResponseDTO> register(
+            @RequestBody AuthenticationRequestDTO request
     ){
         return ResponseEntity.ok(authService.authenticate(request));
     }

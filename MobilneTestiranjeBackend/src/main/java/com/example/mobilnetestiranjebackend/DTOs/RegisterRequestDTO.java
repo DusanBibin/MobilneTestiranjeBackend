@@ -1,9 +1,7 @@
 package com.example.mobilnetestiranjebackend.DTOs;
 
 
-import com.example.mobilnetestiranjebackend.enums.Role;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -15,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterRequest {
+public class RegisterRequestDTO {
     @NotBlank(message = "First name is required")
     private String firstName;
 
