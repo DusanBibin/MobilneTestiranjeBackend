@@ -5,10 +5,12 @@ import com.example.mobilnetestiranjebackend.DTOs.AuthenticationRequestDTO;
 import com.example.mobilnetestiranjebackend.DTOs.AuthenticationResponseDTO;
 import com.example.mobilnetestiranjebackend.DTOs.RegisterRequestDTO;
 import com.example.mobilnetestiranjebackend.enums.Role;
+import com.example.mobilnetestiranjebackend.exceptions.EmailNotConfirmedException;
 import com.example.mobilnetestiranjebackend.services.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,9 +41,17 @@ public class AuthenticationController {
 
 
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponseDTO> register(
-            @RequestBody AuthenticationRequestDTO request
-    ){
-        return ResponseEntity.ok(authService.authenticate(request));
+    public ResponseEntity<?> register(@Valid @RequestBody AuthenticationRequestDTO request){
+
+        AuthenticationResponseDTO token;
+        try{
+            token = authService.authenticate(request);
+        }catch(AuthenticationException e){
+            return ResponseEntity.badRequest().body("Password or email is invalid");
+        }catch (EmailNotConfirmedException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
+        return ResponseEntity.ok(token);
     }
 }
