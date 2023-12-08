@@ -34,6 +34,8 @@ public class WebSecurityConfiguration {
                 .authorizeHttpRequests()
                 .requestMatchers("/api/v1/auth/**")
                 .permitAll()
+                .requestMatchers("/api/v1/demo-controller")
+                .hasAuthority("GUEST")
                 .anyRequest()
                 .authenticated()
                 .and()

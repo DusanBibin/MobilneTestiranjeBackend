@@ -43,7 +43,7 @@ public class AuthenticationService {
                 .email(request.getEmail())
                 .phoneNumber(request.getPhoneNumber())
                 .address(request.getAddress())
-                .emailConfirmed(false)
+                .emailConfirmed(true)
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.valueOf(request.getRole()))
                 .build();
