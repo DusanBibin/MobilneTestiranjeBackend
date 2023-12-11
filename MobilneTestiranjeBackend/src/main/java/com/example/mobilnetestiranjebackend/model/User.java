@@ -31,6 +31,8 @@ public class User implements UserDetails{
     private String phoneNumber;
     private String address;
     private Boolean emailConfirmed;
+    @OneToOne(cascade = {CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    private Verification verification;
     @Enumerated(EnumType.STRING)
     private Role role;
     @Override

@@ -1,5 +1,6 @@
 package com.example.mobilnetestiranjebackend.helpers;
 
+import com.example.mobilnetestiranjebackend.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -7,6 +8,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.naming.AuthenticationException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,5 +23,70 @@ public class GlobalExceptionHandler {
         ex.getBindingResult().getFieldErrors().forEach(error ->
                 errors.put(error.getField(), error.getDefaultMessage()));
         return errors;
+    }
+
+    @ExceptionHandler(value
+            = NonExistingVerificationCodeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public @ResponseBody ErrorResponse
+    handleNonExistingVerificationCodeException(NonExistingVerificationCodeException ex)
+    {
+        return new ErrorResponse(ex.getMessage());
+    }
+
+    @ExceptionHandler(value
+            = CodeExpiredException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public @ResponseBody ErrorResponse
+    handleCodeExpiredException(CodeExpiredException ex)
+    {
+        return new ErrorResponse(ex.getMessage());
+    }
+
+
+    @ExceptionHandler(value
+            = UserAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public @ResponseBody ErrorResponse
+    handleUserAlreadyExistsException(UserAlreadyExistsException ex)
+    {
+        return new ErrorResponse(ex.getMessage());
+    }
+
+    @ExceptionHandler(value
+            = InvalidRepeatPasswordException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public @ResponseBody ErrorResponse
+    handleInvalidRepeatPasswordException(InvalidRepeatPasswordException ex)
+        {
+            return new ErrorResponse(ex.getMessage());
+    }
+
+    @ExceptionHandler(value
+            = InvalidUserRoleException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public @ResponseBody ErrorResponse
+    handleInvalidUserRoleException(InvalidUserRoleException ex)
+    {
+        return new ErrorResponse(ex.getMessage());
+    }
+
+
+    @ExceptionHandler(value
+            = EmailNotConfirmedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public @ResponseBody ErrorResponse
+    handleEmailNotConfirmedException(EmailNotConfirmedException ex)
+    {
+        return new ErrorResponse(ex.getMessage());
+    }
+
+    @ExceptionHandler(value
+            = InvalidAuthenticationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public @ResponseBody ErrorResponse
+    handleEmailNotConfirmedException(InvalidAuthenticationException ex)
+    {
+        return new ErrorResponse(ex.getMessage());
     }
 }

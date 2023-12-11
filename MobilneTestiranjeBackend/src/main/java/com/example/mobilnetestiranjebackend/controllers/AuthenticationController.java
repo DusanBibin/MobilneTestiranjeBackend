@@ -6,15 +6,16 @@ import com.example.mobilnetestiranjebackend.DTOs.AuthenticationResponseDTO;
 import com.example.mobilnetestiranjebackend.DTOs.RegisterRequestDTO;
 import com.example.mobilnetestiranjebackend.enums.Role;
 import com.example.mobilnetestiranjebackend.exceptions.EmailNotConfirmedException;
+import com.example.mobilnetestiranjebackend.exceptions.InvalidRepeatPasswordException;
+import com.example.mobilnetestiranjebackend.exceptions.InvalidUserRoleException;
+import com.example.mobilnetestiranjebackend.exceptions.UserAlreadyExistsException;
 import com.example.mobilnetestiranjebackend.services.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -26,32 +27,28 @@ public class AuthenticationController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO request){
 
-        if(!request.getPassword().equals(request.getRepeatPassword()))
-            return ResponseEntity.badRequest().body("Passwords do not match");
-
-        if(!request.getRole().equals(Role.GUEST.toString()) && !request.getRole().equals(Role.OWNER.toString()))
-            return ResponseEntity.badRequest().body("Invalid user role selected");
-
-        if(authService.userExist(request.getEmail()))
-            return ResponseEntity.badRequest().body("User with email " + request.getEmail() + " already exists");
+        authService.checkInput(request);
 
         authService.register(request);
+
         return ResponseEntity.ok().body("Success, user confirmation email was sent to " + request.getEmail());
     }
 
 
     @PostMapping("/authenticate")
-    public ResponseEntity<?> register(@Valid @RequestBody AuthenticationRequestDTO request){
+    public ResponseEntity<?> authenticate(@Valid @RequestBody AuthenticationRequestDTO request){
 
-        AuthenticationResponseDTO token;
-        try{
-            token = authService.authenticate(request);
-        }catch(AuthenticationException e){
-            return ResponseEntity.badRequest().body("Password or email is invalid");
-        }catch (EmailNotConfirmedException e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        AuthenticationResponseDTO token = authService.authenticate(request);
 
         return ResponseEntity.ok(token);
     }
+
+    @GetMapping(value = "/activate/{idActivation}")
+    public ResponseEntity<String> activateUserEmail(@PathVariable("idActivation") String verificationCode) {
+
+        authService.verifyUser(verificationCode);
+        return new ResponseEntity<>(("Account activated!"), HttpStatus.OK);
+    }
+
+
 }
