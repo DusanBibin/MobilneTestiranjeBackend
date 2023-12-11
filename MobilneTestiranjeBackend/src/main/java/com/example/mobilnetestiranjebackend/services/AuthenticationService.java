@@ -15,6 +15,7 @@ import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
+import com.sendgrid.helpers.mail.objects.Personalization;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.MessagingException;
@@ -39,11 +40,12 @@ public class AuthenticationService {
 
     @Value("${spring.sendgrid.api-key}")
     private String SENDGRID_API_KEY;
-
+    private static final String VERIFICATION_TEMPLATE_ID = "d-3d2f42ee76ed4904bb916951f3471b95";
     public Boolean userExist(String email){
         var userWrapper = userRepository.findByEmail(email);
         return userWrapper.isPresent();
     }
+
 
     public void register(RegisterRequestDTO request) {
 
@@ -86,12 +88,25 @@ public class AuthenticationService {
         Email from = new Email("mobilnebackendtest@gmail.com");
         String subject = "Verify the registration";
         Email to = new Email(user.getEmail());
-        Content content = new Content("text/plain", "Dear " + user.getFirstName() + ","
-                + "Please click the link below to verify your registration: \n"
-                + "http://localhost:8080/api/v1/auth/activate/" + user.getVerification().getVerificationCode() + "\n"
-                + "Thank you,\n"
-                + "Certificate app.");
-        Mail mail = new Mail(from, subject, to, content);
+
+
+//        Content content = new Content("text/plain", "Dear " + user.getFirstName() + ","
+//                + "Please click the link below to verify your registration: \n"
+//                + "http://localhost:8080/api/v1/auth/activate/" + user.getVerification().getVerificationCode() + "\n"
+//                + "Thank you,\n");
+//        Mail mail = new Mail(from, subject, to, content);
+
+        Personalization personalization = new Personalization();
+        personalization.addTo(to);
+        personalization.addDynamicTemplateData("firstName", user.getFirstName());
+        personalization.addDynamicTemplateData("verificationLink", "http://localhost:8080/api/v1/auth/activate/" + user.getVerification().getVerificationCode());
+
+        Mail mail = new Mail();
+        mail.setFrom(from);
+        mail.setSubject(subject);
+        mail.addPersonalization(personalization);
+        mail.setTemplateId(VERIFICATION_TEMPLATE_ID);
+
 
         SendGrid sg = new SendGrid(SENDGRID_API_KEY);
 
@@ -135,11 +150,17 @@ public class AuthenticationService {
 
     public void verifyUser(String verificationCode) {
         User user = userRepository.findUserByVerification_VerificationCode(verificationCode).orElse(null);
+
+
+
         if (user == null) {
             throw new NonExistingVerificationCodeException("That verification code does not exist!");
         } else if (user.getVerification().getExpirationDate().isBefore(LocalDateTime.now())) {
             throw new CodeExpiredException("Verification code expired. Register again!");
-        } else {
+        }else if (user.getEmailConfirmed()){
+            throw new UserAlreadyConfirmedException("User is already confirmed");
+        }
+        else {
             user.setEmailConfirmed(true);
             userRepository.save(user);
         }

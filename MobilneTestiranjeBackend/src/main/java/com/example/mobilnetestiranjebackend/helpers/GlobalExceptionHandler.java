@@ -89,4 +89,14 @@ public class GlobalExceptionHandler {
     {
         return new ErrorResponse(ex.getMessage());
     }
+
+
+    @ExceptionHandler(value
+            = UserAlreadyConfirmedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public @ResponseBody ErrorResponse
+    handleUserAlreadyConfirmedException(UserAlreadyConfirmedException ex)
+    {
+        return new ErrorResponse(ex.getMessage());
+    }
 }
