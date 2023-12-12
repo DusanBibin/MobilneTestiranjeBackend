@@ -35,7 +35,7 @@ public class WebSecurityConfiguration {
                 .requestMatchers("/api/v1/auth/**")
                 .permitAll()
                 .requestMatchers("/api/v1/demo-controller")
-                .hasAuthority("GUEST")
+                .hasAuthority("OWNER")
                 .anyRequest()
                 .authenticated()
                 .and()

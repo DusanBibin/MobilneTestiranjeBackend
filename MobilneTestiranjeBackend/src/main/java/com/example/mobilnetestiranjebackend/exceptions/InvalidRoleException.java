@@ -1,11 +1,11 @@
 package com.example.mobilnetestiranjebackend.exceptions;
 
-public class InvalidUserRoleException extends RuntimeException{
+public class InvalidRoleException extends RuntimeException{
     private String message;
 
-    public InvalidUserRoleException() {}
+    public InvalidRoleException() {}
 
-    public InvalidUserRoleException(String msg)
+    public InvalidRoleException(String msg)
     {
         super(msg);
         this.message = msg;

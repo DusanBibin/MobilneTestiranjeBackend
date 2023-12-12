@@ -13,7 +13,6 @@ import com.sendgrid.Request;
 import com.sendgrid.Response;
 import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
-import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
 import com.sendgrid.helpers.mail.objects.Personalization;
 import lombok.RequiredArgsConstructor;
@@ -78,7 +77,7 @@ public class AuthenticationService {
             throw new InvalidRepeatPasswordException("Passwords do not match");
 
         if(!request.getRole().equals(Role.GUEST.toString()) && !request.getRole().equals(Role.OWNER.toString()))
-            throw new InvalidUserRoleException("Invalid user role selected");
+            throw new InvalidRoleException("Invalid user role selected");
 
         if(userExist(request.getEmail()))
             throw new UserAlreadyExistsException("User with email " + request.getEmail() + " already exists");

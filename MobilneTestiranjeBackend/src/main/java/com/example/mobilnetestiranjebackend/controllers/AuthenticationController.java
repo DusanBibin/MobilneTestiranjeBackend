@@ -4,17 +4,11 @@ package com.example.mobilnetestiranjebackend.controllers;
 import com.example.mobilnetestiranjebackend.DTOs.AuthenticationRequestDTO;
 import com.example.mobilnetestiranjebackend.DTOs.AuthenticationResponseDTO;
 import com.example.mobilnetestiranjebackend.DTOs.RegisterRequestDTO;
-import com.example.mobilnetestiranjebackend.enums.Role;
-import com.example.mobilnetestiranjebackend.exceptions.EmailNotConfirmedException;
-import com.example.mobilnetestiranjebackend.exceptions.InvalidRepeatPasswordException;
-import com.example.mobilnetestiranjebackend.exceptions.InvalidUserRoleException;
-import com.example.mobilnetestiranjebackend.exceptions.UserAlreadyExistsException;
 import com.example.mobilnetestiranjebackend.services.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
