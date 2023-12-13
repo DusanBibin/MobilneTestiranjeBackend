@@ -7,10 +7,20 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 @Configuration
 public class OpenAPI30Configuration {
 
+    public OpenAPI30Configuration(MappingJackson2HttpMessageConverter converter) {
+        var supportedMediaTypes = new ArrayList<>(converter.getSupportedMediaTypes());
+        supportedMediaTypes.add(new MediaType("application", "octet-stream"));
+        converter.setSupportedMediaTypes(supportedMediaTypes);
+    }
     @Bean
     public OpenAPI customizeOpenAPI(){
         final String securitySchemeName = "bearerAuth";
@@ -24,4 +34,5 @@ public class OpenAPI30Configuration {
                                 .scheme("bearer")
                                 .bearerFormat("JWT")));
     }
+
 }

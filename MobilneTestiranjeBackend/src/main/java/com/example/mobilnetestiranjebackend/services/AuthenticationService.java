@@ -5,8 +5,11 @@ import com.example.mobilnetestiranjebackend.DTOs.AuthenticationResponseDTO;
 import com.example.mobilnetestiranjebackend.DTOs.RegisterRequestDTO;
 import com.example.mobilnetestiranjebackend.enums.Role;
 import com.example.mobilnetestiranjebackend.exceptions.*;
+import com.example.mobilnetestiranjebackend.model.Accommodation;
+import com.example.mobilnetestiranjebackend.model.Owner;
 import com.example.mobilnetestiranjebackend.model.User;
 import com.example.mobilnetestiranjebackend.model.Verification;
+import com.example.mobilnetestiranjebackend.repositories.OwnerRepository;
 import com.example.mobilnetestiranjebackend.repositories.UserRepository;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
@@ -26,12 +29,14 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
 
+    private final OwnerRepository ownerRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -51,17 +56,24 @@ public class AuthenticationService {
         Random random = new Random();
         String code = String.format("%05d", random.nextInt(100000));
 
-        var user = User.builder()
-                .firstName(request.getFirstName())
-                .lastname(request.getLastName())
-                .email(request.getEmail())
-                .phoneNumber(request.getPhoneNumber())
-                .address(request.getAddress())
-                .emailConfirmed(false)
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.valueOf(request.getRole()))
-                .verification(new Verification(code, LocalDateTime.now().plusDays(1)))
-                .build();
+        Owner owner = null;
+        User user = null;
+
+        if(request.getRole().equals("OWNER")){
+            owner = Owner.builder()
+                    .firstName(request.getFirstName())
+                    .lastname(request.getLastName())
+                    .email(request.getEmail())
+                    .phoneNumber(request.getPhoneNumber())
+                    .address(request.getAddress())
+                    .emailConfirmed(false)
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .role(Role.valueOf(request.getRole()))
+                    .verification(new Verification(code, LocalDateTime.now().plusDays(1)))
+                    .accommodations(new ArrayList<Accommodation>())
+                    .build();
+            user = owner;
+        }
 
         try {
             sendVerificationEmail(user);
@@ -69,7 +81,8 @@ public class AuthenticationService {
             System.out.println("ERROR WITH SENDING THE MAIL");
         }
 
-        userRepository.save(user);
+        ownerRepository.save(owner);
+        //guestRepository.save(guest);
     }
 
     public void checkInput(RegisterRequestDTO request){
@@ -88,12 +101,6 @@ public class AuthenticationService {
         String subject = "Verify the registration";
         Email to = new Email(user.getEmail());
 
-
-//        Content content = new Content("text/plain", "Dear " + user.getFirstName() + ","
-//                + "Please click the link below to verify your registration: \n"
-//                + "http://localhost:8080/api/v1/auth/activate/" + user.getVerification().getVerificationCode() + "\n"
-//                + "Thank you,\n");
-//        Mail mail = new Mail(from, subject, to, content);
 
         Personalization personalization = new Personalization();
         personalization.addTo(to);

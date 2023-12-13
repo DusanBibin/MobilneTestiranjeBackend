@@ -27,5 +27,4 @@ public class AccommodationAvailability {
     private LocalDate endDate;
     private Long price;
 
-    // Other getters, setters, and constructors as needed
 }

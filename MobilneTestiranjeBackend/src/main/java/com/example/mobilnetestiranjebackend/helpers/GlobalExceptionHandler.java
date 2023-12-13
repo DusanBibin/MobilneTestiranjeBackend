@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -97,5 +98,14 @@ public class GlobalExceptionHandler {
     handleUserAlreadyConfirmedException(UserAlreadyConfirmedException ex)
     {
         return new ErrorResponse(ex.getMessage());
+    }
+
+    @ExceptionHandler(value
+            = MissingServletRequestPartException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public @ResponseBody ErrorResponse
+    handleMissingServletRequestPartException(MissingServletRequestPartException ex)
+    {
+        return new ErrorResponse("Image must be uploaded");
     }
 }

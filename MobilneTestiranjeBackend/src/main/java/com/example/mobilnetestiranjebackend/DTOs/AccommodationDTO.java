@@ -62,4 +62,5 @@ public class AccommodationDTO {
     @Valid
     @NotEmpty(message = "There must be at least one availability period")
     private List<@Valid AccommodationAvailabilityDTO> availabilityList;
+
 }

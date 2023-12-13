@@ -1,5 +1,6 @@
 package com.example.mobilnetestiranjebackend.model;
 
+import com.example.mobilnetestiranjebackend.enums.AccommodationType;
 import com.example.mobilnetestiranjebackend.enums.Amenity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -33,14 +34,17 @@ public class Accommodation {
     @ElementCollection
     private List<String> photos;
 
-    private int minGuests;
-    private int maxGuests;
+    private Integer minGuests;
+    private Integer maxGuests;
 
-    private String accommodationType;
+    private AccommodationType accommodationType;
 
-    private boolean approved;
+    private Boolean approved;
+
+    private Boolean autoAcceptEnabled;
 
     @OneToMany(mappedBy = "accommodation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AccommodationAvailability> availabilityList;
+
 
 }
