@@ -18,14 +18,14 @@ import java.util.List;
 @Table(name = "accommodation")
 public class Accommodation {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
 
     private String name;
     private String description;
     private String address;
-    private Long lat;
-    private Long lon;
+    private Double lat;
+    private Double lon;
 
 
     @ElementCollection
@@ -45,6 +45,9 @@ public class Accommodation {
 
     @OneToMany(mappedBy = "accommodation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AccommodationAvailability> availabilityList;
+
+    @ManyToOne
+    private Owner owner;
 
 
 }

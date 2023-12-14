@@ -63,10 +63,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value
-            = InvalidRoleException.class)
+            = InvalidEnumValueException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public @ResponseBody ErrorResponse
-    handleInvalidUserRoleException(InvalidRoleException ex)
+    handleInvalidUserRoleException(InvalidEnumValueException ex)
     {
         return new ErrorResponse(ex.getMessage());
     }
@@ -107,5 +107,15 @@ public class GlobalExceptionHandler {
     handleMissingServletRequestPartException(MissingServletRequestPartException ex)
     {
         return new ErrorResponse("Image must be uploaded");
+    }
+
+
+    @ExceptionHandler(value
+            = AccommodationAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public @ResponseBody ErrorResponse
+    handleAccommodationAlreadyExistsException(AccommodationAlreadyExistsException ex)
+    {
+        return new ErrorResponse(ex.getMessage());
     }
 }

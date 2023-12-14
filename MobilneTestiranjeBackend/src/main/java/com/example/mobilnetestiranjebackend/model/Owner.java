@@ -1,6 +1,7 @@
 package com.example.mobilnetestiranjebackend.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -16,6 +17,6 @@ import java.util.List;
 @Entity
 public class Owner extends User {
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     private List<Accommodation> accommodations;
 }

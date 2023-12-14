@@ -40,7 +40,7 @@ public class AccommodationDTO {
     private Double lon;
 
     @NotNull(message = "Amenities must be present")
-    private List<Amenity> amenities;
+    private List<String> amenities;
 
     @NotEmpty(message = "There must be at least one photo")
     private List<String> photos;

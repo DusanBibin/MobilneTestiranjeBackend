@@ -1,11 +1,12 @@
 package com.example.mobilnetestiranjebackend.exceptions;
 
-public class InvalidRoleException extends RuntimeException{
+
+public class AccommodationAlreadyExistsException extends RuntimeException{
     private String message;
 
-    public InvalidRoleException() {}
+    public AccommodationAlreadyExistsException() {}
 
-    public InvalidRoleException(String msg)
+    public AccommodationAlreadyExistsException(String msg)
     {
         super(msg);
         this.message = msg;

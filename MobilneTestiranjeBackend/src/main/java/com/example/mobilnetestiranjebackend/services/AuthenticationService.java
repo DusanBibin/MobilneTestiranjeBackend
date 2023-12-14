@@ -3,6 +3,7 @@ package com.example.mobilnetestiranjebackend.services;
 import com.example.mobilnetestiranjebackend.DTOs.AuthenticationRequestDTO;
 import com.example.mobilnetestiranjebackend.DTOs.AuthenticationResponseDTO;
 import com.example.mobilnetestiranjebackend.DTOs.RegisterRequestDTO;
+import com.example.mobilnetestiranjebackend.enums.AccommodationType;
 import com.example.mobilnetestiranjebackend.enums.Role;
 import com.example.mobilnetestiranjebackend.exceptions.*;
 import com.example.mobilnetestiranjebackend.model.Accommodation;
@@ -90,7 +91,13 @@ public class AuthenticationService {
             throw new InvalidRepeatPasswordException("Passwords do not match");
 
         if(!request.getRole().equals(Role.GUEST.toString()) && !request.getRole().equals(Role.OWNER.toString()))
-            throw new InvalidRoleException("Invalid user role selected");
+            throw new InvalidEnumValueException("Invalid user role selected");
+
+        try {
+            Role role = Role.valueOf(request.getRole());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidEnumValueException("Invalid user role value");
+        }
 
         if(userExist(request.getEmail()))
             throw new UserAlreadyExistsException("User with email " + request.getEmail() + " already exists");

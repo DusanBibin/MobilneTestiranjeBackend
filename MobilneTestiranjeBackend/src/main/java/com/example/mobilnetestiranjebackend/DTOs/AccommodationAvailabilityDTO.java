@@ -24,5 +24,5 @@ public class AccommodationAvailabilityDTO {
 
     @NotNull(message = "Accommodation price for this period must be provided")
     @Min(value = 1, message = "Price must be at least 1")
-    private Double price;
+    private Long price;
 }
