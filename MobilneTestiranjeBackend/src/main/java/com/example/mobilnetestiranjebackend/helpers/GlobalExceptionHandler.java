@@ -118,4 +118,14 @@ public class GlobalExceptionHandler {
     {
         return new ErrorResponse(ex.getMessage());
     }
+
+
+    @ExceptionHandler(value
+            = InvalidDateException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public @ResponseBody ErrorResponse
+    handleInvalidDateException(InvalidDateException ex)
+    {
+        return new ErrorResponse(ex.getMessage());
+    }
 }

@@ -7,6 +7,7 @@ import com.example.mobilnetestiranjebackend.enums.AccommodationType;
 import com.example.mobilnetestiranjebackend.enums.Amenity;
 import com.example.mobilnetestiranjebackend.enums.Role;
 import com.example.mobilnetestiranjebackend.exceptions.AccommodationAlreadyExistsException;
+import com.example.mobilnetestiranjebackend.exceptions.InvalidDateException;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidEnumValueException;
 import com.example.mobilnetestiranjebackend.model.Accommodation;
 import com.example.mobilnetestiranjebackend.model.AccommodationAvailability;
@@ -64,6 +65,13 @@ public class AccommodationService {
             } catch (IllegalArgumentException e) {
                 throw new InvalidEnumValueException("Invalid amenity value");
             }
+        }
+
+        for(AccommodationAvailabilityDTO accAvail: accommodationDTO.getAvailabilityList()){
+            if(accAvail.getEndDate().isBefore(accAvail.getStartDate()))
+                throw new InvalidDateException("End date cannot be before start date");
+            if(accAvail.getCancellationDeadline().isBefore(accAvail.getEndDate()))
+                throw new InvalidDateException("Cancellation date cannot be before end date");
         }
 
 

@@ -1,12 +1,13 @@
 package com.example.mobilnetestiranjebackend.model;
 
+
+import com.example.mobilnetestiranjebackend.enums.RequestStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
@@ -14,18 +15,19 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "accommodation_availability")
-public class AccommodationAvailability {
+@Table(name = "reservation")
+public class Reservation {
     @Id
     @GeneratedValue
     private Long id;
 
+    private LocalDate reservationStartDate;
+    private LocalDate reservationEndDate;
+    private Integer guestNum;
+    private RequestStatus status;
+
     @ManyToOne
     private Accommodation accommodation;
-
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private Long price;
-    private LocalDate cancelDeadline;
-
+    @ManyToOne
+    private AccommodationAvailability accommodationAvailability;
 }

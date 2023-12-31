@@ -22,6 +22,10 @@ public class AccommodationAvailabilityDTO {
     @NotNull(message = "End date must be provided")
     private LocalDate endDate;
 
+    @Future(message = "Cancellation date must be in the future")
+    @NotNull(message = "Cancellation date must be provided")
+    private LocalDate cancellationDeadline;
+
     @NotNull(message = "Accommodation price for this period must be provided")
     @Min(value = 1, message = "Price must be at least 1")
     private Long price;

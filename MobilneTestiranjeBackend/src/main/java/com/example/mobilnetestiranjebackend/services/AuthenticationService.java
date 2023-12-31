@@ -72,6 +72,7 @@ public class AuthenticationService {
                     .role(Role.valueOf(request.getRole()))
                     .verification(new Verification(code, LocalDateTime.now().plusDays(1)))
                     .accommodations(new ArrayList<Accommodation>())
+                    .blocked(false)
                     .build();
             user = owner;
         }
