@@ -111,10 +111,10 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(value
-            = AccommodationAlreadyExistsException.class)
+            = EntityAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public @ResponseBody ErrorResponse
-    handleAccommodationAlreadyExistsException(AccommodationAlreadyExistsException ex)
+    handleAccommodationAlreadyExistsException(EntityAlreadyExistsException ex)
     {
         return new ErrorResponse(ex.getMessage());
     }
@@ -128,4 +128,5 @@ public class GlobalExceptionHandler {
     {
         return new ErrorResponse(ex.getMessage());
     }
+
 }

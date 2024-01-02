@@ -49,5 +49,8 @@ public class Accommodation {
     @ManyToOne
     private Owner owner;
 
+    @OneToMany
+    private List<Reservation> reservations;
+
 
 }

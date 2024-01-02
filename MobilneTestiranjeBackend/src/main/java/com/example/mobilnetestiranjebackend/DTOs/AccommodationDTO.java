@@ -42,9 +42,6 @@ public class AccommodationDTO {
     @NotNull(message = "Amenities must be present")
     private List<String> amenities;
 
-    @NotEmpty(message = "There must be at least one photo")
-    private List<String> photos;
-
     @NotNull(message = "Min number of guests must be present")
     @Min(value = 1, message = "Min guests must be at least 1")
     private Integer minGuests;
@@ -56,8 +53,7 @@ public class AccommodationDTO {
     @NotBlank(message = "Accommodation type must be present")
     private String accommodationType;
 
-    @NotNull(message = "Price per guest must be present")
-    private Boolean pricePerGuest;
+
 
     @Valid
     @NotEmpty(message = "There must be at least one availability period")

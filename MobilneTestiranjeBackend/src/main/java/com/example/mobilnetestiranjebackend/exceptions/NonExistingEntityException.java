@@ -1,12 +1,12 @@
 package com.example.mobilnetestiranjebackend.exceptions;
 
-public class NonExistingUserException extends RuntimeException{
+public class NonExistingEntityException extends RuntimeException{
 
     private String message;
 
-    public NonExistingUserException() {}
+    public NonExistingEntityException() {}
 
-    public NonExistingUserException(String msg)
+    public NonExistingEntityException(String msg)
     {
         super(msg);
         this.message = msg;

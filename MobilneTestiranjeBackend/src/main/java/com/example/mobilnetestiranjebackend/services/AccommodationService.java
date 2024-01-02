@@ -5,32 +5,26 @@ import com.example.mobilnetestiranjebackend.DTOs.AccommodationAvailabilityDTO;
 import com.example.mobilnetestiranjebackend.DTOs.AccommodationDTO;
 import com.example.mobilnetestiranjebackend.enums.AccommodationType;
 import com.example.mobilnetestiranjebackend.enums.Amenity;
-import com.example.mobilnetestiranjebackend.enums.Role;
-import com.example.mobilnetestiranjebackend.exceptions.AccommodationAlreadyExistsException;
+import com.example.mobilnetestiranjebackend.exceptions.EntityAlreadyExistsException;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidDateException;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidEnumValueException;
 import com.example.mobilnetestiranjebackend.model.Accommodation;
 import com.example.mobilnetestiranjebackend.model.AccommodationAvailability;
 import com.example.mobilnetestiranjebackend.model.Owner;
-import com.example.mobilnetestiranjebackend.model.User;
 import com.example.mobilnetestiranjebackend.repositories.AccommodationRepository;
 import com.example.mobilnetestiranjebackend.repositories.AvailabilityRepository;
 import com.example.mobilnetestiranjebackend.repositories.OwnerRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +42,7 @@ public class AccommodationService {
         Owner owner = ownerWrapper.orElseThrow();
 
         var accommodationWrapper = accommodationRepository.findAccommodationsByOwnerAndName(owner, accommodationDTO.getName());
-        if(accommodationWrapper.isPresent()) throw new AccommodationAlreadyExistsException("You already have accommodation with this name");
+        if(accommodationWrapper.isPresent()) throw new EntityAlreadyExistsException("You already have accommodation with this name");
 
 
         try {
@@ -70,8 +64,9 @@ public class AccommodationService {
         for(AccommodationAvailabilityDTO accAvail: accommodationDTO.getAvailabilityList()){
             if(accAvail.getEndDate().isBefore(accAvail.getStartDate()))
                 throw new InvalidDateException("End date cannot be before start date");
-            if(accAvail.getCancellationDeadline().isBefore(accAvail.getEndDate()))
-                throw new InvalidDateException("Cancellation date cannot be before end date");
+            if(accAvail.getCancellationDeadline().isAfter(accAvail.getStartDate()) ||
+                    accAvail.getCancellationDeadline().isEqual(accAvail.getStartDate()))
+                throw new InvalidDateException("Cancellation date cannot be after start date");
         }
 
 
@@ -106,8 +101,10 @@ public class AccommodationService {
             var accAvailability = AccommodationAvailability.builder()
                     .price(availabilityDTO.getPrice())
                     .endDate(availabilityDTO.getEndDate())
+                    .cancelDeadline(availabilityDTO.getCancellationDeadline())
                     .startDate(availabilityDTO.getStartDate())
                     .accommodation(accommodation)
+                    .pricePerGuest(availabilityDTO.getPricePerGuest())
                     .build();
 
             availabilityRepository.save(accAvailability);
@@ -139,7 +136,6 @@ public class AccommodationService {
 
         return relativePath;
     }
-
 
 }
 

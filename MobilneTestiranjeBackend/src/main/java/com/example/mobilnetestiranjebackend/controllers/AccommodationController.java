@@ -28,8 +28,7 @@ public class AccommodationController {
     @PostMapping(path = "/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> createAccommodation(@Valid @RequestPart("accommodationDTO") AccommodationDTO accommodationDTO,
                                                  @RequestPart("photos") List<MultipartFile> images,
-                                                 @AuthenticationPrincipal User user)
-    {
+                                                 @AuthenticationPrincipal User user) {
 
         try {
             accommodationService.createAccommodation(user.getId(), images, accommodationDTO);
@@ -38,6 +37,8 @@ public class AccommodationController {
         }
         return ResponseEntity.ok().body("Successfully created new accommodation");
     }
+
+
 
 
 

@@ -1,12 +1,12 @@
 package com.example.mobilnetestiranjebackend.exceptions;
 
 
-public class AccommodationAlreadyExistsException extends RuntimeException{
+public class EntityAlreadyExistsException extends RuntimeException{
     private String message;
 
-    public AccommodationAlreadyExistsException() {}
+    public EntityAlreadyExistsException() {}
 
-    public AccommodationAlreadyExistsException(String msg)
+    public EntityAlreadyExistsException(String msg)
     {
         super(msg);
         this.message = msg;

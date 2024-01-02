@@ -16,8 +16,10 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Entity
 @Table(name = "availability_change")
-public class AvailabilityChangeRequest {
-
+public class AvailabilityRequest {
+    //Ova klasa sluzi za menjanje postojecih availabilitija
+    //kada se posalje zahtev za menjanje ovde je status pending i status u accommodationAvailability je pending, ako bude accepted postavljaju se oba
+    //na accepted i podaci odavde se cuvaju u pravi accommodationAvailability,
     @Id
     @GeneratedValue
     private Long id;
@@ -25,9 +27,15 @@ public class AvailabilityChangeRequest {
     @ManyToOne
     private AccommodationAvailability accommodationAvailability;
 
+    @ManyToOne
+    private Accommodation accommodation;
+
     private LocalDate startDate;
     private LocalDate endDate;
     private Long price;
     private LocalDate cancelDeadline;
+    private Boolean pricePerGuest;
+
     private RequestStatus status;
+    private Boolean isEditRequest;
 }

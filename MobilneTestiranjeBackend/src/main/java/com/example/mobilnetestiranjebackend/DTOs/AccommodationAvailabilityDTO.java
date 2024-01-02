@@ -26,6 +26,9 @@ public class AccommodationAvailabilityDTO {
     @NotNull(message = "Cancellation date must be provided")
     private LocalDate cancellationDeadline;
 
+    @NotNull(message = "Price per guest must be present")
+    private Boolean pricePerGuest;
+
     @NotNull(message = "Accommodation price for this period must be provided")
     @Min(value = 1, message = "Price must be at least 1")
     private Long price;

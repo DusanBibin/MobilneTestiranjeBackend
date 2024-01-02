@@ -17,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "accommodation_change")
-public class AccommodationChangeRequest {
+public class AccommodationRequest {
     @Id
     @GeneratedValue
     private Long id;

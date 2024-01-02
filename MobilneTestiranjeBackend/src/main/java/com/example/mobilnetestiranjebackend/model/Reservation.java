@@ -2,6 +2,7 @@ package com.example.mobilnetestiranjebackend.model;
 
 
 import com.example.mobilnetestiranjebackend.enums.RequestStatus;
+import com.example.mobilnetestiranjebackend.enums.ReservationStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,7 +25,7 @@ public class Reservation {
     private LocalDate reservationStartDate;
     private LocalDate reservationEndDate;
     private Integer guestNum;
-    private RequestStatus status;
+    private ReservationStatus status;
 
     @ManyToOne
     private Accommodation accommodation;

@@ -1,5 +1,6 @@
 package com.example.mobilnetestiranjebackend.model;
 
+import com.example.mobilnetestiranjebackend.enums.RequestStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,5 +28,5 @@ public class AccommodationAvailability {
     private LocalDate endDate;
     private Long price;
     private LocalDate cancelDeadline;
-
+    private Boolean pricePerGuest;
 }
