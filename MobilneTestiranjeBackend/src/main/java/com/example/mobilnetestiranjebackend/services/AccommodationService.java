@@ -5,15 +5,12 @@ import com.example.mobilnetestiranjebackend.DTOs.AccommodationAvailabilityDTO;
 import com.example.mobilnetestiranjebackend.DTOs.AccommodationDTO;
 import com.example.mobilnetestiranjebackend.enums.AccommodationType;
 import com.example.mobilnetestiranjebackend.enums.Amenity;
+import com.example.mobilnetestiranjebackend.enums.RequestStatus;
 import com.example.mobilnetestiranjebackend.exceptions.EntityAlreadyExistsException;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidDateException;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidEnumValueException;
-import com.example.mobilnetestiranjebackend.model.Accommodation;
-import com.example.mobilnetestiranjebackend.model.AccommodationAvailability;
-import com.example.mobilnetestiranjebackend.model.Owner;
-import com.example.mobilnetestiranjebackend.repositories.AccommodationRepository;
-import com.example.mobilnetestiranjebackend.repositories.AvailabilityRepository;
-import com.example.mobilnetestiranjebackend.repositories.OwnerRepository;
+import com.example.mobilnetestiranjebackend.model.*;
+import com.example.mobilnetestiranjebackend.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,21 +26,16 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class AccommodationService {
-
-    private final AvailabilityRepository availabilityRepository;
     private final AccommodationRepository accommodationRepository;
+    private final AccommodationRequestRepository accommodationRequestRepository;
+    private final AvailabilityRequestRepository availabilityRequestRepository;
     private final OwnerRepository ownerRepository;
 
 
     private static final String UPLOAD_DIR = "uploads";
-    public void createAccommodation(Integer ownerId, List<MultipartFile> images, AccommodationDTO accommodationDTO) throws IOException {
 
-        var ownerWrapper = ownerRepository.findOwnerById(ownerId);
-        Owner owner = ownerWrapper.orElseThrow();
 
-        var accommodationWrapper = accommodationRepository.findAccommodationsByOwnerAndName(owner, accommodationDTO.getName());
-        if(accommodationWrapper.isPresent()) throw new EntityAlreadyExistsException("You already have accommodation with this name");
-
+    private List<Amenity> checkInputValues(AccommodationDTO accommodationDTO){
 
         try {
             AccommodationType.valueOf(accommodationDTO.getAccommodationType());
@@ -68,7 +60,17 @@ public class AccommodationService {
                     accAvail.getCancellationDeadline().isEqual(accAvail.getStartDate()))
                 throw new InvalidDateException("Cancellation date cannot be after start date");
         }
+        return amenities;
+    }
+    public void createAccommodationRequest(Integer ownerId, List<MultipartFile> images, AccommodationDTO accommodationDTO){
 
+        var ownerWrapper = ownerRepository.findOwnerById(ownerId);
+        Owner owner = ownerWrapper.orElseThrow();
+
+        var accommodationWrapper = accommodationRepository.findAccommodationsByOwnerAndName(owner, accommodationDTO.getName());
+        if(accommodationWrapper.isPresent()) throw new EntityAlreadyExistsException("You already have accommodation with this name");
+
+        var amenities = checkInputValues(accommodationDTO);
 
 
         List<String> imagePaths = new ArrayList<>();
@@ -77,50 +79,43 @@ public class AccommodationService {
             imagePaths.add(relativePath);
         }
 
-        var accommodation = Accommodation.builder()
+        var accommodationRequest = AccommodationRequest.builder()
                 .name(accommodationDTO.getName())
                 .description(accommodationDTO.getDescription())
                 .address(accommodationDTO.getAddress())
                 .lat(accommodationDTO.getLat())
                 .lon(accommodationDTO.getLon())
                 .amenities(amenities)
+                .imagePaths(imagePaths)
                 .minGuests(accommodationDTO.getMinGuests())
                 .maxGuests(accommodationDTO.getMaxGuests())
                 .accommodationType(AccommodationType.valueOf(accommodationDTO.getAccommodationType()))
-                .approved(false)
                 .autoAcceptEnabled(false)
-                .photos(imagePaths)
-                .availabilityList(new ArrayList<>())
+                .availabilityRequests(new ArrayList<AvailabilityRequest>())
+                .owner(owner)
+                .status(RequestStatus.PENDING)
                 .build();
 
+        accommodationRequestRepository.save(accommodationRequest);
 
-        accommodationRepository.save(accommodation);
-
-
-        for(AccommodationAvailabilityDTO availabilityDTO: accommodationDTO.getAvailabilityList()){
-            var accAvailability = AccommodationAvailability.builder()
-                    .price(availabilityDTO.getPrice())
-                    .endDate(availabilityDTO.getEndDate())
-                    .cancelDeadline(availabilityDTO.getCancellationDeadline())
-                    .startDate(availabilityDTO.getStartDate())
-                    .accommodation(accommodation)
-                    .pricePerGuest(availabilityDTO.getPricePerGuest())
+        for(AccommodationAvailabilityDTO availDTO: accommodationDTO.getAvailabilityList()){
+            var availabilityRequest = AvailabilityRequest.builder()
+                    .startDate(availDTO.getStartDate())
+                    .endDate(availDTO.getEndDate())
+                    .cancelDeadline(availDTO.getCancellationDeadline())
+                    .price(availDTO.getPrice())
+                    .pricePerGuest(availDTO.getPricePerGuest())
+                    .accommodationRequest(accommodationRequest)
                     .build();
-
-            availabilityRepository.save(accAvailability);
-            accommodation.getAvailabilityList().add(accAvailability);
+            availabilityRequestRepository.save(availabilityRequest);
+            accommodationRequest.getAvailabilityRequests().add(availabilityRequest);
         }
 
-        accommodation.setOwner(owner);
-        accommodationRepository.save(accommodation);
-
-        owner.getAccommodations().add(accommodation);
-        ownerRepository.save(owner);
-
+        accommodationRequestRepository.save(accommodationRequest);
 
     }
 
-    public String saveFile(String email, String accommodationName, MultipartFile file) throws IOException {
+    public String saveFile(String email, String accommodationName, MultipartFile file){
         String relativePath = "/" + email + "/" + accommodationName;
         Path uploadPath = Paths.get(UPLOAD_DIR + relativePath).toAbsolutePath().normalize();
         File uploadDir = uploadPath.toFile();
@@ -132,10 +127,17 @@ public class AccommodationService {
 
         Path filePath = Paths.get(uploadPath.toString(), fileName);
 
-        file.transferTo(filePath.toFile());
+        try {
+            file.transferTo(filePath.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         return relativePath;
     }
 
+    public Optional<Accommodation> findAccommodationById(Long accommodationId) {
+        return accommodationRepository.findAccommodationById(accommodationId);
+    }
 }
 

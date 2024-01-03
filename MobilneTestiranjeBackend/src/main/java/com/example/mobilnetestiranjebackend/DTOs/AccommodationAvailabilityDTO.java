@@ -13,7 +13,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AccommodationAvailabilityDTO {
-
+    //SLUZI DA ZNAMO O KOJEM SE AVAILABILITIJU ODNOSI U SLUCAJU DA MENJAMO INFORMACIJE AVAILABILITIJA
+    private Integer id = 0;
     @FutureOrPresent(message = "Start date must be in the future")
     @NotNull(message = "Start date must be provided")
     private LocalDate startDate;

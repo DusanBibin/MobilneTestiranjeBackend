@@ -51,7 +51,6 @@ public class AuthenticationService {
         return userWrapper.isPresent();
     }
 
-
     public void register(RegisterRequestDTO request) {
 
         Random random = new Random();
@@ -85,23 +84,6 @@ public class AuthenticationService {
 
         ownerRepository.save(owner);
         //guestRepository.save(guest);
-    }
-
-    public void checkInput(RegisterRequestDTO request){
-        if(!request.getPassword().equals(request.getRepeatPassword()))
-            throw new InvalidRepeatPasswordException("Passwords do not match");
-
-        if(!request.getRole().equals(Role.GUEST.toString()) && !request.getRole().equals(Role.OWNER.toString()))
-            throw new InvalidEnumValueException("Invalid user role selected");
-
-        try {
-            Role role = Role.valueOf(request.getRole());
-        } catch (IllegalArgumentException e) {
-            throw new InvalidEnumValueException("Invalid user role value");
-        }
-
-        if(userExist(request.getEmail()))
-            throw new UserAlreadyExistsException("User with email " + request.getEmail() + " already exists");
     }
 
     private void sendVerificationEmail(User user) throws MessagingException, IOException {
@@ -164,8 +146,6 @@ public class AuthenticationService {
 
     public void verifyUser(String verificationCode) {
         User user = userRepository.findUserByVerification_VerificationCode(verificationCode).orElse(null);
-
-
 
         if (user == null) {
             throw new NonExistingVerificationCodeException("That verification code does not exist!");

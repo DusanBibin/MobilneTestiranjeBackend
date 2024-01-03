@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "accommodation_change")
+@Table(name = "accommodation_request")
 public class AccommodationRequest {
     @Id
     @GeneratedValue
@@ -33,19 +33,23 @@ public class AccommodationRequest {
     private List<Amenity> amenities;
 
     @ElementCollection
-    private List<String> photos;
+    private List<String> imagePaths;
 
     private Integer minGuests;
     private Integer maxGuests;
 
     private AccommodationType accommodationType;
 
-    private Boolean approved;
-
     private Boolean autoAcceptEnabled;
 
     @ManyToOne
     private Accommodation accommodation;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AvailabilityRequest> availabilityRequests;
+
+    @ManyToOne
+    private Owner owner;
 
     private RequestStatus status;
 }

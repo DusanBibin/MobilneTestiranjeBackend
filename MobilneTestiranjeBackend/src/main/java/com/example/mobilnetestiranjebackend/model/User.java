@@ -20,7 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "_user")
+@Table(name = "user")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class User implements UserDetails{
     @Id

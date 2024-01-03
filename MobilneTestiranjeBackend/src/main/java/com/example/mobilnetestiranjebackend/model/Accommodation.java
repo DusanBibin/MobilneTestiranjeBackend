@@ -32,18 +32,16 @@ public class Accommodation {
     private List<Amenity> amenities;
 
     @ElementCollection
-    private List<String> photos;
+    private List<String> imagePaths;
 
     private Integer minGuests;
     private Integer maxGuests;
 
     private AccommodationType accommodationType;
 
-    private Boolean approved;
-
     private Boolean autoAcceptEnabled;
 
-    @OneToMany(mappedBy = "accommodation", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AccommodationAvailability> availabilityList;
 
     @ManyToOne
@@ -51,6 +49,5 @@ public class Accommodation {
 
     @OneToMany
     private List<Reservation> reservations;
-
 
 }
