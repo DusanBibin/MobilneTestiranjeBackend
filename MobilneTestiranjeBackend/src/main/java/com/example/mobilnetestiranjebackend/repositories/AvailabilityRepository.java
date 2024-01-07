@@ -17,4 +17,7 @@ public interface AvailabilityRepository extends JpaRepository<AccommodationAvail
             "(:startDate <= a.startDate AND :endDate >= a.endDate))")
     List<AccommodationAvailability> findAllByDateRange(Long accommodationId, LocalDate startDate, LocalDate endDate);
 
+
+    List<AccommodationAvailability> findAllByAccommodationId(Long accommodationId);
+
 }

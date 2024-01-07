@@ -129,4 +129,33 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(ex.getMessage());
     }
 
+
+    @ExceptionHandler(value
+            = TooManyFilesException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public @ResponseBody ErrorResponse
+    handleTooManyFilesException(TooManyFilesException ex)
+    {
+        return new ErrorResponse(ex.getMessage());
+    }
+
+    @ExceptionHandler(value
+            = InvalidFileExtensionException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public @ResponseBody ErrorResponse
+    handleInvalidFileExtensionException(InvalidFileExtensionException ex)
+    {
+        return new ErrorResponse(ex.getMessage());
+    }
+
+
+    @ExceptionHandler(value
+            = InvalidAuthorizationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public @ResponseBody ErrorResponse
+    handleInvalidAuthorizationException(InvalidAuthorizationException ex)
+    {
+        return new ErrorResponse(ex.getMessage());
+    }
+
 }

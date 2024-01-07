@@ -17,7 +17,7 @@ public class AvailabilityService {
     private final AvailabilityRepository availabilityRepository;
     private final ReservationRepository reservationRepository;
 
-    private boolean reservationsNotEnded(Long accommodationId) {
+    public boolean reservationsNotEnded(Long accommodationId) {
         List<Reservation> reservationsNotEnded = reservationRepository.findReservationsNotEndedByAccommodationId(accommodationId);
         return !reservationsNotEnded.isEmpty();
     }

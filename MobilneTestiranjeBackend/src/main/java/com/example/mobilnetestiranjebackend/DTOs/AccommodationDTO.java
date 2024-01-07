@@ -1,11 +1,6 @@
 package com.example.mobilnetestiranjebackend.DTOs;
 
 
-import com.example.mobilnetestiranjebackend.enums.Amenity;
-import com.example.mobilnetestiranjebackend.model.AccommodationAvailability;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.OneToMany;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -53,10 +48,12 @@ public class AccommodationDTO {
     @NotBlank(message = "Accommodation type must be present")
     private String accommodationType;
 
-
+    @NotNull(message = "Auto accept must option must be present")
+    private Boolean autoAcceptEnabled;
 
     @Valid
     @NotEmpty(message = "There must be at least one availability period")
     private List<@Valid AccommodationAvailabilityDTO> availabilityList;
 
+    private List<String> imagePaths;
 }

@@ -6,9 +6,7 @@ import com.example.mobilnetestiranjebackend.DTOs.AccommodationDTO;
 import com.example.mobilnetestiranjebackend.enums.AccommodationType;
 import com.example.mobilnetestiranjebackend.enums.Amenity;
 import com.example.mobilnetestiranjebackend.enums.RequestStatus;
-import com.example.mobilnetestiranjebackend.exceptions.EntityAlreadyExistsException;
-import com.example.mobilnetestiranjebackend.exceptions.InvalidDateException;
-import com.example.mobilnetestiranjebackend.exceptions.InvalidEnumValueException;
+import com.example.mobilnetestiranjebackend.exceptions.*;
 import com.example.mobilnetestiranjebackend.model.*;
 import com.example.mobilnetestiranjebackend.repositories.*;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +28,7 @@ public class AccommodationService {
     private final AccommodationRequestRepository accommodationRequestRepository;
     private final AvailabilityRequestRepository availabilityRequestRepository;
     private final OwnerRepository ownerRepository;
+    private final AvailabilityService availabilityService;
 
 
     private static final String UPLOAD_DIR = "uploads";
@@ -74,8 +73,15 @@ public class AccommodationService {
 
 
         List<String> imagePaths = new ArrayList<>();
+
+        if(images.size() > 5) throw new TooManyFilesException("You can only upload 5 images");
+
         for(MultipartFile image: images){
-            String relativePath = saveFile(owner.getEmail(), accommodationDTO.getName(), image);
+
+            checkExtension(image.getOriginalFilename());
+
+            int currentIndex = images.indexOf(image);
+            String relativePath = saveFile(owner.getEmail(), accommodationDTO.getName(), image, currentIndex + 1);
             imagePaths.add(relativePath);
         }
 
@@ -90,7 +96,7 @@ public class AccommodationService {
                 .minGuests(accommodationDTO.getMinGuests())
                 .maxGuests(accommodationDTO.getMaxGuests())
                 .accommodationType(AccommodationType.valueOf(accommodationDTO.getAccommodationType()))
-                .autoAcceptEnabled(false)
+                .autoAcceptEnabled(accommodationDTO.getAutoAcceptEnabled())
                 .availabilityRequests(new ArrayList<AvailabilityRequest>())
                 .owner(owner)
                 .status(RequestStatus.PENDING)
@@ -112,10 +118,36 @@ public class AccommodationService {
         }
 
         accommodationRequestRepository.save(accommodationRequest);
-
     }
 
-    public String saveFile(String email, String accommodationName, MultipartFile file){
+
+
+    public void createEditAccommodationRequest(Integer ownerId, List<MultipartFile> images, AccommodationDTO accommodationDTO, Long accommodationId) {
+        var ownerWrapper = ownerRepository.findOwnerById(ownerId);
+        Owner owner = ownerWrapper.orElseThrow();
+
+        var accommodationWrapper = findAccommodationById(accommodationId);
+        if(accommodationWrapper.isEmpty()) throw new NonExistingEntityException("The accommodation with this id does not exist");
+
+        var amenities = checkInputValues(accommodationDTO);
+
+        if(availabilityService.reservationsNotEnded(accommodationId))
+            throw new ReservationNotEndedException("One or more reservations for this availability period haven't ended yet");
+
+
+        List<String> imagePaths = new ArrayList<>();
+        for(MultipartFile image: images){
+            int currentIndex = images.indexOf(image);
+            String relativePath = saveFile(owner.getEmail(), accommodationDTO.getName(), image, currentIndex);
+            imagePaths.add(relativePath);
+        }
+    }
+
+    public Optional<Accommodation> findAccommodationById(Long accommodationId) {
+        return accommodationRepository.findAccommodationById(accommodationId);
+    }
+
+    public String saveFile(String email, String accommodationName, MultipartFile file, Integer currentIndex){
         String relativePath = "/" + email + "/" + accommodationName;
         Path uploadPath = Paths.get(UPLOAD_DIR + relativePath).toAbsolutePath().normalize();
         File uploadDir = uploadPath.toFile();
@@ -123,21 +155,31 @@ public class AccommodationService {
             uploadDir.mkdirs();
         }
 
-        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        String fileName = currentIndex + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
 
         Path filePath = Paths.get(uploadPath.toString(), fileName);
-
+        System.out.println(filePath.getFileName());
         try {
             file.transferTo(filePath.toFile());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        return relativePath;
+        return relativePath + "/" + filePath.getFileName();
     }
 
-    public Optional<Accommodation> findAccommodationById(Long accommodationId) {
-        return accommodationRepository.findAccommodationById(accommodationId);
+    private void checkExtension(String fileName) {
+        int dotIndex = fileName.lastIndexOf('.');
+
+        if (dotIndex == -1 || dotIndex == fileName.length() - 1) {
+            throw new InvalidFileExtensionException("The file doesn't have extension");
+        }
+
+        String fileExtension = fileName.substring(dotIndex + 1).toLowerCase();
+
+        if(!fileExtension.equals("png") && !fileExtension.equals("jpeg") && !fileExtension.equals("jpg"))
+            throw new InvalidFileExtensionException("You can only upload .jpg or .png");
     }
+
 }
 
