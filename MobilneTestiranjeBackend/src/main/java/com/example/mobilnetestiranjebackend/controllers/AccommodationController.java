@@ -122,19 +122,16 @@ public class AccommodationController {
                 if(fileExtension.equals("png")) foundImgType = MediaType.IMAGE_JPEG;
                 if(fileExtension.equals("jpg") || fileExtension.equals("jpeg")) foundImgType = MediaType.IMAGE_PNG;
 
-
                 break;
             }
         }
 
-
-        if(foundImgPath.isEmpty()) throw new FileNotFoundException("The image with this path does not exist");
+        if(foundImgPath.isEmpty()) throw new NonExistingEntityException("The image with this path does not exist");
 
 
         Path filePath = Path.of("uploads/" + foundImgPath);
 
         if (!Files.exists(filePath)) {
-            // Handle the case where the file doesn't exist
             throw new FileNotFoundException("File not found");
         }
 
@@ -147,6 +144,14 @@ public class AccommodationController {
         return new ResponseEntity<>(imageBytes, headers, 200);
     }
 
+    @PutMapping(path = "/{accommodationId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> createEditAccommodationRequest(@Valid @RequestPart("accommodationDTO") AccommodationDTO accommodationDTO,
+                                                        @RequestPart("photos") List<MultipartFile> images,
+                                                        @AuthenticationPrincipal User user,
+                                                            @PathVariable("accommodationId") Long accommdationId) {
 
+        accommodationService.createEditAccommodationRequest(user.getId(), images, accommodationDTO, accommdationId);
+        return ResponseEntity.ok().body("Successfully created new accommodation request");
 
+    }
 }
