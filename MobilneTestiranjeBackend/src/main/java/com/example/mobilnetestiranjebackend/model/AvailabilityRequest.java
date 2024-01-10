@@ -1,5 +1,6 @@
 package com.example.mobilnetestiranjebackend.model;
 
+import com.example.mobilnetestiranjebackend.enums.RequestType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,4 +31,8 @@ public class AvailabilityRequest {
     
     @ManyToOne
     private AccommodationAvailability accommodationAvailability;
+
+    private RequestType requestType;
+
+
 }

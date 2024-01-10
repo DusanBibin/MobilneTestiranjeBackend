@@ -35,6 +35,15 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value
+            = NonExistingEntityException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public @ResponseBody ErrorResponse
+    handleNonExistingEntityException(NonExistingEntityException ex)
+    {
+        return new ErrorResponse(ex.getMessage());
+    }
+
+    @ExceptionHandler(value
             = CodeExpiredException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public @ResponseBody ErrorResponse
@@ -62,14 +71,14 @@ public class GlobalExceptionHandler {
             return new ErrorResponse(ex.getMessage());
     }
 
-    @ExceptionHandler(value
-            = InvalidEnumValueException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public @ResponseBody ErrorResponse
-    handleInvalidUserRoleException(InvalidEnumValueException ex)
-    {
-        return new ErrorResponse(ex.getMessage());
-    }
+//    @ExceptionHandler(value
+//            = InvalidEnumValueException.class)
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    public @ResponseBody ErrorResponse
+//    handleInvalidRoleException(InvalidEnumValueException ex)
+//    {
+//        return new ErrorResponse(ex.getMessage());
+//    }
 
 
     @ExceptionHandler(value

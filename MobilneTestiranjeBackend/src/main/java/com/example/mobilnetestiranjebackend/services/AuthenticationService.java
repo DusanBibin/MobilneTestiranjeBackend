@@ -68,7 +68,7 @@ public class AuthenticationService {
                     .address(request.getAddress())
                     .emailConfirmed(false)
                     .password(passwordEncoder.encode(request.getPassword()))
-                    .role(Role.valueOf(request.getRole()))
+                    .role(request.getRole())
                     .verification(new Verification(code, LocalDateTime.now().plusDays(1)))
                     .accommodations(new ArrayList<Accommodation>())
                     .blocked(false)

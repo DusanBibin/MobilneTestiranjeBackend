@@ -52,4 +52,6 @@ public class AccommodationRequest {
     private Owner owner;
 
     private RequestStatus status;
+
+    private String reason;
 }

@@ -96,7 +96,7 @@ private final AvailabilityRequestRepository availabilityRequestRepository;
 
         accommodationRepository.save(accommodation);
 
-        var availability = AccommodationAvailability.builder()
+        var availabilityEditTest = AccommodationAvailability.builder()
                 .startDate(LocalDate.now().plusDays(5))
                 .endDate(LocalDate.now().plusDays(7))
                 .cancelDeadline(LocalDate.now().plusDays(4))
@@ -105,8 +105,23 @@ private final AvailabilityRequestRepository availabilityRequestRepository;
                 .accommodation(accommodation)
                 .build();
 
-        availabilityRepository.save(availability);
-        accommodation.getAvailabilityList().add(availability);
+
+        var availabilityDeleteTest = AccommodationAvailability.builder()
+                .startDate(LocalDate.now().plusDays(11))
+                .endDate(LocalDate.now().plusDays(15))
+                .cancelDeadline(LocalDate.now().plusDays(8))
+                .price(250L)
+                .pricePerGuest(true)
+                .accommodation(accommodation)
+                .build();
+
+
+        availabilityRepository.save(availabilityEditTest);
+        availabilityRepository.save(availabilityDeleteTest);
+
+        accommodation.getAvailabilityList().add(availabilityEditTest);
+        accommodation.getAvailabilityList().add(availabilityDeleteTest);
+
         accommodationRepository.save(accommodation);
 
 

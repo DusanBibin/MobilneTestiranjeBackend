@@ -1,8 +1,10 @@
 package com.example.mobilnetestiranjebackend.DTOs;
 
 
+import com.example.mobilnetestiranjebackend.enums.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,6 +41,6 @@ public class RegisterRequestDTO {
     @Size(min = 10, message = "Password must be at least 10 characters")
     private String repeatPassword;
 
-    @NotBlank(message = "Role is required")
-    private String role;
+    @NotNull(message = "Role is required")
+    private Role role;
 }

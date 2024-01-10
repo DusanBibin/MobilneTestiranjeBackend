@@ -1,6 +1,9 @@
 package com.example.mobilnetestiranjebackend.DTOs;
 
 
+import com.example.mobilnetestiranjebackend.enums.AccommodationType;
+import com.example.mobilnetestiranjebackend.enums.Amenity;
+import com.example.mobilnetestiranjebackend.enums.RequestStatus;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -35,7 +38,7 @@ public class AccommodationDTO {
     private Double lon;
 
     @NotNull(message = "Amenities must be present")
-    private List<String> amenities;
+    private List<Amenity> amenities;
 
     @NotNull(message = "Min number of guests must be present")
     @Min(value = 1, message = "Min guests must be at least 1")
@@ -45,8 +48,8 @@ public class AccommodationDTO {
     @Min(value = 1, message = "Max guests must be at least 1")
     private Integer maxGuests;
 
-    @NotBlank(message = "Accommodation type must be present")
-    private String accommodationType;
+    @NotNull(message = "Accommodation type must be present")
+    private AccommodationType accommodationType;
 
     @NotNull(message = "Auto accept must option must be present")
     private Boolean autoAcceptEnabled;
@@ -56,4 +59,7 @@ public class AccommodationDTO {
     private List<@Valid AccommodationAvailabilityDTO> availabilityList;
 
     private List<String> imagePaths;
+
+    private RequestStatus status;
+    private String reason;
 }

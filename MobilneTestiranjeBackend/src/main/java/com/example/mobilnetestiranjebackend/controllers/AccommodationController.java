@@ -37,14 +37,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AccommodationController {
     private final AccommodationService accommodationService;
-    //@PreAuthorize("hasAuthority('OWNER')")
-    @PostMapping(path = "/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> createAccommodationRequest(@Valid @RequestPart("accommodationDTO") AccommodationDTO accommodationDTO,
-                                                 @RequestPart("photos") List<MultipartFile> images,
-                                                 @AuthenticationPrincipal User user) {
-        accommodationService.createAccommodationRequest(user.getId(), images, accommodationDTO);
-        return ResponseEntity.ok().body("Successfully created new accommodation request");
-    }
+
 
 
     //@PreAuthorize("hasAuthority('OWNER')")
@@ -63,17 +56,19 @@ public class AccommodationController {
                 .address(accommodation.getAddress())
                 .lat(accommodation.getLat())
                 .lon(accommodation.getLon())
-                .amenities(accommodation.getAmenities().stream().map(Amenity::name).collect(Collectors.toList()))
+                .amenities(accommodation.getAmenities())
                 .minGuests(accommodation.getMinGuests())
                 .maxGuests(accommodation.getMaxGuests())
-                .accommodationType(accommodation.getAccommodationType().toString())
+                .accommodationType(accommodation.getAccommodationType())
                 .autoAcceptEnabled(accommodation.getAutoAcceptEnabled())
                 .availabilityList(new ArrayList<>())
                 .imagePaths(accommodation.getImagePaths())
                 .build();
 
+
         for(AccommodationAvailability a: accommodation.getAvailabilityList()){
             var availabilityDTO = AccommodationAvailabilityDTO.builder()
+                    .id(a.getId())
                     .startDate(a.getStartDate())
                     .endDate(a.getEndDate())
                     .cancellationDeadline(a.getCancelDeadline())
@@ -144,14 +139,5 @@ public class AccommodationController {
         return new ResponseEntity<>(imageBytes, headers, 200);
     }
 
-    @PutMapping(path = "/{accommodationId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> createEditAccommodationRequest(@Valid @RequestPart("accommodationDTO") AccommodationDTO accommodationDTO,
-                                                        @RequestPart("photos") List<MultipartFile> images,
-                                                        @AuthenticationPrincipal User user,
-                                                            @PathVariable("accommodationId") Long accommdationId) {
 
-        accommodationService.createEditAccommodationRequest(user.getId(), images, accommodationDTO, accommdationId);
-        return ResponseEntity.ok().body("Successfully created new accommodation request");
-
-    }
 }

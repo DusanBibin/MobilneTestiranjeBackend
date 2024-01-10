@@ -28,14 +28,14 @@ public class AuthenticationController {
         if(!request.getPassword().equals(request.getRepeatPassword()))
             throw new InvalidRepeatPasswordException("Passwords do not match");
 
-        if(!request.getRole().equals(Role.GUEST.toString()) && !request.getRole().equals(Role.OWNER.toString()))
+        if(!request.getRole().equals(Role.GUEST) && !request.getRole().equals(Role.OWNER))
             throw new InvalidEnumValueException("Invalid user role selected");
 
-        try {
-            Role role = Role.valueOf(request.getRole());
-        } catch (IllegalArgumentException e) {
-            throw new InvalidEnumValueException("Invalid user role value");
-        }
+//        try {
+//            Role role = request.getRole();
+//        } catch (IllegalArgumentException e) {
+//            throw new InvalidEnumValueException("Invalid user role value");
+//        }
 
         if(authService.userExist(request.getEmail()))
             throw new UserAlreadyExistsException("User with email " + request.getEmail() + " already exists");
