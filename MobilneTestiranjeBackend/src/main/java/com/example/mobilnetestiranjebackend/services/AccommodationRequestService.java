@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Service
@@ -54,6 +55,26 @@ public class AccommodationRequestService {
                     accAvail.getCancellationDeadline().isEqual(accAvail.getStartDate()))
                 throw new InvalidDateException("Cancellation date cannot be after start date");
         }
+
+
+        for(int i = 0; i < accommodationDTO.getAvailabilityList().size(); i++){
+            for(int j = i + 1; j < accommodationDTO.getAvailabilityList().size(); j++){
+                var avail1 = accommodationDTO.getAvailabilityList().get(i);
+                var avail2 = accommodationDTO.getAvailabilityList().get(j);
+
+                var startDate1 = avail1.getStartDate();
+                var endDate1 = avail1.getEndDate();
+                var startDate2 = avail2.getStartDate();
+                var endDate2 = avail2.getEndDate();
+
+
+                if(!(startDate1.isBefore(startDate2) && endDate1.isBefore(startDate2) ||
+                        startDate1.isAfter(endDate2) && endDate1.isAfter(endDate2))){
+                    throw new InvalidDateException("Availability with start date " + startDate1 + " and end date " + endDate1 + " interlaps with availability" +
+                            " with start date " + startDate2 + " and end date " + endDate2);
+                }
+            }
+        }
         return amenities;
     }
     public void createAccommodationRequest(Integer ownerId, List<MultipartFile> images, AccommodationDTO accommodationDTO){
@@ -65,6 +86,7 @@ public class AccommodationRequestService {
         if(accommodationWrapper.isPresent()) throw new EntityAlreadyExistsException("You already have accommodation with this name");
 
         var amenities = checkInputValues(accommodationDTO);
+
 
 
         List<String> imagePaths = new ArrayList<>();
@@ -105,7 +127,6 @@ public class AccommodationRequestService {
                     .price(availDTO.getPrice())
                     .pricePerGuest(availDTO.getPricePerGuest())
                     .accommodationRequest(accommodationRequest)
-                    .requestType(availDTO.getRequestType())
                     .build();
             availabilityRequestRepository.save(availabilityRequest);
             accommodationRequest.getAvailabilityRequests().add(availabilityRequest);
@@ -125,8 +146,15 @@ public class AccommodationRequestService {
 
         var amenities = checkInputValues(accommodationDTO);
 
+        for(AccommodationAvailabilityDTO avail :accommodationDTO.getAvailabilityList()){
+            if(availabilityService.availabilityRangeTaken(accommodationId, avail.getStartDate(), avail.getEndDate(), avail.getId()))
+                throw new InvalidDateException("There is already availability period that interlaces with this period");
+        }
+
         if(availabilityService.reservationsNotEnded(accommodationId))
             throw new ReservationNotEndedException("One or more reservations for this availability period haven't ended yet");
+
+
 
 
         List<String> imagePaths = new ArrayList<>();
@@ -169,7 +197,6 @@ public class AccommodationRequestService {
                     .pricePerGuest(availDTO.getPricePerGuest())
                     .accommodationRequest(accommodationRequest)
                     .accommodationAvailability(accommodationAvailability)
-                    .requestType(availDTO.getRequestType())
                     .build();
 
             availabilityRequestRepository.save(availabilityRequest);
@@ -202,7 +229,7 @@ public class AccommodationRequestService {
     }
 
     public void deleteImage(String filePath) {
-        Path path = Paths.get(filePath);
+        Path path = Paths.get("uploads" + filePath);
 
         // Check if the file exists before attempting to delete
         if (Files.exists(path)) {
@@ -299,7 +326,6 @@ public class AccommodationRequestService {
             }
 
             List<String> imagesToRemove = new ArrayList<>();
-
             for (String imagePath : accommodation.getImagePaths()) {
                 if (!accommodationRequest.getImagePaths().contains(imagePath)) {
                     imagesToRemove.add(imagePath);
@@ -313,23 +339,46 @@ public class AccommodationRequestService {
 
             accommodationRepository.save(accommodation);
 
+            List<Long> idsToDelete = new ArrayList<>();
+            for(AccommodationAvailability ar: accommodation.getAvailabilityList()){
+
+                boolean isFound = false;
+
+                for(AvailabilityRequest ar1 : accommodationRequest.getAvailabilityRequests()){
+                    if(Objects.equals(ar.getId(), ar1.getId())){ isFound = true; break; }
+                }
+
+                if(!isFound) idsToDelete.add(ar.getId());
+
+            }
+
+            for(Long id: idsToDelete){
+
+                var availabilityWrapper = availabilityRepository.findById(id);
+                if(availabilityWrapper.isEmpty()) throw new NonExistingEntityException("Availability doesn't exist");
+                var availability = availabilityWrapper.get();
+
+                availabilityRepository.delete(availability);
+            }
+
+
+
 
             for(AvailabilityRequest ar: accommodationRequest.getAvailabilityRequests()){
-                if (ar.getRequestType().equals(RequestType.CREATE)){
-                 var availability = AccommodationAvailability.builder()
-                         .accommodation(accommodation)
-                         .pricePerGuest(ar.getPricePerGuest())
-                         .price(ar.getPrice())
-                         .cancelDeadline(ar.getCancelDeadline())
-                         .startDate(ar.getStartDate())
-                         .endDate(ar.getEndDate())
-                         .build();
+                if (ar.getId() == 0){
+                     var availability = AccommodationAvailability.builder()
+                             .accommodation(accommodation)
+                             .pricePerGuest(ar.getPricePerGuest())
+                             .price(ar.getPrice())
+                             .cancelDeadline(ar.getCancelDeadline())
+                             .startDate(ar.getStartDate())
+                             .endDate(ar.getEndDate())
+                             .build();
 
-                 availabilityRepository.save(availability);
-                 accommodation.getAvailabilityList().add(availability);
-                 accommodationRepository.save(accommodation);
-                }
-                if(ar.getRequestType().equals(RequestType.EDIT)){
+                     availabilityRepository.save(availability);
+                     accommodation.getAvailabilityList().add(availability);
+                     accommodationRepository.save(accommodation);
+                }else{
 
                     var availabilityWrapper = availabilityRepository.findById(ar.getId());
                     if(availabilityWrapper.isEmpty()) throw new NonExistingEntityException("Availability doesn't exist");
@@ -342,16 +391,17 @@ public class AccommodationRequestService {
                     availability.setPricePerGuest(ar.getPricePerGuest());
 
                     availabilityRepository.save(availability);
+
                 }
 
-                if(ar.getRequestType().equals(RequestType.DELETE)){
-                    var availabilityWrapper = availabilityRepository.findById(ar.getId());
-                    if(availabilityWrapper.isEmpty()) throw new NonExistingEntityException("Availability doesn't exist");
-                    var availability = availabilityWrapper.get();
 
-                    availabilityRepository.delete(availability);
-                }
+
+
             }
+
+
+
+
 
         }
 
@@ -364,8 +414,6 @@ public class AccommodationRequestService {
 
         accommodationRequest.setStatus(RequestStatus.REJECTED);
         accommodationRequest.setReason(reason);
-
-
 
         for(String imgPath: accommodationRequest.getImagePaths()){
             deleteImage(imgPath);

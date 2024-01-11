@@ -17,13 +17,13 @@ public class AvailabilityService {
     private final AvailabilityRepository availabilityRepository;
     private final ReservationRepository reservationRepository;
 
-    public boolean reservationsNotEnded(Long accommodationId) {
+    public Boolean reservationsNotEnded(Long accommodationId) {
         List<Reservation> reservationsNotEnded = reservationRepository.findReservationsNotEndedByAccommodationId(accommodationId);
         return !reservationsNotEnded.isEmpty();
     }
 
-    public Boolean availabilityRangeTaken(Long accommodationId, LocalDate startDate, LocalDate endDate){
-        List<AccommodationAvailability> availabilitesSameRange = availabilityRepository.findAllByDateRange(accommodationId,startDate, endDate);
+    public Boolean availabilityRangeTaken(Long accommodationId, LocalDate startDate, LocalDate endDate, Long newAvailId){
+        List<AccommodationAvailability> availabilitesSameRange = availabilityRepository.findAllByDateRange(accommodationId,startDate, endDate, newAvailId);
         return !availabilitesSameRange.isEmpty();
     }
 

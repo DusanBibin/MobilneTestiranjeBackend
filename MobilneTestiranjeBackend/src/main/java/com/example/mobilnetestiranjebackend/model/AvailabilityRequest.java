@@ -32,7 +32,5 @@ public class AvailabilityRequest {
     @ManyToOne
     private AccommodationAvailability accommodationAvailability;
 
-    private RequestType requestType;
-
 
 }

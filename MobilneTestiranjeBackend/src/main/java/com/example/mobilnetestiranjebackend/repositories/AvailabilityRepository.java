@@ -10,13 +10,14 @@ import java.util.Optional;
 
 public interface AvailabilityRepository extends JpaRepository<AccommodationAvailability, Integer> {
 
-
+    //ako je newAvailId = 0 onda se pravi novi availability i poredi se sa svim periodima, ako je razlicit, onda se poredi
+    //samo sa onim periodima koji on nece zameniti u buducnosti
     @Query("SELECT a FROM AccommodationAvailability a " +
-            "WHERE a.accommodation.id = :accommodationId " +
+            "WHERE a.accommodation.id = :accommodationId AND a.id != :newAvailId " +
             "AND ((:startDate BETWEEN a.startDate AND a.endDate) OR " +
             "(:endDate BETWEEN a.startDate AND a.endDate) OR " +
             "(:startDate <= a.startDate AND :endDate >= a.endDate))")
-    List<AccommodationAvailability> findAllByDateRange(Long accommodationId, LocalDate startDate, LocalDate endDate);
+    List<AccommodationAvailability> findAllByDateRange(Long accommodationId, LocalDate startDate, LocalDate endDate, Long newAvailId);
 
     Optional<AccommodationAvailability> findById(Long accommodationId);
     List<AccommodationAvailability> findAllByAccommodationId(Long accommodationId);
