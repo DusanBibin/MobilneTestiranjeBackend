@@ -11,6 +11,8 @@ import com.example.mobilnetestiranjebackend.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 
 import java.io.File;
@@ -229,12 +231,15 @@ public class AccommodationRequestService {
     }
 
     public void deleteImage(String filePath) {
-        Path path = Paths.get("uploads" + filePath);
-
+        String directory = "uploads" + filePath;
+        Path path = Paths.get(directory);
         // Check if the file exists before attempting to delete
         if (Files.exists(path)) {
             try {
                 Files.delete(path);
+                Path parentFolder = path.getParent();
+                if(isDirEmpty(parentFolder)) Files.delete(parentFolder);
+
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -255,6 +260,12 @@ public class AccommodationRequestService {
 
         if(!fileExtension.equals("png") && !fileExtension.equals("jpeg") && !fileExtension.equals("jpg"))
             throw new InvalidFileExtensionException("You can only upload .jpg or .png");
+    }
+
+    private static boolean isDirEmpty(final Path directory) throws IOException {
+        try(DirectoryStream<Path> dirStream = Files.newDirectoryStream(directory)) {
+            return !dirStream.iterator().hasNext();
+        }
     }
 
     public void acceptRequest(Long requestId) {
