@@ -59,6 +59,13 @@ public class AuthenticationService {
         Owner owner = null;
         User user = null;
 
+        Role role;
+        if (request.getRole().equals("OWNER")) {
+            role = Role.OWNER;
+        } else {
+            role = Role.GUEST;
+        }
+
         if(request.getRole().equals("OWNER")){
             owner = Owner.builder()
                     .firstName(request.getFirstName())
@@ -66,9 +73,9 @@ public class AuthenticationService {
                     .email(request.getEmail())
                     .phoneNumber(request.getPhoneNumber())
                     .address(request.getAddress())
-                    .emailConfirmed(false)
+                    .emailConfirmed(true)
                     .password(passwordEncoder.encode(request.getPassword()))
-                    .role(request.getRole())
+                    .role(role)
                     .verification(new Verification(code, LocalDateTime.now().plusDays(1)))
                     .accommodations(new ArrayList<Accommodation>())
                     .blocked(false)
@@ -76,11 +83,8 @@ public class AuthenticationService {
             user = owner;
         }
 
-        try {
-            sendVerificationEmail(user);
-        } catch (IOException e) {
-            System.out.println("ERROR WITH SENDING THE MAIL");
-        }
+        //            sendVerificationEmail(user);
+        System.out.println("jej");
 
         ownerRepository.save(owner);
         //guestRepository.save(guest);
@@ -137,7 +141,7 @@ public class AuthenticationService {
 
 
         if(!user.getEmailConfirmed()) throw new EmailNotConfirmedException("Email not confirmed for this user");
-        var jwtToken = jwtService.generateToken(user);
+        var jwtToken = jwtService.generateToken(user, user.getId());
         return AuthenticationResponseDTO.builder()
                 .token(jwtToken)
                 .build();

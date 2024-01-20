@@ -3,6 +3,7 @@ package com.example.mobilnetestiranjebackend.configuration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -25,7 +26,10 @@ public class WebSecurityConfiguration {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers(new AntPathRequestMatcher("/swagger-ui.html")
                 , new AntPathRequestMatcher("/swagger-ui/**"), new AntPathRequestMatcher("/v3/api-docs/**"),
-                new AntPathRequestMatcher("/h2-console/**"));
+                new AntPathRequestMatcher("/h2-console/**"))
+                .requestMatchers(HttpMethod.POST, "/api/v1/auth/**","/api/comms/**", "/socket/**","/api/influx/**")
+                .requestMatchers(HttpMethod.GET, "/api/v1/auth/**","/api/comms/**", "/socket/**","/api/influx/**","/api/user/**")
+                .requestMatchers(HttpMethod.PUT, "/api/v1/auth/**","/api/comms/**", "/socket/**","/api/influx/**","/api/user/**");
     }
 
     @Bean

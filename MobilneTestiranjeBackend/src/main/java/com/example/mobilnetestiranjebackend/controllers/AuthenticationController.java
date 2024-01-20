@@ -28,7 +28,13 @@ public class AuthenticationController {
         if(!request.getPassword().equals(request.getRepeatPassword()))
             throw new InvalidRepeatPasswordException("Passwords do not match");
 
-        if(!request.getRole().equals(Role.GUEST) && !request.getRole().equals(Role.OWNER))
+        Role role;
+        if (request.getRole().equals("OWNER")) {
+            role = Role.OWNER;
+        } else {
+            role = Role.GUEST;
+        }
+        if(!role.equals(Role.GUEST) && !role.equals(Role.OWNER))
             throw new InvalidEnumValueException("Invalid user role selected");
 
 //        try {
@@ -41,8 +47,7 @@ public class AuthenticationController {
             throw new UserAlreadyExistsException("User with email " + request.getEmail() + " already exists");
 
         authService.register(request);
-
-        return ResponseEntity.ok().body("Success, user confirmation email was sent to " + request.getEmail());
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 

@@ -10,6 +10,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByEmail(String email);
 
+    Optional<User> findById(Integer id);
+
 
     Optional<User> findUserByVerification_VerificationCode(String code);
 }
