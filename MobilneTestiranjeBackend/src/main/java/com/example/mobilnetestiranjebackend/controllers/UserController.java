@@ -10,8 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.Optional;
 
 @RestController
@@ -34,13 +36,16 @@ public class UserController {
         }
     }
 
-    @PutMapping(value = "{id}")
-    public ResponseEntity<?> editUser(@PathVariable("id") int id, @RequestBody UserDTO userDTO) {
-        User user = userService.editUser(id, userDTO);
+    @PutMapping(value = "")
+    public ResponseEntity<?> editUser(@RequestBody UserDTO userDTO, @AuthenticationPrincipal User user) {
+//        String email = principal.getName();
+//        System.out.println(email);
+        System.out.println(user);
+        User user1 = userService.editUser(user, userDTO);
         if (user != null) {
-            return new ResponseEntity<>(new UserDTO(user), HttpStatus.OK);
+            return new ResponseEntity<>(new UserDTO(user1), HttpStatus.OK);
         } else {
-            ErrorDTO dto = new ErrorDTO("User with id " + id + " not found");
+            ErrorDTO dto = new ErrorDTO("User with id " + Integer.toString(user.getId()) + " not found");
             return new ResponseEntity<ErrorDTO>(dto, HttpStatus.BAD_REQUEST);
         }
     }

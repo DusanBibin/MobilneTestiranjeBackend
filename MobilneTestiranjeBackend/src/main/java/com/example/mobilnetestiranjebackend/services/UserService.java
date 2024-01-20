@@ -34,10 +34,8 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User editUser(int id, UserDTO userDTO) {
-        Optional<User> userWrapper = this.getUser(id);
-        if (userWrapper.isPresent()) {
-            User user = userWrapper.get();
+    public User editUser(User user, UserDTO userDTO) {
+        if (user != null) {
             user.setFirstName(userDTO.getFirstName());
             user.setLastname(userDTO.getLastname());
             user.setPhoneNumber(userDTO.getPhoneNumber());
