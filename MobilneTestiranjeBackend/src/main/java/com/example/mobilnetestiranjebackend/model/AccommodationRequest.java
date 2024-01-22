@@ -35,8 +35,8 @@ public class AccommodationRequest {
     @ElementCollection
     private List<String> imagePaths;
 
-    private Integer minGuests;
-    private Integer maxGuests;
+    private Long minGuests;
+    private Long maxGuests;
 
     private AccommodationType accommodationType;
 

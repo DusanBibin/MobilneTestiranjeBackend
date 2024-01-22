@@ -18,7 +18,7 @@ import java.util.List;
 @Table(name = "accommodation")
 public class Accommodation {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
@@ -34,8 +34,8 @@ public class Accommodation {
     @ElementCollection
     private List<String> imagePaths;
 
-    private Integer minGuests;
-    private Integer maxGuests;
+    private Long minGuests;
+    private Long maxGuests;
 
     private AccommodationType accommodationType;
 

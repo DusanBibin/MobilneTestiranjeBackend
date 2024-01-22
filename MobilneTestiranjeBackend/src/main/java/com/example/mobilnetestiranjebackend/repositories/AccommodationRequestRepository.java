@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface AccommodationRequestRepository extends JpaRepository<AccommodationRequest, Integer> {
+public interface AccommodationRequestRepository extends JpaRepository<AccommodationRequest, Long> {
     Optional<AccommodationRequest> findById(Long requestId);
 }

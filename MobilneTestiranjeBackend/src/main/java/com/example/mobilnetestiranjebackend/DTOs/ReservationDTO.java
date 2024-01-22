@@ -1,0 +1,78 @@
+package com.example.mobilnetestiranjebackend.DTOs;
+
+import com.example.mobilnetestiranjebackend.enums.ReservationStatus;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class ReservationDTO {
+
+    @NotNull(message = "Accommodation must be provided")
+    @Min(value = 1, message = "Id must be at least 1")
+    private Long accommodationId;
+
+    @NotNull(message = "Availability period must be provided")
+    @Min(value = 1, message = "Id must be at least 1")
+    private Long availabilityId;
+
+    @FutureOrPresent(message = "Start date must be in the future")
+    @NotNull(message = "Start date must be provided")
+    private LocalDate reservationStartDate;
+
+    @Future(message = "End date must be in the future")
+    @NotNull(message = "End date must be provided")
+    private LocalDate reservationEndDate;
+
+    @NotNull(message = "Accommodation price for this period must be provided")
+    @Min(value = 1, message = "There must be at least one guest")
+    private Long guestNum;
+
+    public Long getAccommodationId() {
+        return accommodationId;
+    }
+
+    public void setAccommodationId(Long accommodationId) {
+        this.accommodationId = accommodationId;
+    }
+
+    public Long getAvailabilityId() {
+        return availabilityId;
+    }
+
+    public void setAvailabilityId(Long availabilityId) {
+        this.availabilityId = availabilityId;
+    }
+
+    public LocalDate getReservationStartDate() {
+        return reservationStartDate;
+    }
+
+    public void setReservationStartDate(LocalDate reservationStartDate) {
+        this.reservationStartDate = reservationStartDate;
+    }
+
+    public LocalDate getReservationEndDate() {
+        return reservationEndDate;
+    }
+
+    public void setReservationEndDate(LocalDate reservationEndDate) {
+        this.reservationEndDate = reservationEndDate;
+    }
+
+    public Long getGuestNum() {
+        return guestNum;
+    }
+
+    public void setGuestNum(Long guestNum) {
+        this.guestNum = guestNum;
+    }
+}

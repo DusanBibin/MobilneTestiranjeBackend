@@ -79,7 +79,7 @@ public class AccommodationRequestService {
         }
         return amenities;
     }
-    public void createAccommodationRequest(Integer ownerId, List<MultipartFile> images, AccommodationDTO accommodationDTO){
+    public void createAccommodationRequest(Long ownerId, List<MultipartFile> images, AccommodationDTO accommodationDTO){
 
         var ownerWrapper = ownerRepository.findOwnerById(ownerId);
         Owner owner = ownerWrapper.orElseThrow();
@@ -137,7 +137,7 @@ public class AccommodationRequestService {
         accommodationRequestRepository.save(accommodationRequest);
     }
 
-    public void createEditAccommodationRequest(Integer ownerId, List<MultipartFile> images, AccommodationDTO accommodationDTO, Long accommodationId) {
+    public void createEditAccommodationRequest(Long ownerId, List<MultipartFile> images, AccommodationDTO accommodationDTO, Long accommodationId) {
 
         var ownerWrapper = ownerRepository.findOwnerById(ownerId);
         Owner owner = ownerWrapper.orElseThrow();
@@ -150,7 +150,7 @@ public class AccommodationRequestService {
 
         for(AccommodationAvailabilityDTO avail :accommodationDTO.getAvailabilityList()){
             if(availabilityService.availabilityRangeTaken(accommodationId, avail.getStartDate(), avail.getEndDate(), avail.getId()))
-                throw new InvalidDateException("There is already availability period that interlaces with this period");
+                throw new InvalidDateException("There is already availability period that interferes with this period");
         }
 
         if(availabilityService.reservationsNotEnded(accommodationId))
@@ -209,7 +209,7 @@ public class AccommodationRequestService {
 
     }
 
-    public String saveImage(String email, String accommodationName, MultipartFile file, Integer currentIndex){
+    public String saveImage(String email, String accommodationName, MultipartFile file, int currentIndex){
         String relativePath = "/" + email + "/" + accommodationName;
         Path uploadPath = Paths.get(UPLOAD_DIR + relativePath).toAbsolutePath().normalize();
         File uploadDir = uploadPath.toFile();

@@ -42,11 +42,11 @@ public class AccommodationDTO {
 
     @NotNull(message = "Min number of guests must be present")
     @Min(value = 1, message = "Min guests must be at least 1")
-    private Integer minGuests;
+    private Long minGuests;
 
     @NotNull(message = "Max number of guests must be present")
     @Min(value = 1, message = "Max guests must be at least 1")
-    private Integer maxGuests;
+    private Long maxGuests;
 
     @NotNull(message = "Accommodation type must be present")
     private AccommodationType accommodationType;

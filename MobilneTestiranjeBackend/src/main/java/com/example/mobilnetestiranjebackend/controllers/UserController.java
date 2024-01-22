@@ -45,7 +45,7 @@ public class UserController {
         if (user != null) {
             return new ResponseEntity<>(new UserDTO(user1), HttpStatus.OK);
         } else {
-            ErrorDTO dto = new ErrorDTO("User with id " + Integer.toString(user.getId()) + " not found");
+            ErrorDTO dto = new ErrorDTO("User with id " + Long.toString(user.getId()) + " not found");
             return new ResponseEntity<ErrorDTO>(dto, HttpStatus.BAD_REQUEST);
         }
     }

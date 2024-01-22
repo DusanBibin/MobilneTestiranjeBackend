@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public interface AvailabilityRepository extends JpaRepository<AccommodationAvailability, Integer> {
+public interface AvailabilityRepository extends JpaRepository<AccommodationAvailability, Long> {
 
     //ako je newAvailId = 0 onda se pravi novi availability i poredi se sa svim periodima, ako je razlicit, onda se poredi
     //samo sa onim periodima koji on nece zameniti u buducnosti
@@ -19,7 +19,10 @@ public interface AvailabilityRepository extends JpaRepository<AccommodationAvail
             "(:startDate <= a.startDate AND :endDate >= a.endDate))")
     List<AccommodationAvailability> findAllByDateRange(Long accommodationId, LocalDate startDate, LocalDate endDate, Long newAvailId);
 
-    Optional<AccommodationAvailability> findById(Long accommodationId);
+    Optional<AccommodationAvailability> findById(Long availabilityId);
+
+    @Query("SELECT a FROM AccommodationAvailability a WHERE a.accommodation.id = :availId AND a.id = :accId")
+    Optional<AccommodationAvailability> findByIdAndAccommodationId(Long availId, Long accId);
     List<AccommodationAvailability> findAllByAccommodationId(Long accommodationId);
 
 }
