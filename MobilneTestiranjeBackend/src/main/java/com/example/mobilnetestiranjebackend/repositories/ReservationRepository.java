@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
@@ -42,4 +43,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             "))"
     )
     List<Reservation> findConflictedReservations(Long accommodationId, Long reservationId, LocalDate startDate, LocalDate endDate);
+
+    @Query("SELECT r FROM Reservation r " +
+            "WHERE r.id = :reservationId AND r.guest.id = :guestId")
+    Optional<Reservation> findByIdAndGuest(Long reservationId, Long guestId);
 }

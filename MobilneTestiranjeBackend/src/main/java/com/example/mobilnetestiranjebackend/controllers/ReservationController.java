@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @RestController
@@ -70,7 +71,33 @@ public class ReservationController {
         return ResponseEntity.ok().body("Successfully created new reservation request");
     }
 
+    //@PreAuthorize("hasAuthority('GUEST')")
+    @PutMapping(value = "/{reservationId}/cancel")
+    public ResponseEntity<?> cancelReservation(@PathVariable("reservationId") Long reservationId, @AuthenticationPrincipal Guest guest){
 
+
+        Optional<Reservation> reservationWrapper = reservationService.findReservationById(reservationId);
+        if(reservationWrapper.isEmpty()) throw new NonExistingEntityException("Reservation with this id doesn't exist");
+
+        reservationWrapper = reservationService.findReservationByIdAndGuest(reservationId, guest.getId());
+        if(reservationWrapper.isEmpty()) throw new NonExistingEntityException("You do not own this reservation");
+        Reservation reservation = reservationWrapper.get();
+
+
+        if(LocalDate.now().isBefore(reservation.getAccommodationAvailability().getCancelDeadline()))
+            reservationService.cancelReservation(reservation);
+        else throw new InvalidDateException("The cancellation deadline has passed");
+
+
+
+        return ResponseEntity.ok().body("Successfully canceled a reservation");
+    }
+
+
+
+
+
+    //@PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(value = "/{reservationId}/decline")
     public ResponseEntity<?> declineReservationRequest(@RequestBody String reason, @PathVariable("reservationId") Long reservationId){
 
@@ -86,7 +113,7 @@ public class ReservationController {
         return ResponseEntity.ok().body("Successfully declined a reservation request");
     }
 
-
+    //@PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(value = "/{reservationId}/decline")
     public ResponseEntity<?> acceptReservationRequest(@PathVariable("reservationId") Long reservationId){
 

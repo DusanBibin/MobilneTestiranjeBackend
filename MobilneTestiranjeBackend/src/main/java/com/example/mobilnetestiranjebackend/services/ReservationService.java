@@ -62,6 +62,10 @@ public class ReservationService {
         return reservationRepository.findById(reservationId);
     }
 
+    public Optional<Reservation> findReservationByIdAndGuest(Long reservationId, Long guestId){
+        return reservationRepository.findByIdAndGuest(reservationId, guestId);
+    }
+
     public void declineRequest(String reason, Reservation reservation) {
 
         if(!reservation.getStatus().equals(ReservationStatus.PENDING)) throw new InvalidEnumValueException("You can only decline a pending request");
@@ -90,5 +94,11 @@ public class ReservationService {
         reservationRepository.save(reservation);
 
 
+    }
+
+    public void cancelReservation(Reservation reservation) {
+
+        reservation.setStatus(ReservationStatus.CANCELED);
+        reservationRepository.save(reservation);
     }
 }
