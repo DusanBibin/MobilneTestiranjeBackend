@@ -8,11 +8,13 @@ import com.example.mobilnetestiranjebackend.model.Guest;
 import com.example.mobilnetestiranjebackend.model.Reservation;
 import com.example.mobilnetestiranjebackend.repositories.AccommodationRepository;
 import com.example.mobilnetestiranjebackend.repositories.ReservationRepository;
+import com.sendgrid.Request;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -53,5 +55,16 @@ public class ReservationService {
         accommodationRepository.save(accom);
 
 
+    }
+
+    public Optional<Reservation> findReservationById(Long reservationId) {
+        return reservationRepository.findById(reservationId);
+    }
+
+    public void declineRequest(String reason, Reservation reservation) {
+        reservation.setStatus(ReservationStatus.DECLINED);
+        reservation.setReason(reason);
+
+        reservationRepository.save(reservation);
     }
 }

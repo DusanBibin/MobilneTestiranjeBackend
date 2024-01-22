@@ -1,12 +1,10 @@
 package com.example.mobilnetestiranjebackend.controllers;
 
 import com.example.mobilnetestiranjebackend.DTOs.ReservationDTO;
+import com.example.mobilnetestiranjebackend.enums.ReservationStatus;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidDateException;
 import com.example.mobilnetestiranjebackend.exceptions.NonExistingEntityException;
-import com.example.mobilnetestiranjebackend.model.Accommodation;
-import com.example.mobilnetestiranjebackend.model.AccommodationAvailability;
-import com.example.mobilnetestiranjebackend.model.Guest;
-import com.example.mobilnetestiranjebackend.model.User;
+import com.example.mobilnetestiranjebackend.model.*;
 import com.example.mobilnetestiranjebackend.services.AccommodationService;
 import com.example.mobilnetestiranjebackend.services.AvailabilityService;
 import com.example.mobilnetestiranjebackend.services.ReservationService;
@@ -35,6 +33,7 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
+    //@PreAuthorize("hasAuthority('GUEST')")
     @PostMapping(value = "create")
     public ResponseEntity<?> createReservation(@RequestBody ReservationDTO request, @AuthenticationPrincipal Guest guest){
 
@@ -49,15 +48,10 @@ public class ReservationController {
             throw new NonExistingEntityException("Availability with this id for wanted accommodation doesn't exist");
         AccommodationAvailability avail = availabilityWrapper.get();
 
-
-
-
-        //PROVERA DA LI SE RANGE NALAZI U ACCAVAILABILITY
         var startDate = request.getReservationStartDate();
         var endDate = request.getReservationStartDate();
         var availStart = avail.getStartDate();
         var availEnd = avail.getEndDate();
-
 
         if(!(startDate.isBefore(availEnd) && startDate.isAfter(availStart)))
             throw new InvalidDateException("Start date is out of range for availability period");
@@ -66,23 +60,29 @@ public class ReservationController {
             throw new InvalidDateException("End date is out of range for availability period");
 
 
-
-
-        //PROVERA DA LI POSTOJI VEC REZERVACIJA KOJA JE PRIHVACNEA ZA TAJ PERIOD
         if(reservationService.acceptedReservationRangeTaken(startDate, endDate, accom.getId(), avail.getId()))
             throw new InvalidDateException("There is already an accepted reservation for this date range");
 
 
-
-        //NAPRAVITI NOVI RESERVATION SA ACCEPTED ILI PENDING U ZAVISNOSTI DA LI JE AUTOACCEPTENABLED
-
         reservationService.createNewReservation(request, guest, accom, avail);
 
 
-        //SACUVATI REZERVACIJU
-
-
         return ResponseEntity.ok().body("Successfully created new reservation request");
+    }
 
+
+    @PutMapping(value = "/{reservationId}/decline")
+    public ResponseEntity<?> declineReservation(@RequestBody String reason, @PathVariable("reservationId") Long reservationId){
+
+
+        Optional<Reservation> reservationWrapper = reservationService.findReservationById(reservationId);
+        if(reservationWrapper.isEmpty()) throw new NonExistingEntityException("Reservation with this id doesn't exist");
+        Reservation reservation = reservationWrapper.get();
+
+
+        reservationService.declineRequest(reason, reservation);
+
+
+        return ResponseEntity.ok().body("Successfully declined a reservation request");
     }
 }
