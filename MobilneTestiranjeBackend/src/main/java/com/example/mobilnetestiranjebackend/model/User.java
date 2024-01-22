@@ -18,7 +18,6 @@ import java.util.List;
 @Data
 @SuperBuilder
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "_user")
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -39,6 +38,19 @@ public class User implements UserDetails{
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    public User(Integer id, String firstName, String lastname, String email, String password, String phoneNumber, String address, Boolean emailConfirmed, Boolean blocked, Verification verification, Role role) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastname = lastname;
+        this.email = email;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.emailConfirmed = emailConfirmed;
+        this.blocked = blocked;
+        this.verification = verification;
+        this.role = role;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
