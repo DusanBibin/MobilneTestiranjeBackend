@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Optional;
 
-public interface AccommodationRepository extends JpaRepository<Accommodation, Integer> {
+public interface AccommodationRepository extends JpaRepository<Accommodation, Long> {
 
     Optional<Accommodation> findAccommodationsByOwnerAndName(Owner owner, String name);
 

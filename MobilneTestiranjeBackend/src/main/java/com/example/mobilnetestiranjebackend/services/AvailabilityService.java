@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,5 +28,12 @@ public class AvailabilityService {
         return !availabilitesSameRange.isEmpty();
     }
 
+    public Optional<AccommodationAvailability> findAvailabilityById(Long availabilityId){
+        return availabilityRepository.findById(availabilityId);
+    }
 
+
+    public Optional<AccommodationAvailability> findAvailabilityByIdAndAccommodation(Long availabilityId, Long accommodationId) {
+        return availabilityRepository.findByIdAndAccommodationId(availabilityId, accommodationId);
+    }
 }

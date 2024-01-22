@@ -24,9 +24,13 @@ public class Reservation {
 
     private LocalDate reservationStartDate;
     private LocalDate reservationEndDate;
-    private Integer guestNum;
+    private Long guestNum;
     private ReservationStatus status;
+    private String reason;
 
+
+    @ManyToOne
+    private Guest guest;
     @ManyToOne
     private Accommodation accommodation;
     @ManyToOne
