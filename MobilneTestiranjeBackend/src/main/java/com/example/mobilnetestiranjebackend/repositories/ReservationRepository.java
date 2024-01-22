@@ -29,4 +29,17 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
              Long availId
     );
 
+
+
+    @Query("SELECT r FROM Reservation r " +
+            "WHERE r.status = 3 " +
+            "AND r.accommodation.id = :accomId " +
+            "AND r.id != :reservationId " +
+            "AND ((" +
+            "   :startDate BETWEEN r.reservationStartDate AND r.reservationEndDate " +
+            "   OR :endDate BETWEEN r.reservationStartDate AND r.reservationEndDate " +
+            "   OR :startDate <= r.reservationStartDate AND :endDate >= r.reservationEndDate" +
+            "))"
+    )
+    List<Reservation> findConflictedReservations(Long accommodationId, Long reservationId, LocalDate startDate, LocalDate endDate);
 }

@@ -72,7 +72,7 @@ public class ReservationController {
 
 
     @PutMapping(value = "/{reservationId}/decline")
-    public ResponseEntity<?> declineReservation(@RequestBody String reason, @PathVariable("reservationId") Long reservationId){
+    public ResponseEntity<?> declineReservationRequest(@RequestBody String reason, @PathVariable("reservationId") Long reservationId){
 
 
         Optional<Reservation> reservationWrapper = reservationService.findReservationById(reservationId);
@@ -84,5 +84,20 @@ public class ReservationController {
 
 
         return ResponseEntity.ok().body("Successfully declined a reservation request");
+    }
+
+
+    @PutMapping(value = "/{reservationId}/decline")
+    public ResponseEntity<?> acceptReservationRequest(@PathVariable("reservationId") Long reservationId){
+
+        Optional<Reservation> reservationWrapper = reservationService.findReservationById(reservationId);
+        if(reservationWrapper.isEmpty()) throw new NonExistingEntityException("Reservation with this id doesn't exist");
+        Reservation reservation = reservationWrapper.get();
+
+
+        reservationService.acceptRequest(reservation);
+
+
+        return ResponseEntity.ok().body("Successfully accepted a reservation request");
     }
 }

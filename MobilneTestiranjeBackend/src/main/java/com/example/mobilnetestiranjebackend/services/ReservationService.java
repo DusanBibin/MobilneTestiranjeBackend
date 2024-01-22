@@ -2,6 +2,7 @@ package com.example.mobilnetestiranjebackend.services;
 
 import com.example.mobilnetestiranjebackend.DTOs.ReservationDTO;
 import com.example.mobilnetestiranjebackend.enums.ReservationStatus;
+import com.example.mobilnetestiranjebackend.exceptions.InvalidEnumValueException;
 import com.example.mobilnetestiranjebackend.model.Accommodation;
 import com.example.mobilnetestiranjebackend.model.AccommodationAvailability;
 import com.example.mobilnetestiranjebackend.model.Guest;
@@ -23,7 +24,7 @@ public class ReservationService {
     private final AccommodationRepository accommodationRepository;
     public boolean acceptedReservationRangeTaken(LocalDate startDate, LocalDate endDate, Long accomId, Long availId) {
         List<Reservation> sameRangeReservations = reservationRepository.
-                findAcceptedReservationsInConflict(startDate, endDate, accomId, availId);
+                 findAcceptedReservationsInConflict(startDate, endDate, accomId, availId);
 
         return sameRangeReservations.isEmpty();
     }
@@ -62,9 +63,32 @@ public class ReservationService {
     }
 
     public void declineRequest(String reason, Reservation reservation) {
+
+        if(!reservation.getStatus().equals(ReservationStatus.PENDING)) throw new InvalidEnumValueException("You can only decline a pending request");
+
         reservation.setStatus(ReservationStatus.DECLINED);
         reservation.setReason(reason);
 
         reservationRepository.save(reservation);
+    }
+
+    public void acceptRequest(Reservation reservation) {
+
+
+        List<Reservation> conflictedReservations = reservationRepository
+                .findConflictedReservations(reservation.getAccommodation().getId(), reservation.getId(),
+                        reservation.getReservationStartDate(), reservation.getReservationEndDate());
+
+        for(Reservation conflictReservation: conflictedReservations){
+            conflictReservation.setReason("Other reservation was accepted");
+            conflictReservation.setStatus(ReservationStatus.DECLINED);
+            reservationRepository.save(conflictReservation);
+        }
+
+        reservation.setReason("ACCEPTED");
+        reservation.setStatus(ReservationStatus.ACCEPTED);
+        reservationRepository.save(reservation);
+
+
     }
 }
