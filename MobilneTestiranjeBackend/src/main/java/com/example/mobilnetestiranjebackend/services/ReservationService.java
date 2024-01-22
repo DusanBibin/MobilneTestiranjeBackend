@@ -101,4 +101,8 @@ public class ReservationService {
         reservation.setStatus(ReservationStatus.CANCELED);
         reservationRepository.save(reservation);
     }
+
+    public Optional<Reservation> findReservationByIdAccommodation(Long accommodationId, Long reservationId) {
+        return reservationRepository.findByIdAndAccommodation(accommodationId, reservationId);
+    }
 }
