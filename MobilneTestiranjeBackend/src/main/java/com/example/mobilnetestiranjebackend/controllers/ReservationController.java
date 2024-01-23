@@ -72,6 +72,31 @@ public class ReservationController {
         return ResponseEntity.ok().body("Successfully created new reservation request");
     }
 
+    @PutMapping(value = "/{reservationId}/accept")
+    public ResponseEntity<?> acceptReservationRequest(@PathVariable("reservationId") Long reservationId,
+                                                      @PathVariable("accommodationId") Long accommodationId,
+                                                      @AuthenticationPrincipal Owner owner){
+
+        Optional<Accommodation> accommodationWrapper = accommodationService.findAccommodationById(accommodationId);
+        if(accommodationWrapper.isEmpty()) throw new NonExistingEntityException("Accommodation with this id doesn't exist");
+        Accommodation accommodation = accommodationWrapper.get();
+
+
+
+        Optional<Reservation> reservationWrapper = reservationService.findReservationByIdAccommodation(accommodationId, reservationId);
+        if(reservationWrapper.isEmpty()) throw new NonExistingEntityException("Reservation with this id doesn't exist");
+        Reservation reservation = reservationWrapper.get();
+
+        if(!accommodation.getOwner().getId().equals(owner.getId()))
+            throw new InvalidAuthorizationException("You cannot do action for a accommodation you don't own");
+
+
+        reservationService.acceptRequest(reservation);
+
+
+        return ResponseEntity.ok().body("Successfully accepted a reservation request");
+    }
+
     //@PreAuthorize("hasAuthority('GUEST')")
     @PutMapping(value = "/{reservationId}/cancel")
     public ResponseEntity<?> cancelReservation(@PathVariable("accommodationId") Long accommodationId,
@@ -126,17 +151,5 @@ public class ReservationController {
     }
 
     //@PreAuthorize("hasAuthority('OWNER')")
-    @PutMapping(value = "/{reservationId}/accept")
-    public ResponseEntity<?> acceptReservationRequest(@PathVariable("reservationId") Long reservationId){
 
-        Optional<Reservation> reservationWrapper = reservationService.findReservationById(reservationId);
-        if(reservationWrapper.isEmpty()) throw new NonExistingEntityException("Reservation with this id doesn't exist");
-        Reservation reservation = reservationWrapper.get();
-
-
-        reservationService.acceptRequest(reservation);
-
-
-        return ResponseEntity.ok().body("Successfully accepted a reservation request");
-    }
 }
