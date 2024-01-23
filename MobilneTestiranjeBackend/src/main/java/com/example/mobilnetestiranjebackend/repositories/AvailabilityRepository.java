@@ -14,6 +14,7 @@ public interface AvailabilityRepository extends JpaRepository<AccommodationAvail
     //samo sa onim periodima koji on nece zameniti u buducnosti
     @Query("SELECT a FROM AccommodationAvailability a " +
             "WHERE a.accommodation.id = :accommodationId AND a.id != :newAvailId " +
+            "AND :startDate <= :endDate AND a.startDate <= a.endDate " +
             "AND ((:startDate BETWEEN a.startDate AND a.endDate) OR " +
             "(:endDate BETWEEN a.startDate AND a.endDate) OR " +
             "(:startDate <= a.startDate AND :endDate >= a.endDate))")
