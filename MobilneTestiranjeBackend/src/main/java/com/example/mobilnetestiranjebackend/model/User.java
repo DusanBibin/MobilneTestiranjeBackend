@@ -38,7 +38,7 @@ public class User implements UserDetails{
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public User(Integer id, String firstName, String lastname, String email, String password, String phoneNumber, String address, Boolean emailConfirmed, Boolean blocked, Verification verification, Role role) {
+    public User(Long id, String firstName, String lastname, String email, String password, String phoneNumber, String address, Boolean emailConfirmed, Boolean blocked, Verification verification, Role role) {
         this.id = id;
         this.firstName = firstName;
         this.lastname = lastname;
