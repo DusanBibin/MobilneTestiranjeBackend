@@ -25,10 +25,8 @@ public class ReservationService {
 
 
     public void acceptRequest(Reservation reservation) {
-
-
         List<Reservation> conflictedReservations = reservationRepository
-                .findConflictedReservations(reservation.getAccommodation().getId(), reservation.getId(),
+                .findPendingConflictedReservations(reservation.getAccommodation().getId(), reservation.getId(),
                         reservation.getReservationStartDate(), reservation.getReservationEndDate());
 
         for(Reservation conflictReservation: conflictedReservations){
@@ -40,13 +38,15 @@ public class ReservationService {
         reservation.setReason("ACCEPTED");
         reservation.setStatus(ReservationStatus.ACCEPTED);
         reservationRepository.save(reservation);
-
-
     }
+
+
 
     public Optional<Reservation> findReservationByIdAccommodation(Long accommodationId, Long reservationId) {
         return reservationRepository.findByIdAndAccommodation(accommodationId, reservationId);
     }
+
+
     public boolean acceptedReservationRangeTaken(LocalDate startDate, LocalDate endDate, Long accomId, Long availId) {
         List<Reservation> sameRangeReservations = reservationRepository.
                  findAcceptedReservationsInConflict(startDate, endDate, accomId, availId);
@@ -79,8 +79,6 @@ public class ReservationService {
 
         accom.getReservations().add(reservation);
         accommodationRepository.save(accom);
-
-
     }
 
     public Optional<Reservation> findReservationById(Long reservationId) {
