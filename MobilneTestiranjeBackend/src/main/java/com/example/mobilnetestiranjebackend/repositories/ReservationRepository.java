@@ -10,12 +10,14 @@ import java.util.Optional;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
+
+    @Query("SELECT r FROM Reservation r WHERE r.accommodation.id = :accommodationId AND r.status = 1 AND r.reservationEndDate >= CURRENT_DATE")
+    List<Reservation> findReservationsNotEndedByAccommodationId(Long accommodationId);
     @Query("SELECT r FROM Reservation r " +
             "WHERE r.id = :reservationId AND r.accommodation.id = :accommodationId")
     Optional<Reservation> findByIdAndAccommodation(Long accommodationId, Long reservationId);
 
-    @Query("SELECT r FROM Reservation r WHERE r.accommodation.id = :accommodationId AND r.status = 1 AND r.reservationEndDate >= CURRENT_DATE")
-    List<Reservation> findReservationsNotEndedByAccommodationId(Long accommodationId);
+
 
     @Query("SELECT r FROM Reservation r " +
             "WHERE r.status = 1 " +
