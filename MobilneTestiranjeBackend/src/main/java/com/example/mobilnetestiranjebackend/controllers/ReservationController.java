@@ -4,6 +4,7 @@ import com.example.mobilnetestiranjebackend.DTOs.ReservationDTO;
 import com.example.mobilnetestiranjebackend.enums.ReservationStatus;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthorizationException;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidDateException;
+import com.example.mobilnetestiranjebackend.exceptions.InvalidEnumValueException;
 import com.example.mobilnetestiranjebackend.exceptions.NonExistingEntityException;
 import com.example.mobilnetestiranjebackend.model.*;
 import com.example.mobilnetestiranjebackend.services.AccommodationService;
@@ -87,6 +88,9 @@ public class ReservationController {
         if(reservationWrapper.isEmpty()) throw new NonExistingEntityException("Reservation with this id doesn't exist");
         Reservation reservation = reservationWrapper.get();
 
+        if(!reservation.getStatus().equals(ReservationStatus.PENDING))
+            throw new InvalidEnumValueException("You can only accept a pending request reservation");
+
         if(!accommodation.getOwner().getId().equals(owner.getId()))
             throw new InvalidAuthorizationException("You cannot do action for a accommodation you don't own");
 
@@ -110,7 +114,11 @@ public class ReservationController {
         if(reservationWrapper.isEmpty()) throw new NonExistingEntityException("Reservation with this id doesn't exist");
         Reservation reservation = reservationWrapper.get();
 
-        if(!reservation.getGuest().getId().equals(guest.getId())) throw new InvalidAuthorizationException("You don't own this reservation");
+        if(!reservation.getStatus().equals(ReservationStatus.PENDING))
+            throw new InvalidEnumValueException("You can only accept a pending request reservation");
+
+        if(!reservation.getGuest().getId().equals(guest.getId()))
+            throw new InvalidAuthorizationException("You don't own this reservation");
 
 
         if(LocalDate.now().isBefore(reservation.getAccommodationAvailability().getCancelDeadline()))
