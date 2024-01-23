@@ -28,7 +28,7 @@ public class ReservationService {
 
 
         List<Reservation> conflictedReservations = reservationRepository
-                .findConflictedReservations(reservation.getAccommodation().getId(), reservation.getId(),
+                .findPendingConflictedReservations(reservation.getAccommodation().getId(), reservation.getId(),
                         reservation.getReservationStartDate(), reservation.getReservationEndDate());
 
         for(Reservation conflictReservation: conflictedReservations){

@@ -52,7 +52,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             "   OR :startDate <= r.reservationStartDate AND :endDate >= r.reservationEndDate" +
             "))"
     )
-    List<Reservation> findConflictedReservations(Long accommodationId, Long reservationId, LocalDate startDate, LocalDate endDate);
+    List<Reservation> findPendingConflictedReservations(Long accommodationId, Long reservationId, LocalDate startDate, LocalDate endDate);
 
     @Query("SELECT r FROM Reservation r " +
             "WHERE r.id = :reservationId AND r.guest.id = :guestId")

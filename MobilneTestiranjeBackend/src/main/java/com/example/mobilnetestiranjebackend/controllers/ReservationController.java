@@ -118,7 +118,6 @@ public class ReservationController {
         else throw new InvalidDateException("The cancellation deadline has passed");
 
 
-
         return ResponseEntity.ok().body("Successfully canceled a reservation");
     }
 
