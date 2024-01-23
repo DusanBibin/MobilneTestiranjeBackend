@@ -41,7 +41,7 @@ public class Accommodation {
 
     private Boolean autoAcceptEnabled;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany
     private List<AccommodationAvailability> availabilityList;
 
     @ManyToOne
