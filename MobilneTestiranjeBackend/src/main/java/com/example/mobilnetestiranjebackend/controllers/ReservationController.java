@@ -20,7 +20,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/accommodation/{accommodationId}/reservation/")
+@RequestMapping("/api/v1/accommodation/{accommodationId}/reservation/")
 @RequiredArgsConstructor
 public class ReservationController {
 

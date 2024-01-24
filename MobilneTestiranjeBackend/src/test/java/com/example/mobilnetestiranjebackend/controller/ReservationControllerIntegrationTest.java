@@ -40,7 +40,7 @@ public class ReservationControllerIntegrationTest {
     public void setInitialData(){
         headers.setContentType(MediaType.APPLICATION_JSON);
         loginAsDriver();
-        //loginAsPassenger();
+        loginAsPassenger();
         createRestTemplatesForUsers();
 
     }
@@ -90,7 +90,6 @@ public class ReservationControllerIntegrationTest {
     @Test
     public void shouldAcceptReservation() {
         setInitialData();
-        System.out.println(this.ownerToken);
         ResponseEntity<String> acceptResponse = this.ownerRestTemplate.exchange(
                 BASE_PATH + 1 + "/reservation/" + 1 + "/accept",
                 HttpMethod.PUT,
@@ -99,9 +98,8 @@ public class ReservationControllerIntegrationTest {
                 }
         );
 
-
-        System.out.println(acceptResponse);
-
+        assertEquals(acceptResponse.getStatusCode().value(), 200);
+        assertEquals(acceptResponse.getBody(), "Successfully accepted a reservation request");
     }
 
 
