@@ -79,6 +79,83 @@ public class AccommodationRequestService {
         }
         return amenities;
     }
+
+
+
+    public void createEditAccommodationRequest(Long ownerId, AccommodationDTO accommodationDTO, Long accommodationId) {
+
+        var ownerWrapper = ownerRepository.findOwnerById(ownerId);
+        Owner owner = ownerWrapper.orElseThrow();
+        System.out.println(accommodationId);
+        var accommodationWrapper = accommodationRepository.findAccommodationById(accommodationId);
+
+        if(accommodationWrapper.isEmpty()) throw new NonExistingEntityException("The accommodation with this id does not exist");
+        var accommodation = accommodationWrapper.get();
+
+        var amenities = checkInputValues(accommodationDTO);
+
+        for(AccommodationAvailabilityDTO avail :accommodationDTO.getAvailabilityList()){
+            if(availabilityService.availabilityRangeTaken(accommodationId, avail.getStartDate(), avail.getEndDate(), avail.getId()))
+                throw new InvalidDateException("There is already availability period that interferes with this period");
+        }
+
+        if(availabilityService.reservationsNotEnded(accommodationId))
+            throw new ReservationNotEndedException("One or more reservations for this availability period haven't ended yet");
+
+
+
+
+        List<String> imagePaths = new ArrayList<>();
+//        for(MultipartFile image: images){
+//            int currentIndex = images.indexOf(image);
+//            String relativePath = saveImage(owner.getEmail(), accommodationDTO.getName(), image, currentIndex);
+//            imagePaths.add(relativePath);
+//        }
+
+
+        var accommodationRequest = AccommodationRequest.builder()
+                .name(accommodationDTO.getName())
+                .description(accommodationDTO.getDescription())
+                .address(accommodationDTO.getAddress())
+                .lat(accommodationDTO.getLat())
+                .lon(accommodationDTO.getLon())
+                .amenities(amenities)
+                .imagePaths(imagePaths)
+                .minGuests(accommodationDTO.getMinGuests())
+                .maxGuests(accommodationDTO.getMaxGuests())
+                .accommodationType(accommodationDTO.getAccommodationType())
+                .autoAcceptEnabled(accommodationDTO.getAutoAcceptEnabled())
+                .availabilityRequests(new ArrayList<AvailabilityRequest>())
+                .owner(owner)
+                .accommodation(accommodation)
+                .status(RequestStatus.PENDING)
+                .build();
+
+        accommodationRequestRepository.save(accommodationRequest);
+
+        for(AccommodationAvailabilityDTO availDTO: accommodationDTO.getAvailabilityList()){
+            AccommodationAvailability accommodationAvailability = null;
+            if(availDTO.getId() != 0) accommodationAvailability = availabilityRepository.findById(availDTO.getId()).get();
+
+            var availabilityRequest = AvailabilityRequest.builder()
+                    .startDate(availDTO.getStartDate())
+                    .endDate(availDTO.getEndDate())
+                    .cancelDeadline(availDTO.getCancellationDeadline())
+                    .price(availDTO.getPrice())
+                    .pricePerGuest(availDTO.getPricePerGuest())
+                    .accommodationRequest(accommodationRequest)
+                    .accommodationAvailability(accommodationAvailability)
+                    .build();
+
+            availabilityRequestRepository.save(availabilityRequest);
+            accommodationRequest.getAvailabilityRequests().add(availabilityRequest);
+        }
+
+        accommodationRequestRepository.save(accommodationRequest);
+
+    }
+
+
     public void createAccommodationRequest(Long ownerId, List<MultipartFile> images, AccommodationDTO accommodationDTO){
 
         var ownerWrapper = ownerRepository.findOwnerById(ownerId);
@@ -137,77 +214,7 @@ public class AccommodationRequestService {
         accommodationRequestRepository.save(accommodationRequest);
     }
 
-    public void createEditAccommodationRequest(Long ownerId, List<MultipartFile> images, AccommodationDTO accommodationDTO, Long accommodationId) {
 
-        var ownerWrapper = ownerRepository.findOwnerById(ownerId);
-        Owner owner = ownerWrapper.orElseThrow();
-
-        var accommodationWrapper = accommodationRepository.findAccommodationById(accommodationId);
-        if(accommodationWrapper.isEmpty()) throw new NonExistingEntityException("The accommodation with this id does not exist");
-        var accommodation = accommodationWrapper.get();
-
-        var amenities = checkInputValues(accommodationDTO);
-
-        for(AccommodationAvailabilityDTO avail :accommodationDTO.getAvailabilityList()){
-            if(availabilityService.availabilityRangeTaken(accommodationId, avail.getStartDate(), avail.getEndDate(), avail.getId()))
-                throw new InvalidDateException("There is already availability period that interferes with this period");
-        }
-
-        if(availabilityService.reservationsNotEnded(accommodationId))
-            throw new ReservationNotEndedException("One or more reservations for this availability period haven't ended yet");
-
-
-
-
-        List<String> imagePaths = new ArrayList<>();
-        for(MultipartFile image: images){
-            int currentIndex = images.indexOf(image);
-            String relativePath = saveImage(owner.getEmail(), accommodationDTO.getName(), image, currentIndex);
-            imagePaths.add(relativePath);
-        }
-
-
-        var accommodationRequest = AccommodationRequest.builder()
-                .name(accommodationDTO.getName())
-                .description(accommodationDTO.getDescription())
-                .address(accommodationDTO.getAddress())
-                .lat(accommodationDTO.getLat())
-                .lon(accommodationDTO.getLon())
-                .amenities(amenities)
-                .imagePaths(imagePaths)
-                .minGuests(accommodationDTO.getMinGuests())
-                .maxGuests(accommodationDTO.getMaxGuests())
-                .accommodationType(accommodationDTO.getAccommodationType())
-                .autoAcceptEnabled(accommodationDTO.getAutoAcceptEnabled())
-                .availabilityRequests(new ArrayList<AvailabilityRequest>())
-                .owner(owner)
-                .accommodation(accommodation)
-                .status(RequestStatus.PENDING)
-                .build();
-
-        accommodationRequestRepository.save(accommodationRequest);
-
-        for(AccommodationAvailabilityDTO availDTO: accommodationDTO.getAvailabilityList()){
-            AccommodationAvailability accommodationAvailability = null;
-            if(availDTO.getId() != 0) accommodationAvailability = availabilityRepository.findById(availDTO.getId()).get();
-
-            var availabilityRequest = AvailabilityRequest.builder()
-                    .startDate(availDTO.getStartDate())
-                    .endDate(availDTO.getEndDate())
-                    .cancelDeadline(availDTO.getCancellationDeadline())
-                    .price(availDTO.getPrice())
-                    .pricePerGuest(availDTO.getPricePerGuest())
-                    .accommodationRequest(accommodationRequest)
-                    .accommodationAvailability(accommodationAvailability)
-                    .build();
-
-            availabilityRequestRepository.save(availabilityRequest);
-            accommodationRequest.getAvailabilityRequests().add(availabilityRequest);
-        }
-
-        accommodationRequestRepository.save(accommodationRequest);
-
-    }
 
     public String saveImage(String email, String accommodationName, MultipartFile file, int currentIndex){
         String relativePath = "/" + email + "/" + accommodationName;

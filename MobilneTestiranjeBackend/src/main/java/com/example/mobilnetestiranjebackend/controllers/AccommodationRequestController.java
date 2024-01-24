@@ -12,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -31,13 +32,16 @@ public class AccommodationRequestController {
     }
 
     //@PreAuthorize("hasAuthority('OWNER')")
-    @PostMapping(path = "/edit/accommodation/{accommodationId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> createEditAccommodationRequest(@Valid @RequestPart("accommodationDTO") AccommodationDTO accommodationDTO,
-                                                            @RequestPart("photos") List<MultipartFile> images,
+    //@RequestPart("photos") List<MultipartFile> images
+    //, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
+    //@RequestPart("accommodationDTO") AccommodationDTO accommodationDTO
+    @PostMapping(path = "/edit/accommodation/{accommodationId}")
+    public ResponseEntity<?> createEditAccommodationRequest(@Valid @RequestBody AccommodationDTO accommodationDTO,
                                                             @AuthenticationPrincipal User user,
                                                             @PathVariable("accommodationId") Long accommdationId) {
 
-        accommodationRequestService.createEditAccommodationRequest(user.getId(), images, accommodationDTO, accommdationId);
+        List<MultipartFile> images = new ArrayList<>();
+        accommodationRequestService.createEditAccommodationRequest(user.getId(), accommodationDTO, accommdationId);
         return ResponseEntity.ok().body("Successfully created new accommodation request");
     }
 
