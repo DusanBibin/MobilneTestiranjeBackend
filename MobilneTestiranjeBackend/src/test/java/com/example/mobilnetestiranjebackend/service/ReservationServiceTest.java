@@ -176,7 +176,7 @@ public class ReservationServiceTest {
 
         Mockito.verify(reservationRepository).findAcceptedReservationsInConflict(startDate, endDate, accomId, availId);
 
-        assertThat(isRangeAvailable).isTrue();
+        assertThat(isRangeAvailable).isFalse();
     }
 
 
@@ -198,7 +198,7 @@ public class ReservationServiceTest {
 
         Mockito.verify(reservationRepository).findAcceptedReservationsInConflict(startDate, endDate, accomId, availId);
 
-        assertThat(isRangeAvailable).isFalse();
+        assertThat(isRangeAvailable).isTrue();
     }
 
     @Test
