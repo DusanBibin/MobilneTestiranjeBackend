@@ -2,6 +2,7 @@ package com.example.mobilnetestiranjebackend.controller;
 
 import com.example.mobilnetestiranjebackend.DTOs.AuthenticationRequestDTO;
 import com.example.mobilnetestiranjebackend.DTOs.AuthenticationResponseDTO;
+import com.example.mobilnetestiranjebackend.DTOs.ReservationDTO;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
@@ -13,6 +14,8 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -156,7 +159,7 @@ public class ReservationControllerIntegrationTest {
         String message = jsonNode.get("message").asText();
 
 
-
+        System.out.println(message);
         assertEquals(acceptResponse.getStatusCode().value(), 400);
         assertEquals(message, "Reservation with this id doesn't exist");
     }
@@ -185,7 +188,7 @@ public class ReservationControllerIntegrationTest {
         String message = jsonNode.get("message").asText();
 
 
-
+        System.out.println(message);
         assertEquals(acceptResponse.getStatusCode().value(), 400);
         assertEquals(message, "You can only accept a pending request reservation");
     }
@@ -221,4 +224,268 @@ public class ReservationControllerIntegrationTest {
 
 
 
+    @Test
+    public void shouldCreateReservation() {
+        setInitialData();
+
+        ReservationDTO reservationDTO =ReservationDTO.builder()
+                .accommodationId(1L)
+                .availabilityId(2L)
+                .reservationStartDate(LocalDate.now().plusDays(16))
+                .reservationEndDate(LocalDate.now().plusDays(19))
+                .guestNum(1L)
+                .build();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<ReservationDTO> requestEntity = new HttpEntity<>(reservationDTO, headers);
+
+
+
+
+        ResponseEntity<String> acceptResponse = this.guestRestTemplate.exchange(
+                BASE_PATH + 2 + "/reservation/create",
+                HttpMethod.POST,
+                requestEntity,
+                new ParameterizedTypeReference<String>() {
+                }
+        );
+
+        System.out.println(acceptResponse);
+        assertEquals(acceptResponse.getStatusCode().value(), 200);
+        assertEquals(acceptResponse.getBody(), "Successfully created new reservation request");
+
+    }
+
+    @Test
+    public void shouldThrowAccommodationIdErrorCreate() {
+        setInitialData();
+
+        ReservationDTO reservationDTO =ReservationDTO.builder()
+                .accommodationId(500L)
+                .availabilityId(1L)
+                .reservationStartDate(LocalDate.now().plusDays(16))
+                .reservationEndDate(LocalDate.now().plusDays(19))
+                .guestNum(1L)
+                .build();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<ReservationDTO> requestEntity = new HttpEntity<>(reservationDTO, headers);
+
+
+
+
+        ResponseEntity<String> acceptResponse = this.guestRestTemplate.exchange(
+                BASE_PATH + 2 + "/reservation/create",
+                HttpMethod.POST,
+                requestEntity,
+                new ParameterizedTypeReference<String>() {
+                }
+        );
+
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = null;
+
+        try {
+            jsonNode = objectMapper.readTree(acceptResponse.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        String message = jsonNode.get("message").asText();
+
+
+        System.out.println(acceptResponse);
+        assertEquals(acceptResponse.getStatusCode().value(), 400);
+        assertEquals(message, "Accommodation with this id doesn't exist");
+    }
+
+
+    @Test
+    public void shouldThrowAvailabilityIdErrorCreate() {
+        setInitialData();
+
+        ReservationDTO reservationDTO =ReservationDTO.builder()
+                .accommodationId(2L)
+                .availabilityId(500L)
+                .reservationStartDate(LocalDate.now().plusDays(16))
+                .reservationEndDate(LocalDate.now().plusDays(19))
+                .guestNum(1L)
+                .build();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<ReservationDTO> requestEntity = new HttpEntity<>(reservationDTO, headers);
+
+
+
+
+        ResponseEntity<String> acceptResponse = this.guestRestTemplate.exchange(
+                BASE_PATH + 2 + "/reservation/create",
+                HttpMethod.POST,
+                requestEntity,
+                new ParameterizedTypeReference<String>() {
+                }
+        );
+
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = null;
+
+        try {
+            jsonNode = objectMapper.readTree(acceptResponse.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        String message = jsonNode.get("message").asText();
+
+
+        System.out.println(acceptResponse);
+        assertEquals(acceptResponse.getStatusCode().value(), 400);
+        assertEquals(message, "Availability with this id for wanted accommodation doesn't exist");
+    }
+
+
+    @Test
+    public void shouldThrowStartDateOutOfRange() {
+        setInitialData();
+
+        ReservationDTO reservationDTO =ReservationDTO.builder()
+                .accommodationId(1L)
+                .availabilityId(2L)
+                .reservationStartDate(LocalDate.now().plusDays(13))
+                .reservationEndDate(LocalDate.now().plusDays(19))
+                .guestNum(1L)
+                .build();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<ReservationDTO> requestEntity = new HttpEntity<>(reservationDTO, headers);
+
+
+
+
+        ResponseEntity<String> acceptResponse = this.guestRestTemplate.exchange(
+                BASE_PATH + 2 + "/reservation/create",
+                HttpMethod.POST,
+                requestEntity,
+                new ParameterizedTypeReference<String>() {
+                }
+        );
+
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = null;
+
+        try {
+            jsonNode = objectMapper.readTree(acceptResponse.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        String message = jsonNode.get("message").asText();
+
+
+        System.out.println(acceptResponse);
+        assertEquals(acceptResponse.getStatusCode().value(), 400);
+        assertEquals(message, "Start date is out of range for availability period");
+    }
+
+    @Test
+    public void shouldThrowEndDateOutOfRange() {
+        setInitialData();
+
+        ReservationDTO reservationDTO =ReservationDTO.builder()
+                .accommodationId(1L)
+                .availabilityId(2L)
+                .reservationStartDate(LocalDate.now().plusDays(17))
+                .reservationEndDate(LocalDate.now().plusDays(23))
+                .guestNum(1L)
+                .build();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<ReservationDTO> requestEntity = new HttpEntity<>(reservationDTO, headers);
+
+
+
+
+        ResponseEntity<String> acceptResponse = this.guestRestTemplate.exchange(
+                BASE_PATH + 2 + "/reservation/create",
+                HttpMethod.POST,
+                requestEntity,
+                new ParameterizedTypeReference<String>() {
+                }
+        );
+
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = null;
+
+        try {
+            jsonNode = objectMapper.readTree(acceptResponse.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        String message = jsonNode.get("message").asText();
+
+
+        System.out.println(acceptResponse);
+        assertEquals(acceptResponse.getStatusCode().value(), 400);
+        assertEquals(message, "End date is out of range for availability period");
+    }
+
+    @Test
+    public void shouldThrowDateRangeAlreadyTaken() {
+        setInitialData();
+
+        ReservationDTO reservationDTO =ReservationDTO.builder()
+                .accommodationId(2L)
+                .availabilityId(4L)
+                .reservationStartDate(LocalDate.now().plusDays(31))
+                .reservationEndDate(LocalDate.now().plusDays(39))
+                .guestNum(1L)
+                .build();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<ReservationDTO> requestEntity = new HttpEntity<>(reservationDTO, headers);
+
+
+
+
+        ResponseEntity<String> acceptResponse = this.guestRestTemplate.exchange(
+                BASE_PATH + 2 + "/reservation/create",
+                HttpMethod.POST,
+                requestEntity,
+                new ParameterizedTypeReference<String>() {
+                }
+        );
+
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = null;
+
+        try {
+            jsonNode = objectMapper.readTree(acceptResponse.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        String message = jsonNode.get("message").asText();
+
+
+        System.out.println(acceptResponse);
+        assertEquals(acceptResponse.getStatusCode().value(), 400);
+        assertEquals(message, "There is already an accepted reservation for this date range");
+    }
 }

@@ -44,6 +44,7 @@ public class ReservationController {
         if(accommodationWrapper.isEmpty()) throw new NonExistingEntityException("Accommodation with this id doesn't exist");
         Accommodation accom = accommodationWrapper.get();
 
+
         Optional<AccommodationAvailability> availabilityWrapper = availabilityService
                 .findAvailabilityByIdAndAccommodation(request.getAvailabilityId(), request.getAccommodationId());
 
@@ -51,8 +52,11 @@ public class ReservationController {
             throw new NonExistingEntityException("Availability with this id for wanted accommodation doesn't exist");
         AccommodationAvailability avail = availabilityWrapper.get();
 
+
+
+
         var startDate = request.getReservationStartDate();
-        var endDate = request.getReservationStartDate();
+        var endDate = request.getReservationEndDate();
         var availStart = avail.getStartDate();
         var availEnd = avail.getEndDate();
 
