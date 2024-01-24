@@ -14,12 +14,12 @@ import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 //@TestPropertySource(
 //        locations = "classpath:application-test.properties")
 @ActiveProfiles("test")
 public class ReservationControllerIntegrationTest {
-    private final String BASE_PATH = "http://localhost:8080/api/v1/accommodation";
+    private final String BASE_PATH = "http://localhost:8080/api/v1/accommodation/";
     private static final String OWNER_EMAIL = "probamejl@gmail.com";
     private static final String OWNER_PASSWORD = "NekaSifra123";
     private String ownerToken = null;
@@ -32,25 +32,26 @@ public class ReservationControllerIntegrationTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    private TestRestTemplate driverRestTemplate, passengerRestTemplate;
+    private TestRestTemplate ownerRestTemplate, guestRestTemplate;
 
     HttpHeaders headers = new HttpHeaders();
+
 
     public void setInitialData(){
         headers.setContentType(MediaType.APPLICATION_JSON);
         loginAsDriver();
-        loginAsPassenger();
+        //loginAsPassenger();
         createRestTemplatesForUsers();
 
     }
 
     private void loginAsDriver() {
-        HttpEntity<AuthenticationRequestDTO> driverLogin = new HttpEntity<>(new AuthenticationRequestDTO(OWNER_EMAIL, OWNER_PASSWORD), headers);
+        HttpEntity<AuthenticationRequestDTO> ownerLogin = new HttpEntity<>(new AuthenticationRequestDTO(OWNER_EMAIL, OWNER_PASSWORD), headers);
 
         ResponseEntity<AuthenticationResponseDTO> driverResponse = restTemplate
                 .exchange("/api/v1/auth/authenticate",
                         HttpMethod.POST,
-                        driverLogin,
+                        ownerLogin,
                         new ParameterizedTypeReference<AuthenticationResponseDTO>() {
                         });
 
@@ -58,12 +59,12 @@ public class ReservationControllerIntegrationTest {
     }
 
     private void loginAsPassenger() {
-        HttpEntity<AuthenticationRequestDTO> passengerLogin = new HttpEntity<>(new AuthenticationRequestDTO(GUEST_EMAIL, GUEST_PASSWORD), headers);
+        HttpEntity<AuthenticationRequestDTO> guestLogin = new HttpEntity<>(new AuthenticationRequestDTO(GUEST_EMAIL, GUEST_PASSWORD), headers);
 
         ResponseEntity<AuthenticationResponseDTO> passengerResponse = restTemplate
                 .exchange("/api/v1/auth/authenticate",
                         HttpMethod.POST,
-                        passengerLogin,
+                        guestLogin,
                         new ParameterizedTypeReference<AuthenticationResponseDTO>() {
                         });
 
@@ -72,22 +73,36 @@ public class ReservationControllerIntegrationTest {
 
     private void createRestTemplatesForUsers() {
         RestTemplateBuilder builder = new RestTemplateBuilder(rt -> rt.getInterceptors().add((request, body, execution) -> {
-            request.getHeaders().add("X-Auth-Token", this.ownerToken);
+            request.getHeaders().add("Authorization", "Bearer " + this.ownerToken);
             return execution.execute(request, body);
         }));
-        this.driverRestTemplate = new TestRestTemplate(builder);
+        this.ownerRestTemplate = new TestRestTemplate(builder);
 
         RestTemplateBuilder passBuilder = new RestTemplateBuilder(rt -> rt.getInterceptors().add((request, body, execution) -> {
-            request.getHeaders().add("X-Auth-Token", this.ownerToken);
+            request.getHeaders().add("Authorization", "Bearer " + this.guestToken);
             return execution.execute(request, body);
         }));
 
-        this.passengerRestTemplate = new TestRestTemplate(passBuilder);
+        this.guestRestTemplate = new TestRestTemplate(passBuilder);
     }
 
 
     @Test
-    public void shouldRetrieveAllComment() {
+    public void shouldAcceptReservation() {
         setInitialData();
+        System.out.println(this.ownerToken);
+        ResponseEntity<String> acceptResponse = this.ownerRestTemplate.exchange(
+                BASE_PATH + 1 + "/reservation/" + 1 + "/accept",
+                HttpMethod.PUT,
+                null,
+                new ParameterizedTypeReference<String>() {
+                }
+        );
+
+
+        System.out.println(acceptResponse);
+
     }
+
+
 }
