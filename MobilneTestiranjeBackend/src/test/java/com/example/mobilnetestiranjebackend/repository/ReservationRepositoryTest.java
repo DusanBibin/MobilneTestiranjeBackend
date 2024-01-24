@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -798,26 +799,82 @@ public class ReservationRepositoryTest {
         assertThat(conflicted.size()).isEqualTo(2);
     }
 
+    @Test
+    public void shouldFindReservationsNotEndedByAccommodationId() {
+        Accommodation accommodation = new Accommodation();
+        accommodation = accommodationRepository.save(accommodation);
+        accommodationRepository.flush();
+        Reservation reservation = new Reservation();
+        reservation.setAccommodation(accommodation);
+        reservation.setStatus(ReservationStatus.ACCEPTED);
+        reservation.setReservationEndDate(LocalDate.now().plusDays(20));
+        reservation = reservationRepository.save(reservation);
+        reservationRepository.flush();
+        List<Reservation> reservations = reservationRepository.findReservationsNotEndedByAccommodationId(accommodation.getId());
+        assertFalse(reservations.isEmpty());
+    }
 
+    @Test
+    public void shouldNotFindReservationsNotEndedByAccommodationIdWrongAccommodation() {
+        Accommodation accommodation = new Accommodation();
+        accommodation = accommodationRepository.save(accommodation);
+        Accommodation accommodation2 = new Accommodation();
+        accommodation2 = accommodationRepository.save(accommodation2);
+        accommodationRepository.flush();
+        Reservation reservation = new Reservation();
+        reservation.setAccommodation(accommodation);
+        reservation.setStatus(ReservationStatus.ACCEPTED);
+        reservation.setReservationEndDate(LocalDate.now().plusDays(20));
+        reservation = reservationRepository.save(reservation);
+        reservationRepository.flush();
+        List<Reservation> reservations = reservationRepository.findReservationsNotEndedByAccommodationId(accommodation2.getId());
+        assertTrue(reservations.isEmpty());
+    }
 
+    @Test
+    public void shouldNotFindReservationsNotEndedByAccommodationIdWrongStatus() {
+        Accommodation accommodation = new Accommodation();
+        accommodation = accommodationRepository.save(accommodation);
+        accommodationRepository.flush();
+        Reservation reservation = new Reservation();
+        reservation.setAccommodation(accommodation);
+        reservation.setStatus(ReservationStatus.CANCELED);
+        reservation.setReservationEndDate(LocalDate.now().plusDays(20));
+        reservation = reservationRepository.save(reservation);
+        reservationRepository.flush();
+        List<Reservation> reservations = reservationRepository.findReservationsNotEndedByAccommodationId(accommodation.getId());
+        assertTrue(reservations.isEmpty());
+    }
 
+    @Test
+    public void shouldNotFindReservationsNotEndedByAccommodationIdWrongDate() {
+        Accommodation accommodation = new Accommodation();
+        accommodation = accommodationRepository.save(accommodation);
+        accommodationRepository.flush();
+        Reservation reservation = new Reservation();
+        reservation.setAccommodation(accommodation);
+        reservation.setStatus(ReservationStatus.ACCEPTED);
+        reservation.setReservationEndDate(LocalDate.now().minusDays(20));
+        reservation = reservationRepository.save(reservation);
+        reservationRepository.flush();
+        List<Reservation> reservations = reservationRepository.findReservationsNotEndedByAccommodationId(accommodation.getId());
+        assertTrue(reservations.isEmpty());
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    @Test
+    public void shouldFindReservationsNotEndedByAccommodationIdToday() {
+        Accommodation accommodation = new Accommodation();
+        accommodation = accommodationRepository.save(accommodation);
+        accommodationRepository.flush();
+        Reservation reservation = new Reservation();
+        reservation.setAccommodation(accommodation);
+        reservation.setStatus(ReservationStatus.ACCEPTED);
+        reservation.setReservationEndDate(LocalDate.now());
+        reservation = reservationRepository.save(reservation);
+        reservationRepository.flush();
+        List<Reservation> reservations = reservationRepository.findReservationsNotEndedByAccommodationId(accommodation.getId());
+        assertFalse(reservations.isEmpty());
+    }
 
 
 }
