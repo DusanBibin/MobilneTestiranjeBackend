@@ -41,8 +41,22 @@ private final ReservationRepository reservationRepository;
                 .accommodationRequests(new ArrayList<>())
                 .accommodations(new ArrayList<>())
                 .build();
-
         ownerRepository.save(ownerDusan);
+        Owner ownerSomeoneElse = Owner.builder()
+                .firstName("Dusan")
+                .lastname("Bibin")
+                .email("probamejl3@gmail.com")
+                .password(passwordEncoder.encode("NekaSifra123"))
+                .phoneNumber("0691817839")
+                .address("Neka ulica 123")
+                .emailConfirmed(true)
+                .blocked(false)
+                .role(Role.OWNER)
+                .accommodationRequests(new ArrayList<>())
+                .accommodations(new ArrayList<>())
+                .build();
+
+        ownerRepository.save(ownerSomeoneElse);
 
         Guest guestDusan1 = Guest.builder()
                 .firstName("Dusan1")
@@ -123,8 +137,27 @@ private final ReservationRepository reservationRepository;
                 .availabilityList(new ArrayList<>())
                 .reservations(new ArrayList<>())
                 .build();
-
         accommodationRepository.save(accommodation);
+        var accommodation1 = Accommodation.builder()
+                .id(2L)
+                .name("NewAcc")
+                .description("Accommodation description")
+                .address("Some address")
+                .lat(90.0)
+                .lon(90.0)
+                .amenities(List.of(Amenity.WIFI))
+                .imagePaths(List.of("/probamejl@gmail.com/NewAcc/1_new_room.jpg",
+                        "/probamejl@gmail.com/NewAcc/2_new_room.jpg"))
+                .minGuests(1L)
+                .maxGuests(1L)
+                .accommodationType(AccommodationType.valueOf("STUDIO"))
+                .autoAcceptEnabled(false)
+                .owner(ownerSomeoneElse)
+                .availabilityList(new ArrayList<>())
+                .reservations(new ArrayList<>())
+                .build();
+
+       accommodationRepository.save(accommodation1);
         var availabilityEditTest = AccommodationAvailability.builder()
                 .startDate(LocalDate.now().plusDays(5))
                 .endDate(LocalDate.now().plusDays(15))

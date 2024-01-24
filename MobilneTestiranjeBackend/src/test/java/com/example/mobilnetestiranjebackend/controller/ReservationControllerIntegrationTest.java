@@ -93,13 +93,12 @@ public class ReservationControllerIntegrationTest {
     public void shouldAcceptReservation() {
         setInitialData();
         ResponseEntity<String> acceptResponse = this.ownerRestTemplate.exchange(
-                BASE_PATH + 1 + "/reservation/" + 1 + "/accept",
+                BASE_PATH + 1 + "/reservation/" + 2 + "/accept",
                 HttpMethod.PUT,
                 null,
                 new ParameterizedTypeReference<String>() {
                 }
         );
-
         assertEquals(acceptResponse.getStatusCode().value(), 200);
         assertEquals(acceptResponse.getBody(), "Successfully accepted a reservation request");
     }
@@ -163,7 +162,7 @@ public class ReservationControllerIntegrationTest {
     }
 
     @Test
-    public void shouldThrowNotPending() {
+    public void shouldThrowNotPendingError() {
         setInitialData();
         ResponseEntity<String> acceptResponse = this.ownerRestTemplate.exchange(
                 BASE_PATH + 1 + "/reservation/" + 1 + "/accept",
@@ -189,6 +188,35 @@ public class ReservationControllerIntegrationTest {
 
         assertEquals(acceptResponse.getStatusCode().value(), 400);
         assertEquals(message, "You can only accept a pending request reservation");
+    }
+
+    @Test
+    public void shouldThrowNotPending() {
+        setInitialData();
+        ResponseEntity<String> acceptResponse = this.ownerRestTemplate.exchange(
+                BASE_PATH + 2 + "/reservation/" + 2 + "/accept",
+                HttpMethod.PUT,
+                null,
+                new ParameterizedTypeReference<String>() {
+                }
+        );
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = null;
+
+        try {
+            jsonNode = objectMapper.readTree(acceptResponse.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        String message = jsonNode.get("message").asText();
+
+
+        System.out.println(message);
+        assertEquals(acceptResponse.getStatusCode().value(), 400);
+        assertEquals(message, "You cannot do action for a accommodation you don't own");
     }
 
 
