@@ -20,7 +20,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/accommodation/{accommodationId}/reservation/")
+@RequestMapping("/api/v1/accommodation/{accommodationId}/reservation/")
 @RequiredArgsConstructor
 public class ReservationController {
 
@@ -44,6 +44,7 @@ public class ReservationController {
         if(accommodationWrapper.isEmpty()) throw new NonExistingEntityException("Accommodation with this id doesn't exist");
         Accommodation accom = accommodationWrapper.get();
 
+
         Optional<AccommodationAvailability> availabilityWrapper = availabilityService
                 .findAvailabilityByIdAndAccommodation(request.getAvailabilityId(), request.getAccommodationId());
 
@@ -51,8 +52,11 @@ public class ReservationController {
             throw new NonExistingEntityException("Availability with this id for wanted accommodation doesn't exist");
         AccommodationAvailability avail = availabilityWrapper.get();
 
+
+
+
         var startDate = request.getReservationStartDate();
-        var endDate = request.getReservationStartDate();
+        var endDate = request.getReservationEndDate();
         var availStart = avail.getStartDate();
         var availEnd = avail.getEndDate();
 
@@ -82,7 +86,8 @@ public class ReservationController {
         if(accommodationWrapper.isEmpty()) throw new NonExistingEntityException("Accommodation with this id doesn't exist");
         Accommodation accommodation = accommodationWrapper.get();
 
-
+        if(!accommodation.getOwner().getId().equals(owner.getId()))
+            throw new InvalidAuthorizationException("You cannot do action for a accommodation you don't own");
 
         Optional<Reservation> reservationWrapper = reservationService.findReservationByIdAccommodation(accommodationId, reservationId);
         if(reservationWrapper.isEmpty()) throw new NonExistingEntityException("Reservation with this id doesn't exist");
@@ -91,8 +96,7 @@ public class ReservationController {
         if(!reservation.getStatus().equals(ReservationStatus.PENDING))
             throw new InvalidEnumValueException("You can only accept a pending request reservation");
 
-        if(!accommodation.getOwner().getId().equals(owner.getId()))
-            throw new InvalidAuthorizationException("You cannot do action for a accommodation you don't own");
+
 
 
         reservationService.acceptRequest(reservation);

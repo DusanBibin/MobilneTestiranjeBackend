@@ -41,8 +41,22 @@ private final ReservationRepository reservationRepository;
                 .accommodationRequests(new ArrayList<>())
                 .accommodations(new ArrayList<>())
                 .build();
-
         ownerRepository.save(ownerDusan);
+        Owner ownerSomeoneElse = Owner.builder()
+                .firstName("Dusan")
+                .lastname("Bibin")
+                .email("probamejl3@gmail.com")
+                .password(passwordEncoder.encode("NekaSifra123"))
+                .phoneNumber("0691817839")
+                .address("Neka ulica 123")
+                .emailConfirmed(true)
+                .blocked(false)
+                .role(Role.OWNER)
+                .accommodationRequests(new ArrayList<>())
+                .accommodations(new ArrayList<>())
+                .build();
+
+        ownerRepository.save(ownerSomeoneElse);
 
         Guest guestDusan1 = Guest.builder()
                 .firstName("Dusan1")
@@ -123,8 +137,27 @@ private final ReservationRepository reservationRepository;
                 .availabilityList(new ArrayList<>())
                 .reservations(new ArrayList<>())
                 .build();
-
         accommodationRepository.save(accommodation);
+        var accommodation1 = Accommodation.builder()
+                .id(2L)
+                .name("NewAcc")
+                .description("Accommodation description")
+                .address("Some addressfdsafdasfads")
+                .lat(90.0)
+                .lon(90.0)
+                .amenities(List.of(Amenity.WIFI))
+                .imagePaths(List.of("/probamejl@gmail.com/NewAcc/1_new_room.jpg",
+                        "/probamejl@gmail.com/NewAcc/2_new_room.jpg"))
+                .minGuests(1L)
+                .maxGuests(1L)
+                .accommodationType(AccommodationType.valueOf("STUDIO"))
+                .autoAcceptEnabled(true)
+                .owner(ownerSomeoneElse)
+                .availabilityList(new ArrayList<>())
+                .reservations(new ArrayList<>())
+                .build();
+
+       accommodationRepository.save(accommodation1);
         var availabilityEditTest = AccommodationAvailability.builder()
                 .startDate(LocalDate.now().plusDays(5))
                 .endDate(LocalDate.now().plusDays(15))
@@ -144,15 +177,38 @@ private final ReservationRepository reservationRepository;
                 .accommodation(accommodation)
                 .build();
 
+        var availabilityNew = AccommodationAvailability.builder()
+                .startDate(LocalDate.now().plusDays(15))
+                .endDate(LocalDate.now().plusDays(20))
+                .cancelDeadline(LocalDate.now().plusDays(8))
+                .price(2500L)
+                .pricePerGuest(true)
+                .accommodation(accommodation)
+                .build();
+
+
+        var availabilityNewer = AccommodationAvailability.builder()
+                .startDate(LocalDate.now().plusDays(30))
+                .endDate(LocalDate.now().plusDays(40))
+                .cancelDeadline(LocalDate.now().plusDays(8))
+                .price(25000L)
+                .pricePerGuest(true)
+                .accommodation(accommodation1)
+                .build();
+
 
         availabilityRepository.save(availabilityEditTest);
         availabilityRepository.save(availabilityDeleteTest);
+        availabilityRepository.save(availabilityNew);
+        availabilityRepository.save(availabilityNewer);
 
         accommodation.getAvailabilityList().add(availabilityEditTest);
         accommodation.getAvailabilityList().add(availabilityDeleteTest);
+        accommodation1.getAvailabilityList().add(availabilityNew);
+        accommodation1.getAvailabilityList().add(availabilityNewer);
 
         accommodationRepository.save(accommodation);
-
+        accommodationRepository.save(accommodation1);
         //THIS ONE BELOW
 
 
@@ -161,7 +217,7 @@ private final ReservationRepository reservationRepository;
                 .reservationStartDate(LocalDate.now().plusDays(5))
                 .reservationEndDate(LocalDate.now().plusDays(9))
                 .guestNum(1L)
-                .status(ReservationStatus.PENDING)
+                .status(ReservationStatus.CANCELED)
                 .reason("")
                 .guest(guestDusan1)
                 .accommodation(accommodation)
@@ -195,11 +251,27 @@ private final ReservationRepository reservationRepository;
 
         reservationRepository.save(reservation3);
 
+        var reservationConflict = Reservation.builder()
+                .reservationStartDate(LocalDate.now().plusDays(31))
+                .reservationEndDate(LocalDate.now().plusDays(39))
+                .guestNum(1L)
+                .status(ReservationStatus.ACCEPTED)
+                .reason("")
+                .guest(guestDusan2)
+                .accommodation(accommodation1)
+                .accommodationAvailability(availabilityNewer)
+                .build();
+        reservationRepository.save(reservationConflict);
+        accommodation1.getReservations().add(reservationConflict);
 
+
+
+        reservationRepository.save(reservation3);
 
         accommodation.getReservations().add(reservation1);
         accommodation.getReservations().add(reservation2);
         accommodation.getReservations().add(reservation3);
+        accommodationRepository.save(accommodation1);
         accommodationRepository.save(accommodation);
     }
 }

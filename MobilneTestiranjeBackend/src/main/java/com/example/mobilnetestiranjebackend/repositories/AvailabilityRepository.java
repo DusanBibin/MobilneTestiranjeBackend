@@ -22,7 +22,7 @@ public interface AvailabilityRepository extends JpaRepository<AccommodationAvail
 
     Optional<AccommodationAvailability> findById(Long availabilityId);
 
-    @Query("SELECT a FROM AccommodationAvailability a WHERE a.accommodation.id = :availId AND a.id = :accId")
+    @Query("SELECT a FROM AccommodationAvailability a WHERE a.accommodation.id = :accId AND a.id = :availId")
     Optional<AccommodationAvailability> findByIdAndAccommodationId(Long availId, Long accId);
     List<AccommodationAvailability> findAllByAccommodationId(Long accommodationId);
 

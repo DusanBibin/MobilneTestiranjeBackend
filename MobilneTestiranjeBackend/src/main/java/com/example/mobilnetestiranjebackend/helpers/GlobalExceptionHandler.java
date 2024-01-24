@@ -25,6 +25,16 @@ public class GlobalExceptionHandler {
         return errors;
     }
 
+
+    @ExceptionHandler(value
+            = InvalidDateException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public @ResponseBody ErrorResponse
+    handleInvalidDateException(InvalidDateException ex)
+    {
+        return new ErrorResponse(ex.getMessage());
+    }
+
     @ExceptionHandler(value
             = NonExistingVerificationCodeException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -71,14 +81,14 @@ public class GlobalExceptionHandler {
             return new ErrorResponse(ex.getMessage());
     }
 
-//    @ExceptionHandler(value
-//            = InvalidEnumValueException.class)
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    public @ResponseBody ErrorResponse
-//    handleInvalidRoleException(InvalidEnumValueException ex)
-//    {
-//        return new ErrorResponse(ex.getMessage());
-//    }
+    @ExceptionHandler(value
+            = InvalidEnumValueException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public @ResponseBody ErrorResponse
+    handleInvalidRoleException(InvalidEnumValueException ex)
+    {
+        return new ErrorResponse(ex.getMessage());
+    }
 
 
     @ExceptionHandler(value
@@ -129,14 +139,7 @@ public class GlobalExceptionHandler {
     }
 
 
-    @ExceptionHandler(value
-            = InvalidDateException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public @ResponseBody ErrorResponse
-    handleInvalidDateException(InvalidDateException ex)
-    {
-        return new ErrorResponse(ex.getMessage());
-    }
+
 
 
     @ExceptionHandler(value

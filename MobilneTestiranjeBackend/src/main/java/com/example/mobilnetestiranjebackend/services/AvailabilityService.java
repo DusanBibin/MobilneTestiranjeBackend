@@ -34,6 +34,10 @@ public class AvailabilityService {
 
 
     public Optional<AccommodationAvailability> findAvailabilityByIdAndAccommodation(Long availabilityId, Long accommodationId) {
+
+
+
+
         return availabilityRepository.findByIdAndAccommodationId(availabilityId, accommodationId);
     }
 }

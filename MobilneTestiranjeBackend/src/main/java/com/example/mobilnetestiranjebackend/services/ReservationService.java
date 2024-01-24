@@ -51,7 +51,7 @@ public class ReservationService {
         List<Reservation> sameRangeReservations = reservationRepository.
                  findAcceptedReservationsInConflict(startDate, endDate, accomId, availId);
 
-        return sameRangeReservations.isEmpty();
+        return !sameRangeReservations.isEmpty();
     }
 
 
