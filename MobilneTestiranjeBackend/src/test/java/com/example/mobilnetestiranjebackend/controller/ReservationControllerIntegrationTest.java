@@ -2,6 +2,8 @@ package com.example.mobilnetestiranjebackend.controller;
 
 import com.example.mobilnetestiranjebackend.DTOs.AuthenticationRequestDTO;
 import com.example.mobilnetestiranjebackend.DTOs.AuthenticationResponseDTO;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,6 +103,94 @@ public class ReservationControllerIntegrationTest {
         assertEquals(acceptResponse.getStatusCode().value(), 200);
         assertEquals(acceptResponse.getBody(), "Successfully accepted a reservation request");
     }
+
+    @Test
+    public void shouldThrowAccommodationIdError() {
+        setInitialData();
+        ResponseEntity<String> acceptResponse = this.ownerRestTemplate.exchange(
+                BASE_PATH + 500 + "/reservation/" + 1 + "/accept",
+                HttpMethod.PUT,
+                null,
+                new ParameterizedTypeReference<String>() {
+                }
+        );
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = null;
+
+        try {
+            jsonNode = objectMapper.readTree(acceptResponse.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        String message = jsonNode.get("message").asText();
+
+
+
+        assertEquals(acceptResponse.getStatusCode().value(), 400);
+        assertEquals(message, "Accommodation with this id doesn't exist");
+    }
+
+    @Test
+    public void shouldThrowReservationIdError() {
+        setInitialData();
+        ResponseEntity<String> acceptResponse = this.ownerRestTemplate.exchange(
+                BASE_PATH + 1 + "/reservation/" + 100 + "/accept",
+                HttpMethod.PUT,
+                null,
+                new ParameterizedTypeReference<String>() {
+                }
+        );
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = null;
+
+        try {
+            jsonNode = objectMapper.readTree(acceptResponse.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        String message = jsonNode.get("message").asText();
+
+
+
+        assertEquals(acceptResponse.getStatusCode().value(), 400);
+        assertEquals(message, "Reservation with this id doesn't exist");
+    }
+
+    @Test
+    public void shouldThrowNotPending() {
+        setInitialData();
+        ResponseEntity<String> acceptResponse = this.ownerRestTemplate.exchange(
+                BASE_PATH + 1 + "/reservation/" + 1 + "/accept",
+                HttpMethod.PUT,
+                null,
+                new ParameterizedTypeReference<String>() {
+                }
+        );
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = null;
+
+        try {
+            jsonNode = objectMapper.readTree(acceptResponse.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        String message = jsonNode.get("message").asText();
+
+
+
+        assertEquals(acceptResponse.getStatusCode().value(), 400);
+        assertEquals(message, "You can only accept a pending request reservation");
+    }
+
 
 
 }

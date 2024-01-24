@@ -161,7 +161,7 @@ private final ReservationRepository reservationRepository;
                 .reservationStartDate(LocalDate.now().plusDays(5))
                 .reservationEndDate(LocalDate.now().plusDays(9))
                 .guestNum(1L)
-                .status(ReservationStatus.PENDING)
+                .status(ReservationStatus.CANCELED)
                 .reason("")
                 .guest(guestDusan1)
                 .accommodation(accommodation)

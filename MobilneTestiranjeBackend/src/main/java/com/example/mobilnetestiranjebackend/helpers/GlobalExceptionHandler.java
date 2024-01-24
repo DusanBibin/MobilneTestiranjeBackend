@@ -81,14 +81,14 @@ public class GlobalExceptionHandler {
             return new ErrorResponse(ex.getMessage());
     }
 
-//    @ExceptionHandler(value
-//            = InvalidEnumValueException.class)
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    public @ResponseBody ErrorResponse
-//    handleInvalidRoleException(InvalidEnumValueException ex)
-//    {
-//        return new ErrorResponse(ex.getMessage());
-//    }
+    @ExceptionHandler(value
+            = InvalidEnumValueException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public @ResponseBody ErrorResponse
+    handleInvalidRoleException(InvalidEnumValueException ex)
+    {
+        return new ErrorResponse(ex.getMessage());
+    }
 
 
     @ExceptionHandler(value
