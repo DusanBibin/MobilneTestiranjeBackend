@@ -1,36 +1,25 @@
 package com.example.mobilnetestiranjebackend.controllers;
 
-import com.example.mobilnetestiranjebackend.DTOs.AccommodationAvailabilityDTO;
+import com.example.mobilnetestiranjebackend.DTOs.AvailabilityDTO;
 import com.example.mobilnetestiranjebackend.DTOs.AccommodationDTO;
-import com.example.mobilnetestiranjebackend.enums.Amenity;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthorizationException;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidFileExtensionException;
 import com.example.mobilnetestiranjebackend.exceptions.NonExistingEntityException;
-import com.example.mobilnetestiranjebackend.model.Accommodation;
-import com.example.mobilnetestiranjebackend.model.AccommodationAvailability;
+import com.example.mobilnetestiranjebackend.model.Availability;
 import com.example.mobilnetestiranjebackend.model.User;
 import com.example.mobilnetestiranjebackend.services.AccommodationService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.io.IOUtils;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.print.attribute.standard.Media;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/accommodation")
@@ -66,8 +55,8 @@ public class AccommodationController {
                 .build();
 
 
-        for(AccommodationAvailability a: accommodation.getAvailabilityList()){
-            var availabilityDTO = AccommodationAvailabilityDTO.builder()
+        for(Availability a: accommodation.getAvailabilityList()){
+            var availabilityDTO = AvailabilityDTO.builder()
                     .id(a.getId())
                     .startDate(a.getStartDate())
                     .endDate(a.getEndDate())

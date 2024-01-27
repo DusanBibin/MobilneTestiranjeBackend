@@ -1,20 +1,15 @@
 package com.example.mobilnetestiranjebackend.repository;
 
-import com.example.mobilnetestiranjebackend.enums.AccommodationType;
-import com.example.mobilnetestiranjebackend.enums.Amenity;
 import com.example.mobilnetestiranjebackend.enums.ReservationStatus;
 import com.example.mobilnetestiranjebackend.model.Accommodation;
-import com.example.mobilnetestiranjebackend.model.AccommodationAvailability;
+import com.example.mobilnetestiranjebackend.model.Availability;
 import com.example.mobilnetestiranjebackend.model.Reservation;
 import com.example.mobilnetestiranjebackend.repositories.AccommodationRepository;
 import com.example.mobilnetestiranjebackend.repositories.AvailabilityRepository;
 import com.example.mobilnetestiranjebackend.repositories.ReservationRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -121,14 +116,14 @@ public class ReservationRepositoryTest {
 
         accommodation = accommodationRepository.save(accommodation);
 
-        var availability = AccommodationAvailability.builder()
+        var availability = Availability.builder()
                 .accommodation(accommodation)
                 .build();
 
         availability = availabilityRepository.save(availability);
 
         var reservation1 = Reservation.builder()
-                .accommodationAvailability(availability)
+                .availability(availability)
                 .accommodation(accommodation)
                 .reservationStartDate(LocalDate.now().plusDays(8))
                 .reservationEndDate(LocalDate.now().plusDays(10))
@@ -158,14 +153,14 @@ public class ReservationRepositoryTest {
 
         accommodation = accommodationRepository.save(accommodation);
 
-        var availability = AccommodationAvailability.builder()
+        var availability = Availability.builder()
                 .accommodation(accommodation)
                 .build();
 
         availability = availabilityRepository.save(availability);
 
         var reservation1 = Reservation.builder()
-                .accommodationAvailability(availability)
+                .availability(availability)
                 .accommodation(accommodation)
                 .reservationStartDate(LocalDate.now().plusDays(8))
                 .reservationEndDate(LocalDate.now().plusDays(10))
@@ -196,14 +191,14 @@ public class ReservationRepositoryTest {
 
         accommodation = accommodationRepository.save(accommodation);
 
-        var availability = AccommodationAvailability.builder()
+        var availability = Availability.builder()
                 .accommodation(accommodation)
                 .build();
 
         availability = availabilityRepository.save(availability);
 
         var reservation1 = Reservation.builder()
-                .accommodationAvailability(availability)
+                .availability(availability)
                 .accommodation(accommodation)
                 .reservationStartDate(LocalDate.now().plusDays(8))
                 .reservationEndDate(LocalDate.now().plusDays(10))
@@ -235,14 +230,14 @@ public class ReservationRepositoryTest {
 
         accommodation = accommodationRepository.save(accommodation);
 
-        var availability = AccommodationAvailability.builder()
+        var availability = Availability.builder()
                 .accommodation(accommodation)
                 .build();
 
         availability = availabilityRepository.save(availability);
 
         var reservation1 = Reservation.builder()
-                .accommodationAvailability(availability)
+                .availability(availability)
                 .accommodation(accommodation)
                 .reservationStartDate(LocalDate.now().plusDays(8))
                 .reservationEndDate(LocalDate.now().plusDays(10))
@@ -273,14 +268,14 @@ public class ReservationRepositoryTest {
 
         accommodation = accommodationRepository.save(accommodation);
 
-        var availability = AccommodationAvailability.builder()
+        var availability = Availability.builder()
                 .accommodation(accommodation)
                 .build();
 
         availability = availabilityRepository.save(availability);
 
         var reservation1 = Reservation.builder()
-                .accommodationAvailability(availability)
+                .availability(availability)
                 .accommodation(accommodation)
                 .reservationStartDate(LocalDate.now().plusDays(8))
                 .reservationEndDate(LocalDate.now().plusDays(10))
@@ -311,14 +306,14 @@ public class ReservationRepositoryTest {
 
         accommodation = accommodationRepository.save(accommodation);
 
-        var availability = AccommodationAvailability.builder()
+        var availability = Availability.builder()
                 .accommodation(accommodation)
                 .build();
 
         availability = availabilityRepository.save(availability);
 
         var reservation1 = Reservation.builder()
-                .accommodationAvailability(availability)
+                .availability(availability)
                 .accommodation(accommodation)
                 .reservationStartDate(LocalDate.now().plusDays(8))
                 .reservationEndDate(LocalDate.now().plusDays(10))
@@ -348,14 +343,14 @@ public class ReservationRepositoryTest {
 
         accommodation = accommodationRepository.save(accommodation);
 
-        var availability = AccommodationAvailability.builder()
+        var availability = Availability.builder()
                 .accommodation(accommodation)
                 .build();
 
         availability = availabilityRepository.save(availability);
 
         var reservation1 = Reservation.builder()
-                .accommodationAvailability(availability)
+                .availability(availability)
                 .accommodation(accommodation)
                 .reservationStartDate(LocalDate.now().plusDays(8))
                 .reservationEndDate(LocalDate.now().plusDays(10))
@@ -385,14 +380,14 @@ public class ReservationRepositoryTest {
 
         accommodation = accommodationRepository.save(accommodation);
 
-        var availability = AccommodationAvailability.builder()
+        var availability = Availability.builder()
                 .accommodation(accommodation)
                 .build();
 
         availability = availabilityRepository.save(availability);
 
         var reservation1 = Reservation.builder()
-                .accommodationAvailability(availability)
+                .availability(availability)
                 .accommodation(accommodation)
                 .reservationStartDate(LocalDate.now().plusDays(8))
                 .reservationEndDate(LocalDate.now().plusDays(10))
@@ -425,14 +420,14 @@ public class ReservationRepositoryTest {
 
         accommodation = accommodationRepository.save(accommodation);
 
-        var availability = AccommodationAvailability.builder()
+        var availability = Availability.builder()
                 .accommodation(accommodation)
                 .build();
 
         availability = availabilityRepository.save(availability);
 
         var reservation1 = Reservation.builder()
-                .accommodationAvailability(availability)
+                .availability(availability)
                 .accommodation(accommodation)
                 .reservationStartDate(LocalDate.now().plusDays(8))
                 .reservationEndDate(LocalDate.now().plusDays(10))
@@ -442,7 +437,7 @@ public class ReservationRepositoryTest {
         reservation1 = reservationRepository.save(reservation1);
 
         var reservation2 = Reservation.builder()
-                .accommodationAvailability(availability)
+                .availability(availability)
                 .accommodation(accommodation)
                 .reservationStartDate(LocalDate.now().plusDays(5))
                 .reservationEndDate(LocalDate.now().plusDays(7))
@@ -473,14 +468,14 @@ public class ReservationRepositoryTest {
 
         accommodation = accommodationRepository.save(accommodation);
 
-        var availability = AccommodationAvailability.builder()
+        var availability = Availability.builder()
                 .accommodation(accommodation)
                 .build();
 
         availability = availabilityRepository.save(availability);
 
         var reservation1 = Reservation.builder()
-                .accommodationAvailability(availability)
+                .availability(availability)
                 .accommodation(accommodation)
                 .reservationStartDate(LocalDate.now().plusDays(6))
                 .reservationEndDate(LocalDate.now().plusDays(10))
@@ -490,7 +485,7 @@ public class ReservationRepositoryTest {
         reservation1 = reservationRepository.save(reservation1);
 
         var reservation2 = Reservation.builder()
-                .accommodationAvailability(availability)
+                .availability(availability)
                 .accommodation(accommodation)
                 .reservationStartDate(LocalDate.now().plusDays(5))
                 .reservationEndDate(LocalDate.now().plusDays(7))
@@ -521,14 +516,14 @@ public class ReservationRepositoryTest {
 
         accommodation = accommodationRepository.save(accommodation);
 
-        var availability = AccommodationAvailability.builder()
+        var availability = Availability.builder()
                 .accommodation(accommodation)
                 .build();
 
         availability = availabilityRepository.save(availability);
 
         var reservation1 = Reservation.builder()
-                .accommodationAvailability(availability)
+                .availability(availability)
                 .accommodation(accommodation)
                 .reservationStartDate(LocalDate.now().plusDays(4))
                 .reservationEndDate(LocalDate.now().plusDays(6))
@@ -538,7 +533,7 @@ public class ReservationRepositoryTest {
         reservation1 = reservationRepository.save(reservation1);
 
         var reservation2 = Reservation.builder()
-                .accommodationAvailability(availability)
+                .availability(availability)
                 .accommodation(accommodation)
                 .reservationStartDate(LocalDate.now().plusDays(5))
                 .reservationEndDate(LocalDate.now().plusDays(7))
@@ -569,14 +564,14 @@ public class ReservationRepositoryTest {
 
         accommodation = accommodationRepository.save(accommodation);
 
-        var availability = AccommodationAvailability.builder()
+        var availability = Availability.builder()
                 .accommodation(accommodation)
                 .build();
 
         availability = availabilityRepository.save(availability);
 
         var reservation1 = Reservation.builder()
-                .accommodationAvailability(availability)
+                .availability(availability)
                 .accommodation(accommodation)
                 .reservationStartDate(LocalDate.now().plusDays(4))
                 .reservationEndDate(LocalDate.now().plusDays(8))
@@ -586,7 +581,7 @@ public class ReservationRepositoryTest {
         reservation1 = reservationRepository.save(reservation1);
 
         var reservation2 = Reservation.builder()
-                .accommodationAvailability(availability)
+                .availability(availability)
                 .accommodation(accommodation)
                 .reservationStartDate(LocalDate.now().plusDays(5))
                 .reservationEndDate(LocalDate.now().plusDays(7))
@@ -617,14 +612,14 @@ public class ReservationRepositoryTest {
 
         accommodation = accommodationRepository.save(accommodation);
 
-        var availability = AccommodationAvailability.builder()
+        var availability = Availability.builder()
                 .accommodation(accommodation)
                 .build();
 
         availability = availabilityRepository.save(availability);
 
         var reservation1 = Reservation.builder()
-                .accommodationAvailability(availability)
+                .availability(availability)
                 .accommodation(accommodation)
                 .reservationStartDate(LocalDate.now().plusDays(4))
                 .reservationEndDate(LocalDate.now().plusDays(8))
@@ -634,7 +629,7 @@ public class ReservationRepositoryTest {
         reservation1 = reservationRepository.save(reservation1);
 
         var reservation2 = Reservation.builder()
-                .accommodationAvailability(availability)
+                .availability(availability)
                 .accommodation(accommodation)
                 .reservationStartDate(LocalDate.now().plusDays(8))
                 .reservationEndDate(LocalDate.now().plusDays(10))
@@ -665,14 +660,14 @@ public class ReservationRepositoryTest {
 
         accommodation = accommodationRepository.save(accommodation);
 
-        var availability = AccommodationAvailability.builder()
+        var availability = Availability.builder()
                 .accommodation(accommodation)
                 .build();
 
         availability = availabilityRepository.save(availability);
 
         var reservation1 = Reservation.builder()
-                .accommodationAvailability(availability)
+                .availability(availability)
                 .accommodation(accommodation)
                 .reservationStartDate(LocalDate.now().plusDays(4))
                 .reservationEndDate(LocalDate.now().plusDays(9))
@@ -682,7 +677,7 @@ public class ReservationRepositoryTest {
         reservation1 = reservationRepository.save(reservation1);
 
         var reservation2 = Reservation.builder()
-                .accommodationAvailability(availability)
+                .availability(availability)
                 .accommodation(accommodation)
                 .reservationStartDate(LocalDate.now().plusDays(8))
                 .reservationEndDate(LocalDate.now().plusDays(10))
@@ -712,14 +707,14 @@ public class ReservationRepositoryTest {
 
         accommodation = accommodationRepository.save(accommodation);
 
-        var availability = AccommodationAvailability.builder()
+        var availability = Availability.builder()
                 .accommodation(accommodation)
                 .build();
 
         availability = availabilityRepository.save(availability);
 
         var reservation1 = Reservation.builder()
-                .accommodationAvailability(availability)
+                .availability(availability)
                 .accommodation(accommodation)
                 .reservationStartDate(LocalDate.now().plusDays(4))
                 .reservationEndDate(LocalDate.now().plusDays(9))
@@ -729,7 +724,7 @@ public class ReservationRepositoryTest {
         reservation1 = reservationRepository.save(reservation1);
 
         var reservation2 = Reservation.builder()
-                .accommodationAvailability(availability)
+                .availability(availability)
                 .accommodation(accommodation)
                 .reservationStartDate(LocalDate.now().plusDays(8))
                 .reservationEndDate(LocalDate.now().plusDays(10))
@@ -759,14 +754,14 @@ public class ReservationRepositoryTest {
 
         accommodation = accommodationRepository.save(accommodation);
 
-        var availability = AccommodationAvailability.builder()
+        var availability = Availability.builder()
                 .accommodation(accommodation)
                 .build();
 
         availability = availabilityRepository.save(availability);
 
         var reservation1 = Reservation.builder()
-                .accommodationAvailability(availability)
+                .availability(availability)
                 .accommodation(accommodation)
                 .reservationStartDate(LocalDate.now().plusDays(4))
                 .reservationEndDate(LocalDate.now().plusDays(9))
@@ -776,7 +771,7 @@ public class ReservationRepositoryTest {
         reservation1 = reservationRepository.save(reservation1);
 
         var reservation2 = Reservation.builder()
-                .accommodationAvailability(availability)
+                .availability(availability)
                 .accommodation(accommodation)
                 .reservationStartDate(LocalDate.now().plusDays(8))
                 .reservationEndDate(LocalDate.now().plusDays(10))

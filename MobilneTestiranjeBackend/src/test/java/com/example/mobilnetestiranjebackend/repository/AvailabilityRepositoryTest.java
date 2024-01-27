@@ -1,11 +1,9 @@
 package com.example.mobilnetestiranjebackend.repository;
 
 import com.example.mobilnetestiranjebackend.model.Accommodation;
-import com.example.mobilnetestiranjebackend.model.AccommodationAvailability;
-import com.example.mobilnetestiranjebackend.model.Reservation;
+import com.example.mobilnetestiranjebackend.model.Availability;
 import com.example.mobilnetestiranjebackend.repositories.AccommodationRepository;
 import com.example.mobilnetestiranjebackend.repositories.AvailabilityRepository;
-import com.example.mobilnetestiranjebackend.repositories.ReservationRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -35,7 +33,7 @@ public class AvailabilityRepositoryTest {
         accommodation = accommodationRepository.save(accommodation);
 
 
-        var availability = AccommodationAvailability.builder()
+        var availability = Availability.builder()
                 .accommodation(accommodation)
                 .build();
 
@@ -44,7 +42,7 @@ public class AvailabilityRepositoryTest {
         accommodationRepository.save(accommodation);
 
 
-        Optional<AccommodationAvailability> availabilityWrapper = availabilityRepository.findByIdAndAccommodationId(availability.getId(), accommodation.getId());
+        Optional<Availability> availabilityWrapper = availabilityRepository.findByIdAndAccommodationId(availability.getId(), accommodation.getId());
 
         assertThat(availabilityWrapper).isPresent();
     }
@@ -58,7 +56,7 @@ public class AvailabilityRepositoryTest {
         accommodation = accommodationRepository.save(accommodation);
 
 
-        var availability = AccommodationAvailability.builder()
+        var availability = Availability.builder()
                 .accommodation(accommodation)
                 .build();
 
@@ -67,7 +65,7 @@ public class AvailabilityRepositoryTest {
         accommodationRepository.save(accommodation);
 
 
-        Optional<AccommodationAvailability> availabilityWrapper = availabilityRepository.findByIdAndAccommodationId(0L, accommodation.getId());
+        Optional<Availability> availabilityWrapper = availabilityRepository.findByIdAndAccommodationId(0L, accommodation.getId());
 
         assertThat(availabilityWrapper).isEmpty();
     }
@@ -81,7 +79,7 @@ public class AvailabilityRepositoryTest {
         accommodation = accommodationRepository.save(accommodation);
 
 
-        var availability = AccommodationAvailability.builder()
+        var availability = Availability.builder()
                 .accommodation(accommodation)
                 .build();
 
@@ -90,7 +88,7 @@ public class AvailabilityRepositoryTest {
         accommodationRepository.save(accommodation);
 
 
-        Optional<AccommodationAvailability> availabilityWrapper = availabilityRepository.findByIdAndAccommodationId(accommodation.getId(), 0L);
+        Optional<Availability> availabilityWrapper = availabilityRepository.findByIdAndAccommodationId(accommodation.getId(), 0L);
 
         assertThat(availabilityWrapper).isEmpty();
     }

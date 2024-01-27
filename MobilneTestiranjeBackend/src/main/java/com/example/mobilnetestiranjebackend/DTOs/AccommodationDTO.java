@@ -56,7 +56,7 @@ public class AccommodationDTO {
     private Boolean autoAcceptEnabled;
 
     @Valid
-    private List<@Valid AccommodationAvailabilityDTO> availabilityList;
+    private List<@Valid AvailabilityDTO> availabilityList;
 
     private List<String> imagePaths;
 

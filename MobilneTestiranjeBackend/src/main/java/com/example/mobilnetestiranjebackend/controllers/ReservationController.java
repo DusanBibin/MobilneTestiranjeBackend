@@ -45,12 +45,12 @@ public class ReservationController {
         Accommodation accom = accommodationWrapper.get();
 
 
-        Optional<AccommodationAvailability> availabilityWrapper = availabilityService
+        Optional<Availability> availabilityWrapper = availabilityService
                 .findAvailabilityByIdAndAccommodation(request.getAvailabilityId(), request.getAccommodationId());
 
         if(availabilityWrapper.isEmpty())
             throw new NonExistingEntityException("Availability with this id for wanted accommodation doesn't exist");
-        AccommodationAvailability avail = availabilityWrapper.get();
+        Availability avail = availabilityWrapper.get();
 
 
 
@@ -125,7 +125,7 @@ public class ReservationController {
             throw new InvalidAuthorizationException("You don't own this reservation");
 
 
-        if(LocalDate.now().isBefore(reservation.getAccommodationAvailability().getCancelDeadline()))
+        if(LocalDate.now().isBefore(reservation.getAvailability().getCancelDeadline()))
             reservationService.cancelReservation(reservation);
         else throw new InvalidDateException("The cancellation deadline has passed");
 

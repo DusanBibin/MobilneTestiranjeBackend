@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AccommodationAvailabilityDTO {
+public class AvailabilityDTO {
     private Long id;
     @FutureOrPresent(message = "Start date must be in the future")
     @NotNull(message = "Start date must be provided")

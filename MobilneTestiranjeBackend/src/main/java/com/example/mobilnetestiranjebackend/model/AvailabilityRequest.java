@@ -1,6 +1,5 @@
 package com.example.mobilnetestiranjebackend.model;
 
-import com.example.mobilnetestiranjebackend.enums.RequestType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,7 +27,7 @@ public class AvailabilityRequest {
     private Boolean pricePerGuest;
     
     @ManyToOne
-    private AccommodationAvailability accommodationAvailability;
+    private Availability availability;
 
 
     @ManyToOne

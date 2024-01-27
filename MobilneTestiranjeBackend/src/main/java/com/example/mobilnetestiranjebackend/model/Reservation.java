@@ -1,7 +1,6 @@
 package com.example.mobilnetestiranjebackend.model;
 
 
-import com.example.mobilnetestiranjebackend.enums.RequestStatus;
 import com.example.mobilnetestiranjebackend.enums.ReservationStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -34,5 +33,5 @@ public class Reservation {
     @ManyToOne
     private Accommodation accommodation;
     @ManyToOne
-    private AccommodationAvailability accommodationAvailability;
+    private Availability availability;
 }

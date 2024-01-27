@@ -3,7 +3,6 @@ package com.example.mobilnetestiranjebackend.helpers;
 import com.example.mobilnetestiranjebackend.enums.*;
 import com.example.mobilnetestiranjebackend.model.*;
 import com.example.mobilnetestiranjebackend.repositories.*;
-import jakarta.persistence.ManyToOne;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -157,7 +156,7 @@ private final ReservationRepository reservationRepository;
                 .build();
 
        accommodationRepository.save(accommodation1);
-        var availabilityEditTest = AccommodationAvailability.builder()
+        var availabilityEditTest = Availability.builder()
                 .startDate(LocalDate.now().plusDays(5))
                 .endDate(LocalDate.now().plusDays(15))
                 .cancelDeadline(LocalDate.now().plusDays(4))
@@ -167,7 +166,7 @@ private final ReservationRepository reservationRepository;
                 .build();
 
 
-        var availabilityDeleteTest = AccommodationAvailability.builder()
+        var availabilityDeleteTest = Availability.builder()
                 .startDate(LocalDate.now().plusDays(15))
                 .endDate(LocalDate.now().plusDays(20))
                 .cancelDeadline(LocalDate.now().plusDays(8))
@@ -176,7 +175,7 @@ private final ReservationRepository reservationRepository;
                 .accommodation(accommodation)
                 .build();
 
-        var availabilityNew = AccommodationAvailability.builder()
+        var availabilityNew = Availability.builder()
                 .startDate(LocalDate.now().plusDays(15))
                 .endDate(LocalDate.now().plusDays(20))
                 .cancelDeadline(LocalDate.now().plusDays(8))
@@ -186,7 +185,7 @@ private final ReservationRepository reservationRepository;
                 .build();
 
 
-        var availabilityNewer = AccommodationAvailability.builder()
+        var availabilityNewer = Availability.builder()
                 .startDate(LocalDate.now().plusDays(30))
                 .endDate(LocalDate.now().plusDays(40))
                 .cancelDeadline(LocalDate.now().plusDays(8))
@@ -220,7 +219,7 @@ private final ReservationRepository reservationRepository;
                 .reason("")
                 .guest(guestDusan1)
                 .accommodation(accommodation)
-                .accommodationAvailability(availabilityDeleteTest)
+                .availability(availabilityDeleteTest)
                 .build();
         reservationRepository.save(reservation1);
 
@@ -233,7 +232,7 @@ private final ReservationRepository reservationRepository;
                 .reason("")
                 .guest(guestDusan1)
                 .accommodation(accommodation)
-                .accommodationAvailability(availabilityDeleteTest)
+                .availability(availabilityDeleteTest)
                 .build();
         reservationRepository.save(reservation2);
 
@@ -245,7 +244,7 @@ private final ReservationRepository reservationRepository;
                 .reason("")
                 .guest(guestDusan2)
                 .accommodation(accommodation)
-                .accommodationAvailability(availabilityDeleteTest)
+                .availability(availabilityDeleteTest)
                 .build();
 
         reservationRepository.save(reservation3);
@@ -258,7 +257,7 @@ private final ReservationRepository reservationRepository;
                 .reason("")
                 .guest(guestDusan2)
                 .accommodation(accommodation1)
-                .accommodationAvailability(availabilityNewer)
+                .availability(availabilityNewer)
                 .build();
         reservationRepository.save(reservationConflict);
         accommodation1.getReservations().add(reservationConflict);

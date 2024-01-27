@@ -4,7 +4,7 @@ package com.example.mobilnetestiranjebackend.service;
 import com.example.mobilnetestiranjebackend.DTOs.ReservationDTO;
 import com.example.mobilnetestiranjebackend.enums.ReservationStatus;
 import com.example.mobilnetestiranjebackend.model.Accommodation;
-import com.example.mobilnetestiranjebackend.model.AccommodationAvailability;
+import com.example.mobilnetestiranjebackend.model.Availability;
 import com.example.mobilnetestiranjebackend.model.Guest;
 import com.example.mobilnetestiranjebackend.model.Reservation;
 import com.example.mobilnetestiranjebackend.repositories.AccommodationRepository;
@@ -210,7 +210,7 @@ public class ReservationServiceTest {
                 .autoAcceptEnabled(true)
                 .reservations(new ArrayList<>())
                 .build();
-        AccommodationAvailability avail = AccommodationAvailability.builder().build();
+        Availability avail = Availability.builder().build();
 
         Mockito.when(accommodationRepository.save(accom)).thenReturn(accom);
 
@@ -237,7 +237,7 @@ public class ReservationServiceTest {
                 .autoAcceptEnabled(false)
                 .reservations(new ArrayList<>())
                 .build();
-        AccommodationAvailability avail = AccommodationAvailability.builder().build();
+        Availability avail = Availability.builder().build();
 
         Mockito.when(accommodationRepository.save(accom)).thenReturn(accom);
 

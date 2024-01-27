@@ -35,7 +35,7 @@ public class AuthenticationController {
             throw new UserAlreadyExistsException("User with email " + request.getEmail() + " already exists");
 
         authService.register(request);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(("Verification email has been sent to " + request.getEmail()), HttpStatus.OK);
     }
 
 

@@ -4,12 +4,11 @@ import com.example.mobilnetestiranjebackend.DTOs.ReservationDTO;
 import com.example.mobilnetestiranjebackend.enums.ReservationStatus;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidEnumValueException;
 import com.example.mobilnetestiranjebackend.model.Accommodation;
-import com.example.mobilnetestiranjebackend.model.AccommodationAvailability;
+import com.example.mobilnetestiranjebackend.model.Availability;
 import com.example.mobilnetestiranjebackend.model.Guest;
 import com.example.mobilnetestiranjebackend.model.Reservation;
 import com.example.mobilnetestiranjebackend.repositories.AccommodationRepository;
 import com.example.mobilnetestiranjebackend.repositories.ReservationRepository;
-import com.sendgrid.Request;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -55,7 +54,7 @@ public class ReservationService {
     }
 
 
-    public void createNewReservation(ReservationDTO request, Guest guest, Accommodation accom, AccommodationAvailability avail) {
+    public void createNewReservation(ReservationDTO request, Guest guest, Accommodation accom, Availability avail) {
 
         ReservationStatus status = ReservationStatus.PENDING;
         String reason = "";
@@ -72,7 +71,7 @@ public class ReservationService {
                 .reason(reason)
                 .guest(guest)
                 .accommodation(accom)
-                .accommodationAvailability(avail)
+                .availability(avail)
                 .build();
 
         reservationRepository.save(reservation);

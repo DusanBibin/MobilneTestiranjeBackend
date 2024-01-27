@@ -26,7 +26,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @Query("SELECT r FROM Reservation r " +
             "WHERE r.status = 1 " +
             "AND r.accommodation.id = :accomId " +
-            "AND r.accommodationAvailability.id = :availId " +
+            "AND r.availability.id = :availId " +
             "AND ((" +
             "   :startDate BETWEEN r.reservationStartDate AND r.reservationEndDate " +
             "   OR :endDate BETWEEN r.reservationStartDate AND r.reservationEndDate " +

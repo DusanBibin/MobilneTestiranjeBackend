@@ -42,7 +42,7 @@ public class Accommodation {
     private Boolean autoAcceptEnabled;
 
     @OneToMany
-    private List<AccommodationAvailability> availabilityList;
+    private List<Availability> availabilityList;
 
     @ManyToOne
     private Owner owner;

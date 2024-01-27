@@ -1,10 +1,9 @@
 package com.example.mobilnetestiranjebackend.services;
 
-import com.example.mobilnetestiranjebackend.DTOs.AccommodationAvailabilityDTO;
+import com.example.mobilnetestiranjebackend.DTOs.AvailabilityDTO;
 import com.example.mobilnetestiranjebackend.DTOs.AccommodationDTO;
 import com.example.mobilnetestiranjebackend.enums.Amenity;
 import com.example.mobilnetestiranjebackend.enums.RequestStatus;
-import com.example.mobilnetestiranjebackend.enums.RequestType;
 import com.example.mobilnetestiranjebackend.exceptions.*;
 import com.example.mobilnetestiranjebackend.model.*;
 import com.example.mobilnetestiranjebackend.repositories.*;
@@ -50,7 +49,7 @@ public class AccommodationRequestService {
                 amenities.add(amenityStr);
         }
 
-        for(AccommodationAvailabilityDTO accAvail: accommodationDTO.getAvailabilityList()){
+        for(AvailabilityDTO accAvail: accommodationDTO.getAvailabilityList()){
             if(accAvail.getEndDate().isBefore(accAvail.getStartDate()))
                 throw new InvalidDateException("End date cannot be before start date");
             if(accAvail.getCancellationDeadline().isAfter(accAvail.getStartDate()) ||
@@ -121,7 +120,7 @@ public class AccommodationRequestService {
 
         accommodationRequestRepository.save(accommodationRequest);
 
-        for(AccommodationAvailabilityDTO availDTO: accommodationDTO.getAvailabilityList()){
+        for(AvailabilityDTO availDTO: accommodationDTO.getAvailabilityList()){
             var availabilityRequest = AvailabilityRequest.builder()
                     .startDate(availDTO.getStartDate())
                     .endDate(availDTO.getEndDate())
@@ -147,10 +146,10 @@ public class AccommodationRequestService {
 
         var amenities = checkInputValues(accommodationDTO);
 
-        for(AccommodationAvailabilityDTO avail :accommodationDTO.getAvailabilityList()){
-            if(availabilityService.availabilityRangeTaken(accommodationId, avail.getStartDate(), avail.getEndDate(), avail.getId()))
-                throw new InvalidDateException("There is already availability period that interferes with this period");
-        }
+//        for(AvailabilityDTO avail :accommodationDTO.getAvailabilityList()){
+//            if(availabilityService.availabilityRangeTaken(accommodationId, avail.getStartDate(), avail.getEndDate(), avail.getId()))
+//                throw new InvalidDateException("There is already availability period that interferes with this period");
+//        }
 
         if(availabilityService.reservationsNotEnded(accommodationId))
             throw new ReservationNotEndedException("One or more reservations for this availability period haven't ended yet");
@@ -186,22 +185,22 @@ public class AccommodationRequestService {
 
         accommodationRequestRepository.save(accommodationRequest);
 
-        for(AccommodationAvailabilityDTO availDTO: accommodationDTO.getAvailabilityList()){
-            AccommodationAvailability accommodationAvailability = null;
-            if(availDTO.getId() != 0) accommodationAvailability = availabilityRepository.findById(availDTO.getId()).get();
-
-            var availabilityRequest = AvailabilityRequest.builder()
-                    .startDate(availDTO.getStartDate())
-                    .endDate(availDTO.getEndDate())
-                    .cancelDeadline(availDTO.getCancellationDeadline())
-                    .price(availDTO.getPrice())
-                    .pricePerGuest(availDTO.getPricePerGuest())
-                    .accommodationAvailability(accommodationAvailability)
-                    .build();
-
-            availabilityRequestRepository.save(availabilityRequest);
-            accommodationRequest.getAvailabilityRequests().add(availabilityRequest);
-        }
+//        for(AvailabilityDTO availDTO: accommodationDTO.getAvailabilityList()){
+//            Availability availability = null;
+//            if(availDTO.getId() != 0) availability = availabilityRepository.findById(availDTO.getId()).get();
+//
+//            var availabilityRequest = AvailabilityRequest.builder()
+//                    .startDate(availDTO.getStartDate())
+//                    .endDate(availDTO.getEndDate())
+//                    .cancelDeadline(availDTO.getCancellationDeadline())
+//                    .price(availDTO.getPrice())
+//                    .pricePerGuest(availDTO.getPricePerGuest())
+//                    .availability(availability)
+//                    .build();
+//
+//            availabilityRequestRepository.save(availabilityRequest);
+//            accommodationRequest.getAvailabilityRequests().add(availabilityRequest);
+//        }
 
         accommodationRequestRepository.save(accommodationRequest);
 
@@ -298,7 +297,7 @@ public class AccommodationRequestService {
             accommodationRepository.save(accommdation);
 
             for(AvailabilityRequest availabilityRequest: accommodationRequest.getAvailabilityRequests()){
-                var availability = AccommodationAvailability.builder()
+                var availability = Availability.builder()
                         .accommodation(accommdation)
                         .startDate(availabilityRequest.getStartDate())
                         .endDate(availabilityRequest.getEndDate())
@@ -348,65 +347,65 @@ public class AccommodationRequestService {
 
             accommodationRepository.save(accommodation);
 
-            List<Long> idsToDelete = new ArrayList<>();
-            for(AccommodationAvailability ar: accommodation.getAvailabilityList()){
-
-                boolean isFound = false;
-
-                for(AvailabilityRequest ar1 : accommodationRequest.getAvailabilityRequests()){
-                    if(Objects.equals(ar.getId(), ar1.getId())){ isFound = true; break; }
-                }
-
-                if(!isFound) idsToDelete.add(ar.getId());
-
-            }
-
-            for(Long id: idsToDelete){
-
-                var availabilityWrapper = availabilityRepository.findById(id);
-                if(availabilityWrapper.isEmpty()) throw new NonExistingEntityException("Availability doesn't exist");
-                var availability = availabilityWrapper.get();
-
-                availabilityRepository.delete(availability);
-            }
-
-
-
-
-            for(AvailabilityRequest ar: accommodationRequest.getAvailabilityRequests()){
-                if (ar.getId() == 0){
-                     var availability = AccommodationAvailability.builder()
-                             .accommodation(accommodation)
-                             .pricePerGuest(ar.getPricePerGuest())
-                             .price(ar.getPrice())
-                             .cancelDeadline(ar.getCancelDeadline())
-                             .startDate(ar.getStartDate())
-                             .endDate(ar.getEndDate())
-                             .build();
-
-                     availabilityRepository.save(availability);
-                     accommodation.getAvailabilityList().add(availability);
-                     accommodationRepository.save(accommodation);
-                }else{
-
-                    var availabilityWrapper = availabilityRepository.findById(ar.getId());
-                    if(availabilityWrapper.isEmpty()) throw new NonExistingEntityException("Availability doesn't exist");
-                    var availability = availabilityWrapper.get();
-
-                    availability.setPrice(ar.getPrice());
-                    availability.setEndDate(ar.getEndDate());
-                    availability.setStartDate(ar.getStartDate());
-                    availability.setCancelDeadline(ar.getCancelDeadline());
-                    availability.setPricePerGuest(ar.getPricePerGuest());
-
-                    availabilityRepository.save(availability);
-
-                }
-
-
-
-
-            }
+//            List<Long> idsToDelete = new ArrayList<>();
+//            for(Availability ar: accommodation.getAvailabilityList()){
+//
+//                boolean isFound = false;
+//
+//                for(AvailabilityRequest ar1 : accommodationRequest.getAvailabilityRequests()){
+//                    if(Objects.equals(ar.getId(), ar1.getId())){ isFound = true; break; }
+//                }
+//
+//                if(!isFound) idsToDelete.add(ar.getId());
+//
+//            }
+//
+//            for(Long id: idsToDelete){
+//
+//                var availabilityWrapper = availabilityRepository.findById(id);
+//                if(availabilityWrapper.isEmpty()) throw new NonExistingEntityException("Availability doesn't exist");
+//                var availability = availabilityWrapper.get();
+//
+//                availabilityRepository.delete(availability);
+//            }
+//
+//
+//
+//
+//            for(AvailabilityRequest ar: accommodationRequest.getAvailabilityRequests()){
+//                if (ar.getId() == 0){
+//                     var availability = Availability.builder()
+//                             .accommodation(accommodation)
+//                             .pricePerGuest(ar.getPricePerGuest())
+//                             .price(ar.getPrice())
+//                             .cancelDeadline(ar.getCancelDeadline())
+//                             .startDate(ar.getStartDate())
+//                             .endDate(ar.getEndDate())
+//                             .build();
+//
+//                     availabilityRepository.save(availability);
+//                     accommodation.getAvailabilityList().add(availability);
+//                     accommodationRepository.save(accommodation);
+//                }else{
+//
+//                    var availabilityWrapper = availabilityRepository.findById(ar.getId());
+//                    if(availabilityWrapper.isEmpty()) throw new NonExistingEntityException("Availability doesn't exist");
+//                    var availability = availabilityWrapper.get();
+//
+//                    availability.setPrice(ar.getPrice());
+//                    availability.setEndDate(ar.getEndDate());
+//                    availability.setStartDate(ar.getStartDate());
+//                    availability.setCancelDeadline(ar.getCancelDeadline());
+//                    availability.setPricePerGuest(ar.getPricePerGuest());
+//
+//                    availabilityRepository.save(availability);
+//
+//                }
+//
+//
+//
+//
+//            }
 
 
 
