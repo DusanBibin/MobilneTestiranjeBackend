@@ -20,8 +20,6 @@ public class AvailabilityRequest {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne
-    private AccommodationRequest accommodationRequest;
 
     private LocalDate startDate;
     private LocalDate endDate;
@@ -33,4 +31,6 @@ public class AvailabilityRequest {
     private AccommodationAvailability accommodationAvailability;
 
 
+    @ManyToOne
+    private Accommodation accommodation;
 }

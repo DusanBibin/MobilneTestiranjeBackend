@@ -6,10 +6,8 @@ import com.example.mobilnetestiranjebackend.DTOs.RegisterRequestDTO;
 import com.example.mobilnetestiranjebackend.enums.AccommodationType;
 import com.example.mobilnetestiranjebackend.enums.Role;
 import com.example.mobilnetestiranjebackend.exceptions.*;
-import com.example.mobilnetestiranjebackend.model.Accommodation;
-import com.example.mobilnetestiranjebackend.model.Owner;
-import com.example.mobilnetestiranjebackend.model.User;
-import com.example.mobilnetestiranjebackend.model.Verification;
+import com.example.mobilnetestiranjebackend.model.*;
+import com.example.mobilnetestiranjebackend.repositories.GuestRepository;
 import com.example.mobilnetestiranjebackend.repositories.OwnerRepository;
 import com.example.mobilnetestiranjebackend.repositories.UserRepository;
 import com.sendgrid.Method;
@@ -40,6 +38,7 @@ public class AuthenticationService {
     private final OwnerRepository ownerRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final GuestRepository guestRepository;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
@@ -56,18 +55,27 @@ public class AuthenticationService {
         Random random = new Random();
         String code = String.format("%05d", random.nextInt(100000));
 
-        Owner owner = null;
+
         User user = null;
 
-        Role role;
-        if (request.getRole().equals("OWNER")) {
-            role = Role.OWNER;
-        } else {
-            role = Role.GUEST;
-        }
-
-        if(request.getRole().equals("OWNER")){
-            owner = Owner.builder()
+        if(request.getRole().equals(Role.OWNER)){
+            var owner = Owner.builder()
+                    .firstName(request.getFirstName())
+                    .lastname(request.getLastName())
+                    .email(request.getEmail())
+                    .phoneNumber(request.getPhoneNumber())
+                    .address(request.getAddress())
+                    .emailConfirmed(false)
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .role(Role.OWNER)
+                    .verification(new Verification(code, LocalDateTime.now().plusDays(1)))
+                    .accommodations(new ArrayList<Accommodation>())
+                    .blocked(false)
+                    .build();
+            user = owner;
+            ownerRepository.save(owner);
+        }else{
+            var guest = Guest.builder()
                     .firstName(request.getFirstName())
                     .lastname(request.getLastName())
                     .email(request.getEmail())
@@ -75,19 +83,22 @@ public class AuthenticationService {
                     .address(request.getAddress())
                     .emailConfirmed(true)
                     .password(passwordEncoder.encode(request.getPassword()))
-                    .role(role)
+                    .role(Role.OWNER)
                     .verification(new Verification(code, LocalDateTime.now().plusDays(1)))
-                    .accommodations(new ArrayList<Accommodation>())
+                    .reservations(new ArrayList<>())
                     .blocked(false)
                     .build();
-            user = owner;
+            user = guest;
+            guestRepository.save(guest);
         }
 
-        //            sendVerificationEmail(user);
-        System.out.println("jej");
+        try {
+            sendVerificationEmail(user);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-        ownerRepository.save(owner);
-        //guestRepository.save(guest);
+
     }
 
     private void sendVerificationEmail(User user) throws MessagingException, IOException {

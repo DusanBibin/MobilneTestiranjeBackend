@@ -27,22 +27,22 @@ public class RegisterRequestDTO {
     private String email;
 
     @NotBlank(message = "Password is required")
-    @Size(min = 3, message = "Password must be at least 10 characters")
+    @Size(min = 10, message = "Password must be at least 10 characters")
     private String password;
 
     @NotBlank(message = "Phone number is required")
-    @Size(min = 3, message = "Phone number must be at least 10 digits")
+    @Size(min = 10, message = "Phone number must be at least 10 digits")
     private String phoneNumber;
 
     @NotBlank(message = "Address is required")
     private String address;
 
     @NotBlank(message = "Repeat password is required")
-    @Size(min = 3, message = "Password must be at least 10 characters")
+    @Size(min = 10, message = "Password must be at least 10 characters")
     private String repeatPassword;
 
     @NotNull(message = "Role is required")
-    private String role;
+    private Role role;
 
 
 }

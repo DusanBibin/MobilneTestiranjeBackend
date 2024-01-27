@@ -18,6 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AccommodationDTO {
+    private Long id;
     @NotBlank(message = "Accommodation name must be present")
     private String name;
 
@@ -55,7 +56,6 @@ public class AccommodationDTO {
     private Boolean autoAcceptEnabled;
 
     @Valid
-    @NotEmpty(message = "There must be at least one availability period")
     private List<@Valid AccommodationAvailabilityDTO> availabilityList;
 
     private List<String> imagePaths;

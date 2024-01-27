@@ -1,5 +1,6 @@
 package com.example.mobilnetestiranjebackend.DTOs;
 
+import com.example.mobilnetestiranjebackend.enums.RequestStatus;
 import com.example.mobilnetestiranjebackend.enums.RequestType;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -14,7 +15,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AccommodationAvailabilityDTO {
-    //SLUZI DA ZNAMO O KOJEM SE AVAILABILITIJU ODNOSI U SLUCAJU DA MENJAMO INFORMACIJE AVAILABILITIJA
     private Long id;
     @FutureOrPresent(message = "Start date must be in the future")
     @NotNull(message = "Start date must be provided")
@@ -36,4 +36,7 @@ public class AccommodationAvailabilityDTO {
     private Long price;
 
     private RequestType requestType;
+
+    private RequestStatus status;
+    private String reason;
 }
