@@ -7,10 +7,12 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -36,43 +38,4 @@ public class ReservationDTO {
     @Min(value = 1, message = "There must be at least one guest")
     private Long guestNum;
 
-    public Long getAccommodationId() {
-        return accommodationId;
-    }
-
-    public void setAccommodationId(Long accommodationId) {
-        this.accommodationId = accommodationId;
-    }
-
-    public Long getAvailabilityId() {
-        return availabilityId;
-    }
-
-    public void setAvailabilityId(Long availabilityId) {
-        this.availabilityId = availabilityId;
-    }
-
-    public LocalDate getReservationStartDate() {
-        return reservationStartDate;
-    }
-
-    public void setReservationStartDate(LocalDate reservationStartDate) {
-        this.reservationStartDate = reservationStartDate;
-    }
-
-    public LocalDate getReservationEndDate() {
-        return reservationEndDate;
-    }
-
-    public void setReservationEndDate(LocalDate reservationEndDate) {
-        this.reservationEndDate = reservationEndDate;
-    }
-
-    public Long getGuestNum() {
-        return guestNum;
-    }
-
-    public void setGuestNum(Long guestNum) {
-        this.guestNum = guestNum;
-    }
 }
