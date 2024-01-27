@@ -112,7 +112,6 @@ private final ReservationRepository reservationRepository;
                 .cancelDeadline(LocalDate.now().plusDays(4))
                 .price(200L)
                 .pricePerGuest(true)
-                .accommodationRequest(accommodationRequest)
                 .build();
 
         availabilityRequestRepository.save(availabilityRequest);

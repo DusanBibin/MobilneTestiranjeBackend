@@ -28,20 +28,8 @@ public class AuthenticationController {
         if(!request.getPassword().equals(request.getRepeatPassword()))
             throw new InvalidRepeatPasswordException("Passwords do not match");
 
-        Role role;
-        if (request.getRole().equals("OWNER")) {
-            role = Role.OWNER;
-        } else {
-            role = Role.GUEST;
-        }
-        if(!role.equals(Role.GUEST) && !role.equals(Role.OWNER))
-            throw new InvalidEnumValueException("Invalid user role selected");
+        if(request.getRole().equals(Role.ADMIN)) throw new InvalidEnumValueException("You cannot register as an admin");
 
-//        try {
-//            Role role = request.getRole();
-//        } catch (IllegalArgumentException e) {
-//            throw new InvalidEnumValueException("Invalid user role value");
-//        }
 
         if(authService.userExist(request.getEmail()))
             throw new UserAlreadyExistsException("User with email " + request.getEmail() + " already exists");

@@ -128,7 +128,6 @@ public class AccommodationRequestService {
                     .cancelDeadline(availDTO.getCancellationDeadline())
                     .price(availDTO.getPrice())
                     .pricePerGuest(availDTO.getPricePerGuest())
-                    .accommodationRequest(accommodationRequest)
                     .build();
             availabilityRequestRepository.save(availabilityRequest);
             accommodationRequest.getAvailabilityRequests().add(availabilityRequest);
@@ -197,7 +196,6 @@ public class AccommodationRequestService {
                     .cancelDeadline(availDTO.getCancellationDeadline())
                     .price(availDTO.getPrice())
                     .pricePerGuest(availDTO.getPricePerGuest())
-                    .accommodationRequest(accommodationRequest)
                     .accommodationAvailability(accommodationAvailability)
                     .build();
 

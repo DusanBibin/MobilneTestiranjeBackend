@@ -41,7 +41,7 @@ public class RegisterRequestDTO {
     @Size(min = 10, message = "Password must be at least 10 characters")
     private String repeatPassword;
 
-    @NotNull(message = "Role is required")
+    @NotBlank(message = "Role is required")
     private Role role;
 
 
