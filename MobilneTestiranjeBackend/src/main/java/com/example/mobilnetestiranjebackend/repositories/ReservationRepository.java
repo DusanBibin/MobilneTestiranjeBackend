@@ -20,8 +20,12 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
 
 
-    @Query("SELECT r FROM Reservation r WHERE r.accommodation.id = :accommodationId AND r.status = 1 AND r.reservationEndDate >= CURRENT_DATE")
+    @Query("SELECT r FROM Reservation r WHERE r.accommodation.id = :accommodationId AND r.status = 1 AND CURRENT_DATE <= r.reservationEndDate")
     List<Reservation> findReservationsNotEndedByAccommodationId(Long accommodationId);
+
+
+    @Query("select r from  Reservation r where r.accommodation.id = :accomId and r.availability.id = :availId and r.status = 1 and CURRENT_DATE <= r.reservationEndDate")
+    List<Reservation> findReservationNotEndedByAvailabilityIdAndAccommodationId(Long accomId, Long availId);
 
     @Query("SELECT r FROM Reservation r " +
             "WHERE r.status = 1 " +

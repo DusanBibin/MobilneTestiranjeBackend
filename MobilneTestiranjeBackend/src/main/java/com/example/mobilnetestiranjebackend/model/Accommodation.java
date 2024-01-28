@@ -41,13 +41,13 @@ public class Accommodation {
 
     private Boolean autoAcceptEnabled;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "accommodation")
     private List<Availability> availabilityList;
 
     @ManyToOne
     private Owner owner;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "accommodation")
     private List<Reservation> reservations;
 
 }

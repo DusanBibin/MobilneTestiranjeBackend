@@ -1,5 +1,7 @@
 package com.example.mobilnetestiranjebackend.model;
 
+import com.example.mobilnetestiranjebackend.enums.RequestStatus;
+import com.example.mobilnetestiranjebackend.enums.RequestType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,4 +34,10 @@ public class AvailabilityRequest {
 
     @ManyToOne
     private Accommodation accommodation;
+
+    private RequestStatus status;
+
+    private String reason;
+
+    private RequestType requestType;
 }

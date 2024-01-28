@@ -1,6 +1,7 @@
 package com.example.mobilnetestiranjebackend.controllers;
 
 import com.example.mobilnetestiranjebackend.DTOs.AccommodationDTO;
+import com.example.mobilnetestiranjebackend.model.Owner;
 import com.example.mobilnetestiranjebackend.model.User;
 import com.example.mobilnetestiranjebackend.services.AccommodationRequestService;
 import com.example.mobilnetestiranjebackend.services.AccommodationService;
@@ -25,8 +26,8 @@ public class AccommodationRequestController {
     @PostMapping(path = "/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> createAccommodationRequest(@Valid @RequestPart("accommodationDTO") AccommodationDTO accommodationDTO,
                                                         @RequestPart("photos") List<MultipartFile> images,
-                                                        @AuthenticationPrincipal User user) {
-        accommodationRequestService.createAccommodationRequest(user.getId(), images, accommodationDTO);
+                                                        @AuthenticationPrincipal Owner owner) {
+        accommodationRequestService.createAccommodationRequest(owner, images, accommodationDTO);
         return ResponseEntity.ok().body("Successfully created new accommodation request");
     }
 
@@ -34,10 +35,10 @@ public class AccommodationRequestController {
     @PostMapping(path = "/edit/accommodation/{accommodationId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> createEditAccommodationRequest(@Valid @RequestPart("accommodationDTO") AccommodationDTO accommodationDTO,
                                                             @RequestPart("photos") List<MultipartFile> images,
-                                                            @AuthenticationPrincipal User user,
+                                                            @AuthenticationPrincipal Owner owner,
                                                             @PathVariable("accommodationId") Long accommdationId) {
 
-        accommodationRequestService.createEditAccommodationRequest(user.getId(), images, accommodationDTO, accommdationId);
+        accommodationRequestService.createEditAccommodationRequest(owner, images, accommodationDTO, accommdationId);
         return ResponseEntity.ok().body("Successfully created new accommodation request");
     }
 

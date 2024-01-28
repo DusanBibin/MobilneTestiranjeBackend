@@ -73,10 +73,7 @@ public class AccommodationRequestService {
             }
         }
     }
-    public void createAccommodationRequest(Long ownerId, List<MultipartFile> images, AccommodationDTO accommodationDTO){
-
-        var ownerWrapper = ownerRepository.findOwnerById(ownerId);
-        Owner owner = ownerWrapper.orElseThrow();
+    public void createAccommodationRequest(Owner owner, List<MultipartFile> images, AccommodationDTO accommodationDTO){
 
         var accommodationWrapper = accommodationRepository.findAccommodationsByOwnerAndName(owner, accommodationDTO.getName());
         if(accommodationWrapper.isPresent()) throw new EntityAlreadyExistsException("You already have accommodation with this name");
@@ -134,16 +131,15 @@ public class AccommodationRequestService {
         accommodationRequestRepository.save(accommodationRequest);
     }
 
-    public void createEditAccommodationRequest(Long ownerId, List<MultipartFile> images, AccommodationDTO accommodationDTO, Long accommodationId) {
+    public void createEditAccommodationRequest(Owner owner, List<MultipartFile> images, AccommodationDTO accommodationDTO, Long accommodationId) {
 
 
-        var ownerWrapper = ownerRepository.findOwnerById(ownerId);
-        Owner owner = ownerWrapper.orElseThrow();
 
         var accommodationWrapper = accommodationRepository.findAccommodationById(accommodationId);
         if(accommodationWrapper.isEmpty()) throw new NonExistingEntityException("The accommodation with this id does not exist");
         var accommodation = accommodationWrapper.get();
 
+        if(!accommodation.getOwner().getEmail().equals(owner.getEmail())) throw new InvalidAuthorizationException("You don't own this accommodation");
 
         List<Amenity> amenities = new ArrayList<>();
         for(Amenity amenityStr: accommodationDTO.getAmenities()){
@@ -343,15 +339,6 @@ public class AccommodationRequestService {
                 }
             }
 
-            
-            for(String str: accommodation.getImagePaths()){
-                System.out.println(str);
-            }
-
-
-            for(String str: accommodationRequest.getImagePaths()){
-                System.out.println(str);
-            }
 
             List<String> imagesToRemove = new ArrayList<>();
             for (String imagePath : accommodation.getImagePaths()) {
@@ -439,6 +426,8 @@ public class AccommodationRequestService {
         var accommodationRequestWrapper = accommodationRequestRepository.findById(requestId);
         if(accommodationRequestWrapper.isEmpty()) throw new NonExistingEntityException("This request doesn't exist");
         var accommodationRequest = accommodationRequestWrapper.get();
+
+        if(accommodationRequest.getStatus() != RequestStatus.PENDING) throw new InvalidEnumValueException("You can only reject a pending request");
 
         accommodationRequest.setStatus(RequestStatus.REJECTED);
         accommodationRequest.setReason(reason);

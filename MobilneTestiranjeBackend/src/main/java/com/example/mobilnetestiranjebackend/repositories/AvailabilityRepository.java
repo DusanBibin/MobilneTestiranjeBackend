@@ -13,11 +13,11 @@ public interface AvailabilityRepository extends JpaRepository<Availability, Long
     //ako je newAvailId = 0 onda se pravi novi availability i poredi se sa svim periodima, ako je razlicit, onda se poredi
     //samo sa onim periodima koji on nece zameniti u buducnosti
     @Query("SELECT a FROM Availability a " +
-            "WHERE a.accommodation.id = :accommodationId AND a.id != :newAvailId " +
+            "WHERE a.accommodation.id = :accommodationId AND a.id != :availId " +
             "AND ((:startDate BETWEEN a.startDate AND a.endDate) OR " +
             "(:endDate BETWEEN a.startDate AND a.endDate) OR " +
             "(:startDate <= a.startDate AND :endDate >= a.endDate))")
-    List<Availability> findAllByDateRange(Long accommodationId, LocalDate startDate, LocalDate endDate, Long newAvailId);
+    List<Availability> findAllByDateRange(Long accommodationId, LocalDate startDate, LocalDate endDate, Long availId);
 
     Optional<Availability> findById(Long availabilityId);
 

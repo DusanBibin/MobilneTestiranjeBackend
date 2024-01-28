@@ -155,9 +155,9 @@ private final ReservationRepository reservationRepository;
                 .build();
 
         var availabilityNew = Availability.builder()
-                .startDate(LocalDate.now().plusDays(15))
-                .endDate(LocalDate.now().plusDays(20))
-                .cancelDeadline(LocalDate.now().plusDays(8))
+                .startDate(LocalDate.now().plusDays(20))
+                .endDate(LocalDate.now().plusDays(30))
+                .cancelDeadline(LocalDate.now().plusDays(12))
                 .price(2500L)
                 .pricePerGuest(true)
                 .accommodation(accommodation)
@@ -175,7 +175,19 @@ private final ReservationRepository reservationRepository;
         accommodationRepository.save(accommodation);
         //THIS ONE BELOW
 
+        var reservation = Reservation.builder()
+                .availability(availabilityDeleteTest)
+                .guest(guestDusan1)
+                .status(ReservationStatus.ACCEPTED)
+                .accommodation(accommodation)
+                .reservationEndDate(LocalDate.now())
+                .reservationStartDate(LocalDate.now())
+                .guestNum(1L)
+                .build();
 
+        reservationRepository.save(reservation);
+        accommodation.getReservations().add(reservation);
+        accommodationRepository.save(accommodation);
 
 
     }

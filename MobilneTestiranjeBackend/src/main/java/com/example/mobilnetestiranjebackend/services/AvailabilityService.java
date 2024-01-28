@@ -22,8 +22,20 @@ public class AvailabilityService {
         return !reservationsNotEnded.isEmpty();
     }
 
-    public Boolean availabilityRangeTaken(Long accommodationId, LocalDate startDate, LocalDate endDate, Long newAvailId){
-        List<Availability> availabilitesSameRange = availabilityRepository.findAllByDateRange(accommodationId,startDate, endDate, newAvailId);
+    public Boolean reservationsNotEnded(Long accommodationId, Long availabilityId) {
+        List<Reservation> reservationsNotEnded = reservationRepository
+                .findReservationNotEndedByAvailabilityIdAndAccommodationId(accommodationId, availabilityId);
+        return !reservationsNotEnded.isEmpty();
+    }
+
+    public Boolean availabilityRangeTaken(Long accommodationId, LocalDate startDate, LocalDate endDate, Long availId){
+        List<Availability> availabilitesSameRange = availabilityRepository.findAllByDateRange(accommodationId,startDate, endDate, availId);
+        return !availabilitesSameRange.isEmpty();
+    }
+
+    public Boolean availabilityRangeTaken(Long accommodationId, LocalDate startDate, LocalDate endDate){
+        Long availId = 0L;
+        List<Availability> availabilitesSameRange = availabilityRepository.findAllByDateRange(accommodationId,startDate, endDate, availId);
         return !availabilitesSameRange.isEmpty();
     }
 
