@@ -26,10 +26,7 @@ public class WebSecurityConfiguration {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers(new AntPathRequestMatcher("/swagger-ui.html")
                 , new AntPathRequestMatcher("/swagger-ui/**"), new AntPathRequestMatcher("/v3/api-docs/**"),
-                new AntPathRequestMatcher("/h2-console/**"))
-                .requestMatchers(HttpMethod.POST, "/api/v1/auth/**","/api/comms/**", "/socket/**","/api/influx/**")
-                .requestMatchers(HttpMethod.GET, "/api/v1/auth/**","/api/comms/**", "/socket/**","/api/influx/**","/api/user/**")
-                .requestMatchers(HttpMethod.PUT, "/api/v1/auth/**","/api/comms/**", "/socket/**","/api/influx/**","/api/user/**");
+                new AntPathRequestMatcher("/h2-console/**"));
     }
 
     @Bean

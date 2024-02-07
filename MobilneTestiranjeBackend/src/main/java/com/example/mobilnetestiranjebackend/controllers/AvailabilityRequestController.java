@@ -11,6 +11,7 @@ import com.example.mobilnetestiranjebackend.services.AvailabilityService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,7 +25,7 @@ public class AvailabilityRequestController {
 
 
     private final AvailabilityRequestService availabilityRequestService;
-    //@PreAuthorize("hasAuthority('OWNER')")
+    @PreAuthorize("hasAuthority('OWNER')")
     @PostMapping(value = "/accommodation/{accommId}/create")
     public ResponseEntity<?> createAvailabilityRequest(@Valid @RequestBody AvailabilityDTO availabilityDTO,
                                                        @PathVariable("accommId") Long accommId,
@@ -34,7 +35,8 @@ public class AvailabilityRequestController {
 
         return ResponseEntity.ok().body("Successfully created new availability  request");
     }
-    //@PreAuthorize("hasAuthority('OWNER')")
+
+    @PreAuthorize("hasAuthority('OWNER')")
     @PostMapping(value = "/accommodation/{accommId}/edit/availability/{availId}")
     public ResponseEntity<?> createEditAvailabilityRequest(@Valid @RequestBody AvailabilityDTO availabilityDTO,
                                                        @PathVariable("accommId") Long accommId,
@@ -46,7 +48,7 @@ public class AvailabilityRequestController {
         return ResponseEntity.ok().body("Successfully created new edit availability request");
     }
 
-    //@PreAuthorize("hasAuthority('OWNER')")
+    @PreAuthorize("hasAuthority('OWNER')")
     @PostMapping(value = "/accommodation/{accommId}/delete/availability/{availId}")
     public ResponseEntity<?> createDeleteAvailabilityRequest(@PathVariable("accommId") Long accommId,
                                                            @PathVariable("availId") Long availId,
@@ -57,7 +59,7 @@ public class AvailabilityRequestController {
         return ResponseEntity.ok().body("Successfully created new delete availability request");
     }
 
-    //@PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(value = "/accept/{requestId}")
     public ResponseEntity<?> acceptAvailabilityRequest(@PathVariable("requestId") Long requestId) {
 
@@ -66,7 +68,7 @@ public class AvailabilityRequestController {
         return ResponseEntity.ok().body("Successfully accepted availability request");
     }
 
-    //@PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(value = "/decline/{requestId}")
     public ResponseEntity<?> declineAvailabilityRequest(@PathVariable("requestId") Long requestId, @RequestBody String reason) {
 

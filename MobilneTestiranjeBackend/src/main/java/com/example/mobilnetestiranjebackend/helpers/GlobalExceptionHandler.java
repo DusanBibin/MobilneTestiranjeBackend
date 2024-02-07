@@ -177,4 +177,15 @@ public class GlobalExceptionHandler {
         return new ErrorResponse("Invalid enum value");
     }
 
+
+    @ExceptionHandler(value
+            = InvalidInputException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public @ResponseBody ErrorResponse
+    handleInvalidInputException(InvalidInputException ex)
+    {
+        return new ErrorResponse(ex.getMessage());
+    }
+
+
 }

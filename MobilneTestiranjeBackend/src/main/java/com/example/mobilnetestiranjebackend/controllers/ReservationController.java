@@ -13,6 +13,7 @@ import com.example.mobilnetestiranjebackend.services.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,7 +37,7 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    //@PreAuthorize("hasAuthority('GUEST')")
+    @PreAuthorize("hasAuthority('GUEST')")
     @PostMapping(value = "create")
     public ResponseEntity<?> createReservation(@RequestBody ReservationDTO request, @AuthenticationPrincipal Guest guest){
 
@@ -77,6 +78,7 @@ public class ReservationController {
         return ResponseEntity.ok().body("Successfully created new reservation request");
     }
 
+    @PreAuthorize("hasAuthority('OWNER')")
     @PutMapping(value = "/{reservationId}/accept")
     public ResponseEntity<?> acceptReservationRequest(@PathVariable("reservationId") Long reservationId,
                                                       @PathVariable("accommodationId") Long accommodationId,
@@ -105,7 +107,7 @@ public class ReservationController {
         return ResponseEntity.ok().body("Successfully accepted a reservation request");
     }
 
-    //@PreAuthorize("hasAuthority('GUEST')")
+    @PreAuthorize("hasAuthority('GUEST')")
     @PutMapping(value = "/{reservationId}/cancel")
     public ResponseEntity<?> cancelReservation(@PathVariable("accommodationId") Long accommodationId,
                                                @PathVariable("reservationId") Long reservationId,
@@ -134,7 +136,7 @@ public class ReservationController {
     }
 
 
-    //@PreAuthorize("hasAuthority('OWNER')")
+    @PreAuthorize("hasAuthority('OWNER')")
     @PutMapping(value = "/{reservationId}/decline")
     public ResponseEntity<?> declineReservationRequest(@RequestBody String reason,
                                                        @PathVariable("reservationId") Long reservationId,
@@ -160,7 +162,5 @@ public class ReservationController {
 
         return ResponseEntity.ok().body("Successfully declined a reservation request");
     }
-
-    //@PreAuthorize("hasAuthority('OWNER')")
 
 }

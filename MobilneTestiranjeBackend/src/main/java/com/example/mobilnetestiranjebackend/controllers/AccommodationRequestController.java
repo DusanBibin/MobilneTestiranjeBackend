@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,7 +23,7 @@ public class AccommodationRequestController {
     private final AccommodationService accommodationService;
     private final AccommodationRequestService accommodationRequestService;
 
-    //@PreAuthorize("hasAuthority('OWNER')")
+    @PreAuthorize("hasAuthority('OWNER')")
     @PostMapping(path = "/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> createAccommodationRequest(@Valid @RequestPart("accommodationDTO") AccommodationDTO accommodationDTO,
                                                         @RequestPart("photos") List<MultipartFile> images,
@@ -31,7 +32,7 @@ public class AccommodationRequestController {
         return ResponseEntity.ok().body("Successfully created new accommodation request");
     }
 
-    //@PreAuthorize("hasAuthority('OWNER')")
+    @PreAuthorize("hasAuthority('OWNER')")
     @PostMapping(path = "/edit/accommodation/{accommodationId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> createEditAccommodationRequest(@Valid @RequestPart("accommodationDTO") AccommodationDTO accommodationDTO,
                                                             @RequestPart("photos") List<MultipartFile> images,
@@ -42,7 +43,7 @@ public class AccommodationRequestController {
         return ResponseEntity.ok().body("Successfully created new accommodation request");
     }
 
-    //@PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(path = "/accept/{requestId}")
     public ResponseEntity<?> acceptAccommodationRequest(@PathVariable("requestId") Long requestId){
 
@@ -51,7 +52,7 @@ public class AccommodationRequestController {
         return ResponseEntity.ok().body("Successfully accepted accommodation request");
     }
 
-    //@PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(path = "/reject/{requestId}")
     public ResponseEntity<?> rejectAccommodationRequest(@PathVariable("requestId") Long requestId, @RequestBody String reason){
 

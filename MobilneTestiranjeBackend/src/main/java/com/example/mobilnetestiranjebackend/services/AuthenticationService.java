@@ -81,7 +81,7 @@ public class AuthenticationService {
                     .email(request.getEmail())
                     .phoneNumber(request.getPhoneNumber())
                     .address(request.getAddress())
-                    .emailConfirmed(true)
+                    .emailConfirmed(false)
                     .password(passwordEncoder.encode(request.getPassword()))
                     .role(Role.OWNER)
                     .verification(new Verification(code, LocalDateTime.now().plusDays(1)))
@@ -103,7 +103,7 @@ public class AuthenticationService {
 
     private void sendVerificationEmail(User user) throws MessagingException, IOException {
         Email from = new Email("mobilnebackendtest@gmail.com");
-        String subject = "Verify the registration";
+        String subject = "Verify Email Address";
         Email to = new Email(user.getEmail());
 
 

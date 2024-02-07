@@ -15,24 +15,15 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterRequestDTO {
+public class UserDTO {
     @NotBlank(message = "First name is required")
     private String firstName;
 
     @NotBlank(message = "Last name is required")
     private String lastName;
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Invalid email address")
+
     private String email;
-
-    @NotBlank(message = "Password is required")
-    @Size(min = 10, message = "Password must be at least 10 characters")
-    private String password;
-
-    @NotBlank(message = "Repeat password is required")
-    @Size(min = 10, message = "Password must be at least 10 characters")
-    private String repeatPassword;
 
     @NotBlank(message = "Phone number is required")
     @Size(min = 10, message = "Phone number must be at least 10 digits")
@@ -41,8 +32,5 @@ public class RegisterRequestDTO {
     @NotBlank(message = "Address is required")
     private String address;
 
-    @NotNull(message = "Role is required")
     private Role role;
-
-
 }

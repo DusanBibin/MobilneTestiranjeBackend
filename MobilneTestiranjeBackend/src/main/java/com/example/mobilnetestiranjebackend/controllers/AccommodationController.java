@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,15 +30,12 @@ public class AccommodationController {
 
 
 
-    //@PreAuthorize("hasAuthority('OWNER')")
     @GetMapping(path = "/{accommodationId}")
-    public ResponseEntity<?> getAccommodation(@PathVariable("accommodationId") Long accommodationId, @AuthenticationPrincipal User user){
+    public ResponseEntity<?> getAccommodation(@PathVariable("accommodationId") Long accommodationId){
 
         var accommodationWrapper = accommodationService.findAccommodationById(accommodationId);
         if(accommodationWrapper.isEmpty()) throw new NonExistingEntityException("Accommodation with this id does not exist");
         var accommodation = accommodationWrapper.get();
-
-        if(!user.getEmail().equals(accommodation.getOwner().getEmail())) throw new InvalidAuthorizationException("You don't own this accommodation");
 
         var accommodationDTO = AccommodationDTO.builder()
                 .name(accommodation.getName())
@@ -71,19 +69,16 @@ public class AccommodationController {
         return ResponseEntity.ok().body(accommodationDTO);
     }
 
-    //@PreAuthorize("hasAuthority('OWNER')")
+
     @GetMapping(
             value = "/{accommodationId}/image/{imageId}"
     )
     public @ResponseBody ResponseEntity<?> getImageWithMediaType(@PathVariable("accommodationId") Long accommodationId,
-                                                      @PathVariable("imageId") Long imageId,
-                                                      @AuthenticationPrincipal User user) throws IOException {
+                                                      @PathVariable("imageId") Long imageId) throws IOException {
 
         var accommodationWrapper = accommodationService.findAccommodationById(accommodationId);
         if(accommodationWrapper.isEmpty()) throw new NonExistingEntityException("Accommodation with this id does not exist");
         var accommodation = accommodationWrapper.get();
-
-        if(!user.getEmail().equals(accommodation.getOwner().getEmail())) throw new InvalidAuthorizationException("You don't own this accommodation");
 
 
         String foundImgPath = "";

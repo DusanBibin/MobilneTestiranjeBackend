@@ -27,7 +27,6 @@ public class Reservation {
     private ReservationStatus status;
     private String reason;
 
-
     @ManyToOne
     private Guest guest;
     @ManyToOne
