@@ -40,7 +40,7 @@ private final ReservationRepository reservationRepository;
                 .accommodationRequests(new ArrayList<>())
                 .accommodations(new ArrayList<>())
                 .build();
-        ownerRepository.save(ownerDusan);
+        ownerDusan = ownerRepository.save(ownerDusan);
         Owner ownerSomeoneElse = Owner.builder()
                 .firstName("Dusan")
                 .lastname("Bibin")
@@ -55,7 +55,7 @@ private final ReservationRepository reservationRepository;
                 .accommodations(new ArrayList<>())
                 .build();
 
-        ownerRepository.save(ownerSomeoneElse);
+        ownerSomeoneElse = ownerRepository.save(ownerSomeoneElse);
 
         Guest guestDusan1 = Guest.builder()
                 .firstName("Dusan1")
@@ -82,9 +82,9 @@ private final ReservationRepository reservationRepository;
                 .role(Role.GUEST)
                 .build();
 
-        ownerRepository.save(ownerDusan);
-        guestRepository.save(guestDusan1);
-        guestRepository.save(guestDusan2);
+        ownerDusan = ownerRepository.save(ownerDusan);
+        guestDusan1 = guestRepository.save(guestDusan1);
+        guestDusan2 = guestRepository.save(guestDusan2);
 
         var accommodationRequest = AccommodationRequest.builder()
                 .name("AccName")
@@ -102,8 +102,7 @@ private final ReservationRepository reservationRepository;
                 .owner(ownerDusan)
                 .status(RequestStatus.PENDING)
                 .build();
-
-        accommodationRequestRepository.save(accommodationRequest);
+        accommodationRequest = accommodationRequestRepository.save(accommodationRequest);
 
         var availabilityRequest = AvailabilityRequest.builder()
                 .startDate(LocalDate.now().plusDays(5))
@@ -113,9 +112,16 @@ private final ReservationRepository reservationRepository;
                 .pricePerGuest(true)
                 .build();
 
-        availabilityRequestRepository.save(availabilityRequest);
+        availabilityRequest = availabilityRequestRepository.save(availabilityRequest);
+
+        accommodationRequest = accommodationRequestRepository.save(accommodationRequest);
+
+        ownerDusan.getAccommodationRequests().add(accommodationRequest);
+        ownerDusan = ownerRepository.save(ownerDusan);
+
         accommodationRequest.getAvailabilityRequests().add(availabilityRequest);
-        accommodationRequestRepository.save(accommodationRequest);
+        accommodationRequest = accommodationRequestRepository.save(accommodationRequest);
+
 
         var accommodation = Accommodation.builder()
                 .name("NewAcc")
@@ -134,7 +140,11 @@ private final ReservationRepository reservationRepository;
                 .availabilityList(new ArrayList<>())
                 .reservations(new ArrayList<>())
                 .build();
-        accommodationRepository.save(accommodation);
+        accommodation = accommodationRepository.save(accommodation);
+
+        ownerDusan.getAccommodations().add(accommodation);
+        ownerDusan = ownerRepository.save(ownerDusan);
+
         var availabilityEditTest = Availability.builder()
                 .startDate(LocalDate.now().plusDays(5))
                 .endDate(LocalDate.now().plusDays(15))
@@ -165,15 +175,15 @@ private final ReservationRepository reservationRepository;
 
 
 
-        availabilityRepository.save(availabilityEditTest);
-        availabilityRepository.save(availabilityDeleteTest);
-        availabilityRepository.save(availabilityNew);
+
+        availabilityEditTest = availabilityRepository.save(availabilityEditTest);
+        availabilityDeleteTest = availabilityRepository.save(availabilityDeleteTest);
+        availabilityNew = availabilityRepository.save(availabilityNew);
 
         accommodation.getAvailabilityList().add(availabilityEditTest);
         accommodation.getAvailabilityList().add(availabilityDeleteTest);
 
-        accommodationRepository.save(accommodation);
-        //THIS ONE BELOW
+        accommodation = accommodationRepository.save(accommodation);
 
         var reservation = Reservation.builder()
                 .availability(availabilityDeleteTest)
@@ -185,9 +195,10 @@ private final ReservationRepository reservationRepository;
                 .guestNum(1L)
                 .build();
 
-        reservationRepository.save(reservation);
+        reservation = reservationRepository.save(reservation);
         accommodation.getReservations().add(reservation);
-        accommodationRepository.save(accommodation);
+        accommodation = accommodationRepository.save(accommodation);
+
 
 
     }

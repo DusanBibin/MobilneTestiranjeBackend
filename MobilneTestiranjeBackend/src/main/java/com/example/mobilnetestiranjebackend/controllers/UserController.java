@@ -7,6 +7,7 @@ import com.example.mobilnetestiranjebackend.exceptions.NonExistingEntityExceptio
 import com.example.mobilnetestiranjebackend.model.User;
 import com.example.mobilnetestiranjebackend.repositories.UserRepository;
 import com.example.mobilnetestiranjebackend.services.UserService;
+import com.sendgrid.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,6 @@ public class UserController {
         var userDto = userService.getUserInfo(user);
 
         return new ResponseEntity<>((userDto), HttpStatus.OK);
-
     }
 
     @PutMapping(path = "/change-info")
@@ -49,8 +49,6 @@ public class UserController {
         return new ResponseEntity<>((changePasswordDTO), HttpStatus.OK);
 
     }
-
-
 
 
 }

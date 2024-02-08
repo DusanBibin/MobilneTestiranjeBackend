@@ -19,7 +19,7 @@ import java.util.List;
 @Entity
 public class Owner extends User {
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Accommodation> accommodations;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
