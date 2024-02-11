@@ -45,7 +45,7 @@ private final ReservationRepository reservationRepository;
                 .firstName("Dusan")
                 .lastname("Bibin")
                 .email("probamejl3@gmail.com")
-                .password(passwordEncoder.encode("NekaSifra123"))
+                .password(passwordEncoder.encode("123"))
                 .phoneNumber("0691817839")
                 .address("Neka ulica 123")
                 .emailConfirmed(true)
@@ -61,8 +61,9 @@ private final ReservationRepository reservationRepository;
                 .firstName("Dusan1")
                 .lastname("Bibin1")
                 .email("probamejl1@gmail.com")
-                .password(passwordEncoder.encode("NekaSifra123"))
+                .password(passwordEncoder.encode("123"))
                 .phoneNumber("0691817839")
+                .reservations(new ArrayList<>())
                 .address("Neka ulica 123")
                 .emailConfirmed(true)
                 .blocked(false)
@@ -74,9 +75,10 @@ private final ReservationRepository reservationRepository;
                 .firstName("Dusan2")
                 .lastname("Bibin2")
                 .email("probamejl2@gmail.com")
-                .password(passwordEncoder.encode("NekaSifra123"))
+                .password(passwordEncoder.encode("123"))
                 .phoneNumber("0691817839")
                 .address("Neka ulica 123")
+                .reservations(new ArrayList<>())
                 .emailConfirmed(true)
                 .blocked(false)
                 .role(Role.GUEST)
@@ -190,12 +192,18 @@ private final ReservationRepository reservationRepository;
                 .guest(guestDusan1)
                 .status(ReservationStatus.ACCEPTED)
                 .accommodation(accommodation)
-                .reservationEndDate(LocalDate.now())
-                .reservationStartDate(LocalDate.now())
+                .reservationEndDate(LocalDate.now().minusDays(2))
+                .reservationStartDate(LocalDate.now().minusDays(1))
                 .guestNum(1L)
                 .build();
 
+
+
         reservation = reservationRepository.save(reservation);
+
+        guestDusan1.getReservations().add(reservation);
+        guestDusan1 = guestRepository.save(guestDusan1);
+
         accommodation.getReservations().add(reservation);
         accommodation = accommodationRepository.save(accommodation);
 

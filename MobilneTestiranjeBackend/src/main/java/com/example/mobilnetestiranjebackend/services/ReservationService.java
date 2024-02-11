@@ -53,6 +53,12 @@ public class ReservationService {
         return !sameRangeReservations.isEmpty();
     }
 
+    public boolean acceptedReservationRangeTakenGuest(LocalDate startDate, LocalDate endDate, Long guestId) {
+        List<Reservation> sameRangeReservations = reservationRepository.
+                findGuestReservationsInConflict(startDate, endDate, guestId);
+
+        return !sameRangeReservations.isEmpty();
+    }
 
     public void createNewReservation(ReservationDTO request, Guest guest, Accommodation accom, Availability avail) {
 
@@ -106,5 +112,17 @@ public class ReservationService {
         reservationRepository.save(reservation);
     }
 
+
+
+    public Boolean reservationsNotEnded(Long accommodationId) {
+        List<Reservation> reservationsNotEnded = reservationRepository.findReservationsNotEndedByAccommodationId(accommodationId);
+        return !reservationsNotEnded.isEmpty();
+    }
+
+    public Boolean reservationsNotEnded(Long accommodationId, Long availabilityId) {
+        List<Reservation> reservationsNotEnded = reservationRepository
+                .findReservationNotEndedByAvailabilityIdAndAccommodationId(accommodationId, availabilityId);
+        return !reservationsNotEnded.isEmpty();
+    }
 
 }

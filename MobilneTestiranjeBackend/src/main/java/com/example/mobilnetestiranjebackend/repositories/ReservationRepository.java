@@ -23,6 +23,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @Query("SELECT r FROM Reservation r WHERE r.accommodation.id = :accommodationId AND r.status = 1 AND CURRENT_DATE <= r.reservationEndDate")
     List<Reservation> findReservationsNotEndedByAccommodationId(Long accommodationId);
 
+    @Query("SELECT r FROM Reservation r WHERE r.guest.id = :guestId AND r.status = 1 AND CURRENT_DATE <= r.reservationEndDate")
+    List<Reservation> findReservationsNotEndedByGuestId(Long guestId);
 
     @Query("select r from  Reservation r where r.accommodation.id = :accomId and r.availability.id = :availId and r.status = 1 and CURRENT_DATE <= r.reservationEndDate")
     List<Reservation> findReservationNotEndedByAvailabilityIdAndAccommodationId(Long accomId, Long availId);
@@ -43,6 +45,14 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
              Long accomId,
              Long availId
     );
+
+    //TODO VIDETI DA LI JE POTREBNO UVODITI FINISHED STATUS I DA LI JE POTREBNO NA SVAKO LOGOVANJE PROVERAVATI DATUM DA LI SE REZERVACIJA ZAVRSILA I DA LI JE
+    //VREME ZA ODGOVARANJE NA RESERVATION REQUEST PROSLO
+    @Query("select r from Reservation  r where (r.status = 1 AND CURRENT_DATE <= r.reservationEndDate or r.status = 3 ) and r.guest.id = :guestId and ((" +
+            "               :startDate BETWEEN r.reservationStartDate AND r.reservationEndDate " +
+            "               OR :endDate BETWEEN r.reservationStartDate AND r.reservationEndDate " +
+            "               OR :startDate <= r.reservationStartDate AND :endDate >= r.reservationEndDate))")
+    List<Reservation> findGuestReservationsInConflict(LocalDate startDate, LocalDate endDate, Long guestId);
 
 
 

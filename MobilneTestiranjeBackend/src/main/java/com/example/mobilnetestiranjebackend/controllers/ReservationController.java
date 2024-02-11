@@ -71,6 +71,9 @@ public class ReservationController {
         if(reservationService.acceptedReservationRangeTaken(startDate, endDate, accom.getId(), avail.getId()))
             throw new InvalidDateException("There is already an accepted reservation for this date range");
 
+        if(reservationService.acceptedReservationRangeTakenGuest(startDate, endDate, guest.getId()))
+            throw new InvalidDateException("You already have an active reservation within this date range");
+
 
         reservationService.createNewReservation(request, guest, accom, avail);
 

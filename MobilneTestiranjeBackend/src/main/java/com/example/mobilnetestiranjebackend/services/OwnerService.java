@@ -1,6 +1,7 @@
 package com.example.mobilnetestiranjebackend.services;
 
 
+import com.example.mobilnetestiranjebackend.exceptions.ReservationNotEndedException;
 import com.example.mobilnetestiranjebackend.model.Accommodation;
 import com.example.mobilnetestiranjebackend.model.Owner;
 import com.example.mobilnetestiranjebackend.model.Reservation;
@@ -14,18 +15,17 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class OwnerService {
     private final OwnerRepository ownerRepository;
-    private final AccommodationRepository accommodationRepository;
-
+    private final ReservationService reservationService;
     public void deleteAccount(Owner owner) {
 
-
         var accommodations = owner.getAccommodations();
-        System.out.println(accommodations.size());
-        var accomRequests = owner.getAccommodationRequests();
-        System.out.println(accomRequests.size());
-        //ownerRepository.delete(owner);
+        for(Accommodation acc: accommodations){
+            if(reservationService.reservationsNotEnded(acc.getId())) throw new ReservationNotEndedException("Some reservations haven't ended");
+        }
 
 
+
+        ownerRepository.delete(owner);
 
     }
 }

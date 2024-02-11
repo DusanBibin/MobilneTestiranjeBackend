@@ -20,7 +20,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 
 @Service
@@ -29,7 +28,7 @@ public class AccommodationRequestService {
     private final AccommodationRequestRepository accommodationRequestRepository;
     private final AvailabilityRequestRepository availabilityRequestRepository;
     private final OwnerRepository ownerRepository;
-    private final AvailabilityService availabilityService;
+    private final ReservationService reservationService;
     private final AvailabilityRepository availabilityRepository;
     private final AccommodationRepository accommodationRepository;
 
@@ -152,7 +151,7 @@ public class AccommodationRequestService {
 //                throw new InvalidDateException("There is already availability period that interferes with this period");
 //        }
 
-        if(availabilityService.reservationsNotEnded(accommodationId))
+        if(reservationService.reservationsNotEnded(accommodationId))
             throw new ReservationNotEndedException("You cannot change details if there are active reservations ");
 
 

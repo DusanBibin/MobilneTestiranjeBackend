@@ -16,10 +16,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AvailabilityRequestService {
 
-    private final AvailabilityService availabilityService;
+    private final ReservationService reservationService;
     private final AccommodationRepository accommodationRepository;
     private final AvailabilityRequestRepository availabilityRequestRepository;
     private final AvailabilityRepository availabilityRepository;
+    private final AvailabilityService availabilityService;
     public void createAvailabilityRequest(AvailabilityDTO availDTO, Long accommodationId, Owner owner) {
 
         var accommodationWrapper = accommodationRepository.findAccommodationById(accommodationId);
@@ -67,7 +68,7 @@ public class AvailabilityRequestService {
             throw new InvalidDateException("There is already availability period that interferes with this period");
 
 
-        if(availabilityService.reservationsNotEnded(accommodationId, availId))
+        if(reservationService.reservationsNotEnded(accommodationId, availId))
             throw new ReservationNotEndedException("You cannot change details if there are active reservations for this period");
 
         var availabilityRequest = AvailabilityRequest.builder()
@@ -98,7 +99,7 @@ public class AvailabilityRequestService {
         var availability = availabilityWrapper.get();
 
 
-        if(availabilityService.reservationsNotEnded(accommodationId, availabilityId))
+        if(reservationService.reservationsNotEnded(accommodationId, availabilityId))
             throw new ReservationNotEndedException("You cannot change details if there are active reservations for this period");
 
 

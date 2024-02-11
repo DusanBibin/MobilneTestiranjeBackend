@@ -187,5 +187,13 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(ex.getMessage());
     }
 
+    @ExceptionHandler(value
+            = ReservationNotEndedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public @ResponseBody ErrorResponse
+    handleReservationNotEndedException(ReservationNotEndedException ex)
+    {
+        return new ErrorResponse(ex.getMessage());
+    }
 
 }
