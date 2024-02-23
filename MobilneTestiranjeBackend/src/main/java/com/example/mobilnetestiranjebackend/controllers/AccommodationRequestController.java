@@ -17,14 +17,14 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/accommodation-request")
+@RequestMapping("/api/v1/accommodation-requests")
 @RequiredArgsConstructor
 public class AccommodationRequestController {
     private final AccommodationService accommodationService;
     private final AccommodationRequestService accommodationRequestService;
 
     @PreAuthorize("hasAuthority('OWNER')")
-    @PostMapping(path = "/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(path = "/create-new-request", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> createAccommodationRequest(@Valid @RequestPart("accommodationDTO") AccommodationDTO accommodationDTO,
                                                         @RequestPart("photos") List<MultipartFile> images,
                                                         @AuthenticationPrincipal Owner owner) {
@@ -33,18 +33,18 @@ public class AccommodationRequestController {
     }
 
     @PreAuthorize("hasAuthority('OWNER')")
-    @PostMapping(path = "/edit/accommodation/{accommodationId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(path = "/create-edit-request/accommodations/{accommodationId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> createEditAccommodationRequest(@Valid @RequestPart("accommodationDTO") AccommodationDTO accommodationDTO,
                                                             @RequestPart("photos") List<MultipartFile> images,
                                                             @AuthenticationPrincipal Owner owner,
-                                                            @PathVariable("accommodationId") Long accommdationId) {
+                                                            @PathVariable("accommodationId") Long accommodationId) {
 
-        accommodationRequestService.createEditAccommodationRequest(owner, images, accommodationDTO, accommdationId);
+        accommodationRequestService.createEditAccommodationRequest(owner, images, accommodationDTO, accommodationId);
         return ResponseEntity.ok().body("Successfully created new accommodation request");
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping(path = "/accept/{requestId}")
+    @PutMapping(path = "/accept-request/{requestId}")
     public ResponseEntity<?> acceptAccommodationRequest(@PathVariable("requestId") Long requestId){
 
         accommodationRequestService.acceptRequest(requestId);
@@ -53,7 +53,7 @@ public class AccommodationRequestController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping(path = "/reject/{requestId}")
+    @PutMapping(path = "/reject-request/{requestId}")
     public ResponseEntity<?> rejectAccommodationRequest(@PathVariable("requestId") Long requestId, @RequestBody String reason){
 
         accommodationRequestService.declineRequest(requestId, reason);

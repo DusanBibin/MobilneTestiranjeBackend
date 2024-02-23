@@ -23,7 +23,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 
 @RestController
-@RequestMapping("/api/v1/accommodation")
+@RequestMapping("/api/v1/accommodations")
 @RequiredArgsConstructor
 public class AccommodationController {
     private final AccommodationService accommodationService;
@@ -71,7 +71,7 @@ public class AccommodationController {
 
 
     @GetMapping(
-            value = "/{accommodationId}/image/{imageId}"
+            value = "/{accommodationId}/images/{imageId}"
     )
     public @ResponseBody ResponseEntity<?> getImageWithMediaType(@PathVariable("accommodationId") Long accommodationId,
                                                       @PathVariable("imageId") Long imageId) throws IOException {

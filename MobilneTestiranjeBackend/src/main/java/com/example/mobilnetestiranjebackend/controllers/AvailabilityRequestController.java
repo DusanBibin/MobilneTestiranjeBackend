@@ -20,15 +20,15 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/availability-request")
+@RequestMapping("/api/v1/accommodation/{accommodationId}")
 public class AvailabilityRequestController {
 
 
     private final AvailabilityRequestService availabilityRequestService;
     @PreAuthorize("hasAuthority('OWNER')")
-    @PostMapping(value = "/accommodation/{accommId}/create")
+    @PostMapping(value = "/availability-request/create-new-request")
     public ResponseEntity<?> createAvailabilityRequest(@Valid @RequestBody AvailabilityDTO availabilityDTO,
-                                                       @PathVariable("accommId") Long accommId,
+                                                       @PathVariable("accommodationId") Long accommId,
                                                        @AuthenticationPrincipal Owner owner) {
 
         availabilityRequestService.createAvailabilityRequest(availabilityDTO, accommId, owner);
@@ -37,9 +37,9 @@ public class AvailabilityRequestController {
     }
 
     @PreAuthorize("hasAuthority('OWNER')")
-    @PostMapping(value = "/accommodation/{accommId}/edit/availability/{availId}")
+    @PostMapping(value = "/availability-request/create-edit-request/availability/{availId}")
     public ResponseEntity<?> createEditAvailabilityRequest(@Valid @RequestBody AvailabilityDTO availabilityDTO,
-                                                       @PathVariable("accommId") Long accommId,
+                                                       @PathVariable("accommodationId") Long accommId,
                                                        @PathVariable("availId") Long availId,
                                                        @AuthenticationPrincipal Owner owner) {
 
@@ -49,8 +49,8 @@ public class AvailabilityRequestController {
     }
 
     @PreAuthorize("hasAuthority('OWNER')")
-    @PostMapping(value = "/accommodation/{accommId}/delete/availability/{availId}")
-    public ResponseEntity<?> createDeleteAvailabilityRequest(@PathVariable("accommId") Long accommId,
+    @PostMapping(value = "/availability-request/create-delete-request/availability/{availId}")
+    public ResponseEntity<?> createDeleteAvailabilityRequest(@PathVariable("accommodationId") Long accommId,
                                                            @PathVariable("availId") Long availId,
                                                            @AuthenticationPrincipal Owner owner) {
 
@@ -60,20 +60,21 @@ public class AvailabilityRequestController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping(value = "/accept/{requestId}")
-    public ResponseEntity<?> acceptAvailabilityRequest(@PathVariable("requestId") Long requestId) {
+    @PutMapping(value = "/availability-request/accept-request/{requestId}")
+    public ResponseEntity<?> acceptAvailabilityRequest(@PathVariable("accommodationId") Long accommId, @PathVariable("requestId") Long requestId) {
 
-        availabilityRequestService.acceptRequest(requestId);
+        availabilityRequestService.acceptRequest(requestId, accommId);
 
         return ResponseEntity.ok().body("Successfully accepted availability request");
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping(value = "/decline/{requestId}")
-    public ResponseEntity<?> declineAvailabilityRequest(@PathVariable("requestId") Long requestId, @RequestBody String reason) {
+    @PutMapping(value = "/availability-request/decline-request/{requestId}")
+    public ResponseEntity<?> declineAvailabilityRequest(@PathVariable("accommodationId") Long accommId,
+                                                        @PathVariable("requestId") Long requestId, @RequestBody String reason) {
 
 
-        availabilityRequestService.declineRequest(reason, requestId);
+        availabilityRequestService.declineRequest(reason, requestId, accommId);
         return ResponseEntity.ok().body("Successfully rejected availability request");
     }
 

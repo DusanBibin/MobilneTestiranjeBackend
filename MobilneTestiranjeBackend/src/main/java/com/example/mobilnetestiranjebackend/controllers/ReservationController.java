@@ -21,7 +21,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1/accommodation/{accommodationId}/reservation/")
+@RequestMapping("/api/v1/accommodation/{accommodationId}")
 @RequiredArgsConstructor
 public class ReservationController {
 
@@ -38,16 +38,18 @@ public class ReservationController {
     }
 
     @PreAuthorize("hasAuthority('GUEST')")
-    @PostMapping(value = "create")
-    public ResponseEntity<?> createReservation(@RequestBody ReservationDTO request, @AuthenticationPrincipal Guest guest){
+    @PostMapping("/availability/{availabilityId}/reservation")
+    public ResponseEntity<?> createReservation(@PathVariable("accommodationId") Long accommodationId,
+                                               @PathVariable("availabilityId") Long availabilityId,
+                                               @RequestBody ReservationDTO request, @AuthenticationPrincipal Guest guest){
 
-        Optional<Accommodation> accommodationWrapper = accommodationService.findAccommodationById(request.getAccommodationId());
+        Optional<Accommodation> accommodationWrapper = accommodationService.findAccommodationById(accommodationId);
         if(accommodationWrapper.isEmpty()) throw new NonExistingEntityException("Accommodation with this id doesn't exist");
         Accommodation accom = accommodationWrapper.get();
 
 
         Optional<Availability> availabilityWrapper = availabilityService
-                .findAvailabilityByIdAndAccommodation(request.getAvailabilityId(), request.getAccommodationId());
+                .findAvailabilityByIdAndAccommodation(availabilityId, accommodationId);
 
         if(availabilityWrapper.isEmpty())
             throw new NonExistingEntityException("Availability with this id for wanted accommodation doesn't exist");
@@ -81,37 +83,46 @@ public class ReservationController {
         return ResponseEntity.ok().body("Successfully created new reservation request");
     }
 
+
     @PreAuthorize("hasAuthority('OWNER')")
-    @PutMapping(value = "/{reservationId}/accept")
-    public ResponseEntity<?> acceptReservationRequest(@PathVariable("reservationId") Long reservationId,
-                                                      @PathVariable("accommodationId") Long accommodationId,
-                                                      @AuthenticationPrincipal Owner owner){
+    @PutMapping(value = "/reservations/{reservationId}/{status}")
+    public ResponseEntity<?> declineReservationRequest(@RequestBody String reason,
+                                                       @PathVariable("reservationId") Long reservationId,
+                                                       @PathVariable("accommodationId") Long accommodationId,
+                                                       @PathVariable("status") ReservationStatus status,
+                                                       @AuthenticationPrincipal Owner owner){
+
 
         Optional<Accommodation> accommodationWrapper = accommodationService.findAccommodationById(accommodationId);
         if(accommodationWrapper.isEmpty()) throw new NonExistingEntityException("Accommodation with this id doesn't exist");
         Accommodation accommodation = accommodationWrapper.get();
 
-        if(!accommodation.getOwner().getId().equals(owner.getId()))
-            throw new InvalidAuthorizationException("You cannot do action for a accommodation you don't own");
 
         Optional<Reservation> reservationWrapper = reservationService.findReservationByIdAccommodation(accommodationId, reservationId);
         if(reservationWrapper.isEmpty()) throw new NonExistingEntityException("Reservation with this id doesn't exist");
         Reservation reservation = reservationWrapper.get();
 
+        if(!accommodation.getOwner().getId().equals(owner.getId()))
+            throw new InvalidAuthorizationException("You cannot do action for a accommodation you don't own");
+
+
+
         if(!reservation.getStatus().equals(ReservationStatus.PENDING))
-            throw new InvalidEnumValueException("You can only accept a pending request reservation");
+            throw new InvalidEnumValueException("You can only do this action for a pending request reservation");
+
+        if(status.equals(ReservationStatus.DECLINED)) reservationService.declineRequest(reason, reservation);
+        else if(status.equals(ReservationStatus.ACCEPTED))reservationService.acceptRequest(reservation);
+        else throw new InvalidEnumValueException("Unsupported action");
 
 
 
 
-        reservationService.acceptRequest(reservation);
-
-
-        return ResponseEntity.ok().body("Successfully accepted a reservation request");
+        return ResponseEntity.ok().body("Successfully declined a reservation request");
     }
 
+
     @PreAuthorize("hasAuthority('GUEST')")
-    @PutMapping(value = "/{reservationId}/cancel")
+    @PutMapping(value = "/reservations/{reservationId}/cancel")
     public ResponseEntity<?> cancelReservation(@PathVariable("accommodationId") Long accommodationId,
                                                @PathVariable("reservationId") Long reservationId,
                                                @AuthenticationPrincipal Guest guest){
@@ -139,31 +150,5 @@ public class ReservationController {
     }
 
 
-    @PreAuthorize("hasAuthority('OWNER')")
-    @PutMapping(value = "/{reservationId}/decline")
-    public ResponseEntity<?> declineReservationRequest(@RequestBody String reason,
-                                                       @PathVariable("reservationId") Long reservationId,
-                                                       @PathVariable("accommodationId") Long accommodationId,
-                                                       @AuthenticationPrincipal Owner owner){
-
-
-        Optional<Accommodation> accommodationWrapper = accommodationService.findAccommodationById(accommodationId);
-        if(accommodationWrapper.isEmpty()) throw new NonExistingEntityException("Accommodation with this id doesn't exist");
-        Accommodation accommodation = accommodationWrapper.get();
-
-
-        Optional<Reservation> reservationWrapper = reservationService.findReservationByIdAccommodation(accommodationId, reservationId);
-        if(reservationWrapper.isEmpty()) throw new NonExistingEntityException("Reservation with this id doesn't exist");
-        Reservation reservation = reservationWrapper.get();
-
-        if(!accommodation.getOwner().getId().equals(owner.getId()))
-            throw new InvalidAuthorizationException("You cannot do action for a accommodation you don't own");
-
-
-        reservationService.declineRequest(reason, reservation);
-
-
-        return ResponseEntity.ok().body("Successfully declined a reservation request");
-    }
 
 }

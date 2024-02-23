@@ -24,7 +24,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping(path = "/user-info")
+    @GetMapping()
     public ResponseEntity<?> getUserInfo(@AuthenticationPrincipal User user){
 
         var userDto = userService.getUserInfo(user);
@@ -32,7 +32,7 @@ public class UserController {
         return new ResponseEntity<>((userDto), HttpStatus.OK);
     }
 
-    @PutMapping(path = "/change-info")
+    @PutMapping()
     public ResponseEntity<?> changeUserInfo(@RequestBody UserDTO userDTO, @AuthenticationPrincipal User user){
 
         userService.changeUserInfo(userDTO, user);

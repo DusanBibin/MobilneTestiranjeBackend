@@ -2,6 +2,7 @@ package com.example.mobilnetestiranjebackend.model;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,13 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Guest extends User {
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Reservation> reservations;
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Review> reviews;
-
-
+public class OwnerReview extends Review {
+    @ManyToOne
+    private Owner owner;
 }

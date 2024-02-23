@@ -120,8 +120,9 @@ public class AvailabilityRequestService {
 
     }
 
-    public void acceptRequest(Long requestId) {
-        var requestWrapper = availabilityRequestRepository.findById(requestId);
+    public void acceptRequest(Long requestId, Long accommId) {
+        //var requestWrapper = availabilityRequestRepository.findById(requestId);
+        var requestWrapper = availabilityRequestRepository.findByIdAAndAccommodation(requestId, accommId);
         if(requestWrapper.isEmpty()) throw new NonExistingEntityException("This request doesn't exist");
         AvailabilityRequest request = requestWrapper.get();
         Accommodation accommodation = request.getAccommodation();
@@ -168,8 +169,9 @@ public class AvailabilityRequestService {
 
     }
 
-    public void declineRequest(String reason, Long requestId) {
-        var requestWrapper = availabilityRequestRepository.findById(requestId);
+    public void declineRequest(String reason, Long requestId, Long accommId) {
+        //var requestWrapper = availabilityRequestRepository.findById(requestId);
+        var requestWrapper = availabilityRequestRepository.findByIdAAndAccommodation(requestId, accommId);
         if(requestWrapper.isEmpty()) throw new NonExistingEntityException("This request doesn't exist");
         AvailabilityRequest request = requestWrapper.get();
 

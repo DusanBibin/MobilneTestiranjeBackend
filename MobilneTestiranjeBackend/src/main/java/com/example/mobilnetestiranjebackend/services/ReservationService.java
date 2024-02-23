@@ -23,21 +23,7 @@ public class ReservationService {
     private final AccommodationRepository accommodationRepository;
 
 
-    public void acceptRequest(Reservation reservation) {
-        List<Reservation> conflictedReservations = reservationRepository
-                .findPendingConflictedReservations(reservation.getAccommodation().getId(), reservation.getId(),
-                        reservation.getReservationStartDate(), reservation.getReservationEndDate());
 
-        for(Reservation conflictReservation: conflictedReservations){
-            conflictReservation.setReason("Other reservation was accepted");
-            conflictReservation.setStatus(ReservationStatus.DECLINED);
-            reservationRepository.save(conflictReservation);
-        }
-
-        reservation.setReason("ACCEPTED");
-        reservation.setStatus(ReservationStatus.ACCEPTED);
-        reservationRepository.save(reservation);
-    }
 
 
 
@@ -104,7 +90,21 @@ public class ReservationService {
         reservationRepository.save(reservation);
     }
 
+    public void acceptRequest(Reservation reservation) {
+        List<Reservation> conflictedReservations = reservationRepository
+                .findPendingConflictedReservations(reservation.getAccommodation().getId(), reservation.getId(),
+                        reservation.getReservationStartDate(), reservation.getReservationEndDate());
 
+        for(Reservation conflictReservation: conflictedReservations){
+            conflictReservation.setReason("Other reservation was accepted");
+            conflictReservation.setStatus(ReservationStatus.DECLINED);
+            reservationRepository.save(conflictReservation);
+        }
+
+        reservation.setReason("ACCEPTED");
+        reservation.setStatus(ReservationStatus.ACCEPTED);
+        reservationRepository.save(reservation);
+    }
 
     public void cancelReservation(Reservation reservation) {
 
