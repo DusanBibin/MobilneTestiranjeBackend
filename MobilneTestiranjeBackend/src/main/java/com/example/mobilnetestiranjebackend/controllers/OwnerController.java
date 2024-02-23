@@ -20,7 +20,7 @@ public class OwnerController {
     private final OwnerService ownerService;
 
     @PreAuthorize("hasAuthority('OWNER')")
-    @DeleteMapping(path = "/delete-account")
+    @DeleteMapping()
     public ResponseEntity<?> changeUserPassword(@AuthenticationPrincipal Owner owner){
 
         ownerService.deleteAccount(owner);

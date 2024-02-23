@@ -21,7 +21,7 @@ public class GuestController {
 
 
     @PreAuthorize("hasAuthority('GUEST')")
-    @DeleteMapping(path = "/delete-account")
+    @DeleteMapping()
     public ResponseEntity<?> changeUserPassword(@AuthenticationPrincipal Guest guest){
 
         guestService.deleteAccount(guest);

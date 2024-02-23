@@ -1,6 +1,8 @@
 package com.example.mobilnetestiranjebackend.controllers;
 
 import com.example.mobilnetestiranjebackend.DTOs.AccommodationDTO;
+import com.example.mobilnetestiranjebackend.enums.RequestStatus;
+import com.example.mobilnetestiranjebackend.exceptions.InvalidEnumValueException;
 import com.example.mobilnetestiranjebackend.model.Owner;
 import com.example.mobilnetestiranjebackend.model.User;
 import com.example.mobilnetestiranjebackend.services.AccommodationRequestService;
@@ -24,7 +26,7 @@ public class AccommodationRequestController {
     private final AccommodationRequestService accommodationRequestService;
 
     @PreAuthorize("hasAuthority('OWNER')")
-    @PostMapping(path = "/create-new-request", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> createAccommodationRequest(@Valid @RequestPart("accommodationDTO") AccommodationDTO accommodationDTO,
                                                         @RequestPart("photos") List<MultipartFile> images,
                                                         @AuthenticationPrincipal Owner owner) {
@@ -33,7 +35,7 @@ public class AccommodationRequestController {
     }
 
     @PreAuthorize("hasAuthority('OWNER')")
-    @PostMapping(path = "/create-edit-request/accommodations/{accommodationId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(path = "/accommodations/{accommodationId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> createEditAccommodationRequest(@Valid @RequestPart("accommodationDTO") AccommodationDTO accommodationDTO,
                                                             @RequestPart("photos") List<MultipartFile> images,
                                                             @AuthenticationPrincipal Owner owner,
@@ -44,20 +46,16 @@ public class AccommodationRequestController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping(path = "/accept-request/{requestId}")
-    public ResponseEntity<?> acceptAccommodationRequest(@PathVariable("requestId") Long requestId){
+    @PutMapping(path = "/{requestId}/{status}")
+    public ResponseEntity<?> processAccommodationRequest(@PathVariable("requestId") Long requestId,
+                                                        @PathVariable("status") RequestStatus status,
+                                                        @RequestBody(required = false) String reason){
 
-        accommodationRequestService.acceptRequest(requestId);
+        if(status.equals(RequestStatus.ACCEPTED)) accommodationRequestService.acceptRequest(requestId);
+        else if(status.equals(RequestStatus.REJECTED)) accommodationRequestService.declineRequest(requestId, reason);
+        else throw new InvalidEnumValueException("Invalid status value");
 
         return ResponseEntity.ok().body("Successfully accepted accommodation request");
-    }
-
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping(path = "/reject-request/{requestId}")
-    public ResponseEntity<?> rejectAccommodationRequest(@PathVariable("requestId") Long requestId, @RequestBody String reason){
-
-        accommodationRequestService.declineRequest(requestId, reason);
-        return ResponseEntity.ok().body("Successfully rejected accommodation request");
     }
 
 }

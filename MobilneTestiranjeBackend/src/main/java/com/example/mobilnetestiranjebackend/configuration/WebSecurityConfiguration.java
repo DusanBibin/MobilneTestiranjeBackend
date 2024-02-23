@@ -37,7 +37,7 @@ public class WebSecurityConfiguration {
                 .authorizeHttpRequests()
                 .requestMatchers("/api/v1/auth/**")
                 .permitAll()
-                .requestMatchers("/api/v1/accommodation/**")
+                .requestMatchers("/api/v1/accommodation/**", "/accommodation-requests")
                 .permitAll()
                 .anyRequest()
                 .authenticated()

@@ -115,8 +115,6 @@ public class ReservationController {
         else throw new InvalidEnumValueException("Unsupported action");
 
 
-
-
         return ResponseEntity.ok().body("Successfully declined a reservation request");
     }
 
@@ -134,8 +132,8 @@ public class ReservationController {
         if(reservationWrapper.isEmpty()) throw new NonExistingEntityException("Reservation with this id doesn't exist");
         Reservation reservation = reservationWrapper.get();
 
-        if(!reservation.getStatus().equals(ReservationStatus.PENDING))
-            throw new InvalidEnumValueException("You can only accept a pending request reservation");
+        if(!reservation.getStatus().equals(ReservationStatus.ACCEPTED))
+            throw new InvalidEnumValueException("You can only cancel an accepted request reservation");
 
         if(!reservation.getGuest().getId().equals(guest.getId()))
             throw new InvalidAuthorizationException("You don't own this reservation");

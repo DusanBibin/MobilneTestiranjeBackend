@@ -22,7 +22,7 @@ public class UserDTO {
     @NotBlank(message = "Last name is required")
     private String lastName;
 
-
+    @NotBlank(message = "Email is required")
     private String email;
 
     @NotBlank(message = "Phone number is required")
