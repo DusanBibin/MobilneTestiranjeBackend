@@ -1,9 +1,6 @@
 package com.example.mobilnetestiranjebackend.model;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -17,12 +14,20 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name = "owner")
+@ToString
 public class Owner extends User {
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+
+    @ToString.Exclude
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owner")
     private List<Accommodation> accommodations;
 
+    @ToString.Exclude
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AccommodationRequest> accommodationRequests;
 
+    @ToString.Exclude
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owner")
+    private List<OwnerReview> ownerReviews;
 }

@@ -21,7 +21,7 @@ public class OwnerController {
 
     @PreAuthorize("hasAuthority('OWNER')")
     @DeleteMapping()
-    public ResponseEntity<?> changeUserPassword(@AuthenticationPrincipal Owner owner){
+    public ResponseEntity<?> deleteAccount(@AuthenticationPrincipal Owner owner){
 
         ownerService.deleteAccount(owner);
 

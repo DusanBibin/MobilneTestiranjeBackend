@@ -3,6 +3,7 @@ package com.example.mobilnetestiranjebackend.services;
 
 import com.example.mobilnetestiranjebackend.DTOs.ChangePasswordDTO;
 import com.example.mobilnetestiranjebackend.DTOs.UserDTO;
+import com.example.mobilnetestiranjebackend.DTOs.UserDTOResponse;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthenticationException;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthorizationException;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidInputException;
@@ -21,9 +22,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserDTO getUserInfo(User user) {
+    public UserDTOResponse getUserInfo(User user) {
 
-        return UserDTO.builder()
+        return UserDTOResponse.builder()
                 .email(user.getEmail())
                 .role(user.getRole())
                 .address(user.getAddress())

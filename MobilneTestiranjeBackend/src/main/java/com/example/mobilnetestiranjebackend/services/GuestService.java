@@ -17,7 +17,6 @@ public class GuestService {
 
     public void deleteAccount(Guest guest) {
 
-        var reservations = guest.getReservations();
         var notEndedReservations = reservationRepository.findReservationsNotEndedByGuestId(guest.getId());
         if(!notEndedReservations.isEmpty()) throw new ReservationNotEndedException("Some reservations haven't ended");
 

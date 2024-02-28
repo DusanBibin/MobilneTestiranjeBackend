@@ -3,10 +3,7 @@ package com.example.mobilnetestiranjebackend.model;
 
 import com.example.mobilnetestiranjebackend.enums.ReservationStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -16,6 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Entity
 @Table(name = "reservation")
+@ToString
 public class Reservation {
     @Id
     @GeneratedValue
@@ -27,6 +25,7 @@ public class Reservation {
     private ReservationStatus status;
     private String reason;
 
+    @ToString.Exclude
     @ManyToOne
     private Guest guest;
     @ManyToOne

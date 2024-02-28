@@ -22,7 +22,7 @@ public class GuestController {
 
     @PreAuthorize("hasAuthority('GUEST')")
     @DeleteMapping()
-    public ResponseEntity<?> changeUserPassword(@AuthenticationPrincipal Guest guest){
+    public ResponseEntity<?> deleteAccount(@AuthenticationPrincipal Guest guest){
 
         guestService.deleteAccount(guest);
 

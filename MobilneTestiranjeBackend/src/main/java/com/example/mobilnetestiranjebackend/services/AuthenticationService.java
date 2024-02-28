@@ -70,6 +70,7 @@ public class AuthenticationService {
                     .role(Role.OWNER)
                     .verification(new Verification(code, LocalDateTime.now().plusDays(1)))
                     .accommodations(new ArrayList<Accommodation>())
+                    .accommodationRequests(new ArrayList<>())
                     .blocked(false)
                     .build();
             user = owner;

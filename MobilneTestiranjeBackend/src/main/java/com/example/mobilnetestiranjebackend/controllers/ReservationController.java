@@ -21,7 +21,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1/accommodation/{accommodationId}")
+@RequestMapping("/api/v1/accommodations/{accommodationId}")
 @RequiredArgsConstructor
 public class ReservationController {
 

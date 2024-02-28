@@ -3,10 +3,7 @@ package com.example.mobilnetestiranjebackend.model;
 import com.example.mobilnetestiranjebackend.enums.AccommodationType;
 import com.example.mobilnetestiranjebackend.enums.Amenity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -16,7 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "accommodation")
-public class Accommodation {
+@ToString
+public class  Accommodation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -41,6 +39,7 @@ public class Accommodation {
 
     private Boolean autoAcceptEnabled;
 
+    @ToString.Exclude
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "accommodation")
     private List<Availability> availabilityList;
 

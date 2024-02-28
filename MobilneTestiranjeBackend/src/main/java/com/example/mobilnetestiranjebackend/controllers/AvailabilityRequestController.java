@@ -22,7 +22,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/accommodation/{accommodationId}/availability-request")
+@RequestMapping("/api/v1/accommodations/{accommodationId}/availability-request")
 public class AvailabilityRequestController {
 
 

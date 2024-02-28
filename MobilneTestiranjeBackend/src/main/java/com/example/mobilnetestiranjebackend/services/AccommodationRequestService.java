@@ -1,5 +1,6 @@
 package com.example.mobilnetestiranjebackend.services;
 
+import com.example.mobilnetestiranjebackend.DTOs.AccommodationDTOEdit;
 import com.example.mobilnetestiranjebackend.DTOs.AvailabilityDTO;
 import com.example.mobilnetestiranjebackend.DTOs.AccommodationDTO;
 import com.example.mobilnetestiranjebackend.enums.Amenity;
@@ -130,7 +131,7 @@ public class AccommodationRequestService {
         accommodationRequestRepository.save(accommodationRequest);
     }
 
-    public void createEditAccommodationRequest(Owner owner, List<MultipartFile> images, AccommodationDTO accommodationDTO, Long accommodationId) {
+    public void createEditAccommodationRequest(Owner owner, List<MultipartFile> images, AccommodationDTOEdit accommodationDTO, Long accommodationId) {
 
 
 
@@ -277,7 +278,6 @@ public class AccommodationRequestService {
         accommodationRequestRepository.save(accommodationRequest);
 
 
-        System.out.println(accommodationRequest.getAccommodation().getDescription());
 
         if(accommodationRequest.getAccommodation() == null){
             var accommdation = Accommodation.builder()

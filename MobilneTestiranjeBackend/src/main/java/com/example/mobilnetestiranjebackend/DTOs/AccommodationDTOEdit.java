@@ -1,10 +1,7 @@
 package com.example.mobilnetestiranjebackend.DTOs;
 
-
 import com.example.mobilnetestiranjebackend.enums.AccommodationType;
 import com.example.mobilnetestiranjebackend.enums.Amenity;
-import com.example.mobilnetestiranjebackend.enums.RequestStatus;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,8 +14,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AccommodationDTO {
-    //private Long id;
+public class AccommodationDTOEdit {
     @NotBlank(message = "Accommodation name must be present")
     private String name;
 
@@ -54,12 +50,4 @@ public class AccommodationDTO {
 
     @NotNull(message = "Auto accept must option must be present")
     private Boolean autoAcceptEnabled;
-
-    @Valid
-    private List<@Valid AvailabilityDTO> availabilityList;
-
-//    private List<String> imagePaths;
-//
-//    private RequestStatus status;
-//    private String reason;
 }

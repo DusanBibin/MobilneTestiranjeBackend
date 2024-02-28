@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 public class OwnerService {
     private final OwnerRepository ownerRepository;
     private final ReservationService reservationService;
+    private final AccommodationRepository accommodationRepository;
     public void deleteAccount(Owner owner) {
 
         var accommodations = owner.getAccommodations();
@@ -23,9 +24,9 @@ public class OwnerService {
             if(reservationService.reservationsNotEnded(acc.getId())) throw new ReservationNotEndedException("Some reservations haven't ended");
         }
 
-
-
         ownerRepository.delete(owner);
 
     }
+
+
 }

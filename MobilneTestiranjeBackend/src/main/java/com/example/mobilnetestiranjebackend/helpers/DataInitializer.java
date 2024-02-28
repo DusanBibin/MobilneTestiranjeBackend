@@ -39,6 +39,7 @@ private final ReservationRepository reservationRepository;
                 .role(Role.OWNER)
                 .accommodationRequests(new ArrayList<>())
                 .accommodations(new ArrayList<>())
+                .ownerReviews(new ArrayList<>())
                 .build();
         ownerDusan = ownerRepository.save(ownerDusan);
         Owner ownerSomeoneElse = Owner.builder()
@@ -53,6 +54,7 @@ private final ReservationRepository reservationRepository;
                 .role(Role.OWNER)
                 .accommodationRequests(new ArrayList<>())
                 .accommodations(new ArrayList<>())
+                .ownerReviews(new ArrayList<>())
                 .build();
 
         ownerSomeoneElse = ownerRepository.save(ownerSomeoneElse);
@@ -64,6 +66,7 @@ private final ReservationRepository reservationRepository;
                 .password(passwordEncoder.encode("123"))
                 .phoneNumber("0691817839")
                 .reservations(new ArrayList<>())
+                .ownerReviews(new ArrayList<>())
                 .address("Neka ulica 123")
                 .emailConfirmed(true)
                 .blocked(false)
@@ -79,6 +82,7 @@ private final ReservationRepository reservationRepository;
                 .phoneNumber("0691817839")
                 .address("Neka ulica 123")
                 .reservations(new ArrayList<>())
+                .ownerReviews(new ArrayList<>())
                 .emailConfirmed(true)
                 .blocked(false)
                 .role(Role.GUEST)

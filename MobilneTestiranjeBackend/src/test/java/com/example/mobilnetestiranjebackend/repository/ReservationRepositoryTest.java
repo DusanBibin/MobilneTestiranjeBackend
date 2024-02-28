@@ -78,7 +78,6 @@ public class ReservationRepositoryTest {
 
 
 
-        System.out.println(reservationRepository.findAll().size());
         Optional<Reservation> foundReservation = reservationRepository.findByIdAndAccommodation(0L, reservation1.getId());
         assertThat(foundReservation).isEmpty();
     }

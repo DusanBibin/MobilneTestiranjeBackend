@@ -27,11 +27,12 @@ public class UserController {
     @GetMapping()
     public ResponseEntity<?> getUserInfo(@AuthenticationPrincipal User user){
 
-        var userDto = userService.getUserInfo(user);
+        var userDTOResponse = userService.getUserInfo(user);
 
-        return new ResponseEntity<>((userDto), HttpStatus.OK);
+        return new ResponseEntity<>((userDTOResponse), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('OWNER')")
     @PutMapping()
     public ResponseEntity<?> changeUserInfo(@RequestBody UserDTO userDTO, @AuthenticationPrincipal User user){
 

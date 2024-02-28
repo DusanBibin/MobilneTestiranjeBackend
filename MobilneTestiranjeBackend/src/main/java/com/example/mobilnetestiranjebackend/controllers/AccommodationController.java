@@ -1,5 +1,6 @@
 package com.example.mobilnetestiranjebackend.controllers;
 
+import com.example.mobilnetestiranjebackend.DTOs.AccommodationDTOResponse;
 import com.example.mobilnetestiranjebackend.DTOs.AvailabilityDTO;
 import com.example.mobilnetestiranjebackend.DTOs.AccommodationDTO;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthorizationException;
@@ -37,7 +38,7 @@ public class AccommodationController {
         if(accommodationWrapper.isEmpty()) throw new NonExistingEntityException("Accommodation with this id does not exist");
         var accommodation = accommodationWrapper.get();
 
-        var accommodationDTO = AccommodationDTO.builder()
+        var accommodationDTO = AccommodationDTOResponse.builder()
                 .name(accommodation.getName())
                 .description(accommodation.getDescription())
                 .address(accommodation.getAddress())
@@ -70,9 +71,7 @@ public class AccommodationController {
     }
 
 
-    @GetMapping(
-            value = "/{accommodationId}/images/{imageId}"
-    )
+    @GetMapping(value = "/{accommodationId}/images/{imageId}")
     public @ResponseBody ResponseEntity<?> getImageWithMediaType(@PathVariable("accommodationId") Long accommodationId,
                                                       @PathVariable("imageId") Long imageId) throws IOException {
 

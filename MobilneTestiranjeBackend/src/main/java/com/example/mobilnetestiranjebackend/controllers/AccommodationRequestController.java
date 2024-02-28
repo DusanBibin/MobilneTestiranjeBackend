@@ -1,6 +1,7 @@
 package com.example.mobilnetestiranjebackend.controllers;
 
 import com.example.mobilnetestiranjebackend.DTOs.AccommodationDTO;
+import com.example.mobilnetestiranjebackend.DTOs.AccommodationDTOEdit;
 import com.example.mobilnetestiranjebackend.enums.RequestStatus;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidEnumValueException;
 import com.example.mobilnetestiranjebackend.model.Owner;
@@ -36,7 +37,7 @@ public class AccommodationRequestController {
 
     @PreAuthorize("hasAuthority('OWNER')")
     @PostMapping(path = "/accommodations/{accommodationId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> createEditAccommodationRequest(@Valid @RequestPart("accommodationDTO") AccommodationDTO accommodationDTO,
+    public ResponseEntity<?> createEditAccommodationRequest(@Valid @RequestPart("accommodationDTO") AccommodationDTOEdit accommodationDTO,
                                                             @RequestPart("photos") List<MultipartFile> images,
                                                             @AuthenticationPrincipal Owner owner,
                                                             @PathVariable("accommodationId") Long accommodationId) {
