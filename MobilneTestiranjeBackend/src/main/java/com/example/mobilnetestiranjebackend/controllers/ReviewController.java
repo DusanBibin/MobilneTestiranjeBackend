@@ -3,7 +3,7 @@ package com.example.mobilnetestiranjebackend.controllers;
 
 import com.example.mobilnetestiranjebackend.DTOs.ReviewDTO;
 import com.example.mobilnetestiranjebackend.model.Guest;
-import com.example.mobilnetestiranjebackend.services.OwnerReviewService;
+import com.example.mobilnetestiranjebackend.services.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/owner-reviews")
 @RequiredArgsConstructor
-public class OwnerReviewController {
+public class ReviewController {
 
-    private final OwnerReviewService ownerService;
+    private final ReviewService ownerService;
 
     @PreAuthorize("hasAuthority('GUEST')")
     @PostMapping("/owners/{ownerId}")
@@ -26,6 +26,7 @@ public class OwnerReviewController {
 
         return ResponseEntity.ok().body("Successfully created new owner review");
     }
+
 
     @PreAuthorize("hasAuthority('GUEST')")
     @DeleteMapping("{reviewId}")

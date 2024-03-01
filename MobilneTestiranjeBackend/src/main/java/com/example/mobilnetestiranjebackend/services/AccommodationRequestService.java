@@ -297,6 +297,7 @@ public class AccommodationRequestService {
 
                     .owner(accommodationRequest.getOwner())
                     .reservations(new ArrayList<>())
+                    .accommodationReviews(new ArrayList<>())
                     .build();
 
             accommodationRepository.save(accommdation);

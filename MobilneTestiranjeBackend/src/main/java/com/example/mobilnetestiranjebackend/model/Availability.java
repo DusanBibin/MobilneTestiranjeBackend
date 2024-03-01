@@ -11,13 +11,11 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Entity
 @Table(name = "accommodation_availability")
-@ToString
 public class Availability {
     @Id
     @GeneratedValue
     private Long id;
 
-    @ToString.Exclude
     @ManyToOne
     private Accommodation accommodation;
 

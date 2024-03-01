@@ -13,7 +13,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Entity
 @Table(name = "reservation")
-@ToString
 public class Reservation {
     @Id
     @GeneratedValue
@@ -25,7 +24,6 @@ public class Reservation {
     private ReservationStatus status;
     private String reason;
 
-    @ToString.Exclude
     @ManyToOne
     private Guest guest;
     @ManyToOne

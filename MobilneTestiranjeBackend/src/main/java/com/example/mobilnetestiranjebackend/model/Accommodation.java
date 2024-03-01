@@ -13,7 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "accommodation")
-@ToString
 public class  Accommodation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +38,6 @@ public class  Accommodation {
 
     private Boolean autoAcceptEnabled;
 
-    @ToString.Exclude
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "accommodation")
     private List<Availability> availabilityList;
 
@@ -48,5 +46,8 @@ public class  Accommodation {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "accommodation")
     private List<Reservation> reservations;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "accommodation")
+    private List<AccommodationReview> accommodationReviews;
 
 }

@@ -8,6 +8,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.sql.Array;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +68,8 @@ private final ReservationRepository reservationRepository;
                 .phoneNumber("0691817839")
                 .reservations(new ArrayList<>())
                 .ownerReviews(new ArrayList<>())
+                .accommodationReviews(new ArrayList<>())
+                .favorites(new ArrayList<>())
                 .address("Neka ulica 123")
                 .emailConfirmed(true)
                 .blocked(false)
@@ -83,6 +86,8 @@ private final ReservationRepository reservationRepository;
                 .address("Neka ulica 123")
                 .reservations(new ArrayList<>())
                 .ownerReviews(new ArrayList<>())
+                .accommodationReviews(new ArrayList<>())
+                .favorites(new ArrayList<>())
                 .emailConfirmed(true)
                 .blocked(false)
                 .role(Role.GUEST)
@@ -145,6 +150,7 @@ private final ReservationRepository reservationRepository;
                 .owner(ownerDusan)
                 .availabilityList(new ArrayList<>())
                 .reservations(new ArrayList<>())
+                .accommodationReviews(new ArrayList<>())
                 .build();
         accommodation = accommodationRepository.save(accommodation);
 

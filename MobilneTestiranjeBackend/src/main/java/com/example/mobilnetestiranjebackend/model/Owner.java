@@ -15,19 +15,15 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "owner")
-@ToString
 public class Owner extends User {
 
 
-    @ToString.Exclude
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owner")
     private List<Accommodation> accommodations;
 
-    @ToString.Exclude
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AccommodationRequest> accommodationRequests;
 
-    @ToString.Exclude
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owner")
     private List<OwnerReview> ownerReviews;
 }

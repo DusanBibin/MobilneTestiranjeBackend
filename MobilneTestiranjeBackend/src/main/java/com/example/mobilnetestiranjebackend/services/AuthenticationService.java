@@ -70,6 +70,7 @@ public class AuthenticationService {
                     .role(Role.OWNER)
                     .verification(new Verification(code, LocalDateTime.now().plusDays(1)))
                     .accommodations(new ArrayList<Accommodation>())
+                    .ownerReviews(new ArrayList<>())
                     .accommodationRequests(new ArrayList<>())
                     .blocked(false)
                     .build();
@@ -87,6 +88,10 @@ public class AuthenticationService {
                     .role(Role.OWNER)
                     .verification(new Verification(code, LocalDateTime.now().plusDays(1)))
                     .reservations(new ArrayList<>())
+                    .accommodationReviews(new ArrayList<>())
+                    .ownerReviews(new ArrayList<>())
+                    .accommodationReviews(new ArrayList<>())
+                    .favorites(new ArrayList<>())
                     .blocked(false)
                     .build();
             user = guest;

@@ -16,14 +16,18 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "guest")
-@ToString
 public class Guest extends User {
-    @ToString.Exclude
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "guest")
     private List<Reservation> reservations;
 
-    @ToString.Exclude
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "guest")
     private List<OwnerReview> ownerReviews;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "guest")
+    private List<AccommodationReview> accommodationReviews;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Accommodation> favorites;
 
 }
