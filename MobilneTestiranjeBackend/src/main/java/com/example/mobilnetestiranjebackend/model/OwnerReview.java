@@ -13,6 +13,8 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "owner_reviews")
 public class OwnerReview extends Review {
 
+
+
     @ManyToOne
     private Guest guest;
 

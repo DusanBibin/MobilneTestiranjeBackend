@@ -22,6 +22,9 @@ public class AccommodationReview extends Review{
     private Guest guest;
 
     @ManyToOne
+    private Reservation reservation;
+
+    @ManyToOne
     private Accommodation accommodation;
 
     private Boolean allowed;

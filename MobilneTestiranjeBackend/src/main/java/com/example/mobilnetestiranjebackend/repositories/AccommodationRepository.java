@@ -17,4 +17,6 @@ public interface AccommodationRepository extends JpaRepository<Accommodation, Lo
 
     @Query("select a from Accommodation a where a.owner.id = :ownerId")
     List<Accommodation> findByOwnerId(Long ownerId);
+
+
 }

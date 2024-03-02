@@ -73,4 +73,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @Query("select r from Reservation r where r.guest.id = :guestId and r.accommodation.owner.id = :ownerId and" +
             " r.status = 1 and r.reservationEndDate <= CURRENT_DATE ")
     List<Reservation> findGuestCompletedReservations(Long ownerId, Long guestId);
+
+
 }
