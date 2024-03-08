@@ -26,16 +26,11 @@ import java.util.Optional;
 public class ReservationController {
 
 
-    private AccommodationService accommodationService;
-    private AvailabilityService availabilityService;
-    private ReservationService reservationService;
+    private final AccommodationService accommodationService;
+    private final AvailabilityService availabilityService;
+    private final ReservationService reservationService;
 
-    @Autowired
-    public ReservationController(AccommodationService accommodationService, AvailabilityService availabilityService, ReservationService reservationService) {
-        this.accommodationService = accommodationService;
-        this.availabilityService = availabilityService;
-        this.reservationService = reservationService;
-    }
+
 
     @PreAuthorize("hasAuthority('GUEST')")
     @PostMapping("/availability/{availabilityId}/reservation")

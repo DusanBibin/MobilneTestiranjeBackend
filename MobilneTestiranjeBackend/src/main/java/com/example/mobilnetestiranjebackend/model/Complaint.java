@@ -1,6 +1,7 @@
 package com.example.mobilnetestiranjebackend.model;
 
 
+import com.example.mobilnetestiranjebackend.enums.RequestStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,19 +13,18 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "reviews")
+@Table(name = "complaints")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Review {
+public class Complaint {
+
 
     @Id
     @GeneratedValue
     private Long id;
 
-    private String comment;
-    private Long rating;
+    private String reason;
 
-    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private Complaint complaint;
+    private RequestStatus status;
 
-
+    private String response;
 }

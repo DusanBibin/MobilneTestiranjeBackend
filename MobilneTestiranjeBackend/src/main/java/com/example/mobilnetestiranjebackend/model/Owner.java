@@ -26,4 +26,8 @@ public class Owner extends User {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owner")
     private List<OwnerReview> ownerReviews;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "owner")
+    private List<ReviewComplaint> reviewComplaints;
+
 }

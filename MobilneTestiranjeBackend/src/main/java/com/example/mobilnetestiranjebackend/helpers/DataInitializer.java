@@ -25,6 +25,9 @@ private final AccommodationRequestRepository accommodationRequestRepository;
 private final AvailabilityRequestRepository availabilityRequestRepository;
 private final GuestRepository guestRepository;
 private final ReservationRepository reservationRepository;
+private final AccommodationReviewRepository accommodationReviewRepository;
+private final OwnerReviewRepository ownerReviewRepository;
+private final ReviewComplaintRepository reviewComplaintRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -41,6 +44,7 @@ private final ReservationRepository reservationRepository;
                 .accommodationRequests(new ArrayList<>())
                 .accommodations(new ArrayList<>())
                 .ownerReviews(new ArrayList<>())
+                .reviewComplaints(new ArrayList<>())
                 .build();
         ownerDusan = ownerRepository.save(ownerDusan);
         Owner ownerSomeoneElse = Owner.builder()
@@ -56,6 +60,7 @@ private final ReservationRepository reservationRepository;
                 .accommodationRequests(new ArrayList<>())
                 .accommodations(new ArrayList<>())
                 .ownerReviews(new ArrayList<>())
+                .reviewComplaints(new ArrayList<>())
                 .build();
 
         ownerSomeoneElse = ownerRepository.save(ownerSomeoneElse);
@@ -70,6 +75,7 @@ private final ReservationRepository reservationRepository;
                 .ownerReviews(new ArrayList<>())
                 .accommodationReviews(new ArrayList<>())
                 .favorites(new ArrayList<>())
+                .reviewComplaints(new ArrayList<>())
                 .address("Neka ulica 123")
                 .emailConfirmed(true)
                 .blocked(false)
@@ -88,6 +94,7 @@ private final ReservationRepository reservationRepository;
                 .ownerReviews(new ArrayList<>())
                 .accommodationReviews(new ArrayList<>())
                 .favorites(new ArrayList<>())
+                .reviewComplaints(new ArrayList<>())
                 .emailConfirmed(true)
                 .blocked(false)
                 .role(Role.GUEST)
@@ -216,6 +223,62 @@ private final ReservationRepository reservationRepository;
 
         accommodation.getReservations().add(reservation);
         accommodation = accommodationRepository.save(accommodation);
+
+
+
+        var ownerReview = OwnerReview.builder()
+                .rating(5L)
+                .comment("owner Review")
+                .owner(ownerDusan)
+                .guest(guestDusan1)
+                .complaint(null)
+                .build();
+
+        ownerReview = ownerReviewRepository.save(ownerReview);
+
+        var accommodationReview = AccommodationReview.builder()
+                .rating(3L)
+                .comment("accommodation review")
+                .allowed(false)
+                .guest(guestDusan1)
+                .reservation(reservation)
+                .accommodation(accommodation)
+                .complaint(null)
+                .build();
+
+        accommodationReview = accommodationReviewRepository.save(accommodationReview);
+
+
+        var ownerReviewComplaint = ReviewComplaint.builder()
+                .owner(ownerDusan)
+                .review(ownerReview)
+                .guest(guestDusan1)
+                .reason("some reason")
+                .status(RequestStatus.PENDING)
+                .response("")
+                .build();
+
+        ownerReviewComplaint = reviewComplaintRepository.save(ownerReviewComplaint);
+
+
+        var accommodationReviewComplaint = ReviewComplaint.builder()
+                .owner(ownerDusan)
+                .review(accommodationReview)
+                .guest(guestDusan1)
+                .reason("some reason")
+                .status(RequestStatus.PENDING)
+                .response("")
+                .build();
+
+
+        accommodationReviewComplaint = reviewComplaintRepository.save(accommodationReviewComplaint);
+
+
+        ownerReview.setComplaint(ownerReviewComplaint);
+        ownerReview = ownerReviewRepository.save(ownerReview);
+
+        accommodationReview.setComplaint(accommodationReviewComplaint);
+        accommodationReview = accommodationReviewRepository.save(accommodationReview);
 
 
 
