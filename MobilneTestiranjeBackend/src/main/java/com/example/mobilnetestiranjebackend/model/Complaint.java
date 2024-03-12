@@ -17,7 +17,6 @@ import lombok.experimental.SuperBuilder;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Complaint {
 
-
     @Id
     @GeneratedValue
     private Long id;
@@ -27,4 +26,5 @@ public class Complaint {
     private RequestStatus status;
 
     private String response;
+
 }

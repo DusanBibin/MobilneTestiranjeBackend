@@ -20,6 +20,9 @@ public class ComplaintService {
     private final OwnerRepository ownerRepository;
     private final OwnerReviewRepository ownerReviewRepository;
     private final AccommodationReviewRepository accommodationReviewRepository;
+    private final UserComplaintRepository userComplaintRepository;
+    private final ReservationRepository reservationRepository;
+
     public void createReviewComplaint(Long ownerId, Long reviewId, String reason) {
 
         var ownerWrapper = ownerRepository.findById(ownerId);
@@ -81,13 +84,77 @@ public class ComplaintService {
         }
 
 
-
-
         owner.getReviewComplaints().add(reviewComplaint);
         owner = ownerRepository.save(owner);
 
         guest.getReviewComplaints().add(reviewComplaint);
         guest = guestRepository.save(guest);
+
+    }
+
+    public void createUserComplaint(Long reporterId, Long reportedId, String reason) {
+
+        Owner owner = null;
+        Guest guest = null;
+
+        User reporter = null;
+        User reported = null;
+
+        var ownerWrapper = ownerRepository.findOwnerById(reporterId);
+        if(ownerWrapper.isPresent()){
+
+            owner = ownerWrapper.get();
+            reporter = owner;
+
+            var guestWrapper = guestRepository.findGuestById(reportedId);
+            if(guestWrapper.isPresent()){
+                guest = guestWrapper.get();
+                reported = guest;
+            }
+        }
+
+
+        ownerWrapper = ownerRepository.findOwnerById(reportedId);
+        if(ownerWrapper.isPresent()){
+
+            owner = ownerWrapper.get();
+            reported = owner;
+
+            var guestWrapper = guestRepository.findGuestById(reporterId);
+            if(guestWrapper.isPresent()){
+                guest = guestWrapper.get();
+                reporter = guest;
+            }
+        }
+
+
+
+
+        if(owner == null || guest == null) throw new NonExistingEntityException("User with this id doesn't exist");
+
+
+
+        var completedReservations = reservationRepository.findGuestCompletedReservations(owner.getId(), guest.getId());
+        if(completedReservations.isEmpty()) throw new InvalidAuthorizationException("No reservations found between the reporter and reported users");
+
+
+
+
+        var pendingComplaints = userComplaintRepository.findByReporterIdAndReportedId(reporterId, reportedId);
+        if(!pendingComplaints.isEmpty()) throw new InvalidAuthorizationException("There already exists a pending complaint");
+
+
+        var userComplaint = UserComplaint.builder()
+                .reporter(reporter)
+                .reported(reported)
+                .status(RequestStatus.PENDING)
+                .reason(reason)
+                .response("")
+                .build();
+
+
+        userComplaint = userComplaintRepository.save(userComplaint);
+
 
     }
 }

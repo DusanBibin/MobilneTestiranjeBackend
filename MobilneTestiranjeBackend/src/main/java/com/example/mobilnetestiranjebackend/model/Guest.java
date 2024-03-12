@@ -33,4 +33,5 @@ public class Guest extends User {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "guest")
     private List<ReviewComplaint> reviewComplaints;
 
+
 }
