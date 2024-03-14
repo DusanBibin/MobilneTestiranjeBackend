@@ -27,7 +27,7 @@ public class Guest extends User {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "guest")
     private List<AccommodationReview> accommodationReviews;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany
     private List<Accommodation> favorites;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "guest")

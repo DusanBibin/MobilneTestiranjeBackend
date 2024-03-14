@@ -7,10 +7,12 @@ import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthorizationExcep
 import com.example.mobilnetestiranjebackend.exceptions.InvalidFileExtensionException;
 import com.example.mobilnetestiranjebackend.exceptions.NonExistingEntityException;
 import com.example.mobilnetestiranjebackend.model.Availability;
+import com.example.mobilnetestiranjebackend.model.Guest;
 import com.example.mobilnetestiranjebackend.model.User;
 import com.example.mobilnetestiranjebackend.services.AccommodationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -121,6 +123,30 @@ public class AccommodationController {
 
         return new ResponseEntity<>(imageBytes, headers, 200);
     }
+
+
+    @PreAuthorize("hasAuthority('GUEST')")
+    @PutMapping(path = "/{accommodationId}/add-favorites")
+    public ResponseEntity<?> addToFavorites(@PathVariable("accommodationId") Long accommodationId,
+                                            @AuthenticationPrincipal Guest guest){
+
+
+        accommodationService.addToFavorites(accommodationId, guest.getId());
+
+        return new ResponseEntity<>(("Successfully added accommodation to favorites"), HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('GUEST')")
+    @PutMapping(path = "/{accommodationId}/remove-favorites")
+    public ResponseEntity<?> removeFromFavorites(@PathVariable("accommodationId") Long accommodationId,
+                                            @AuthenticationPrincipal Guest guest){
+
+
+        accommodationService.removeFromFavorites(accommodationId, guest.getId());
+
+        return new ResponseEntity<>(("Successfully removed accommodation from favorites"), HttpStatus.OK);
+    }
+
 
 
 }
