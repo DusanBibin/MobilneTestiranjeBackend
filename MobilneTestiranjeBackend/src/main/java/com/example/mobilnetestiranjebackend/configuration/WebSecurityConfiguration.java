@@ -43,10 +43,8 @@ public class WebSecurityConfiguration {
                         "/api/v1/guest/**",
                         "/api/v1/owner/**",
                         "/api/v1/user/**",
-                        "/api/v1/owner-reviews/**",
-                        "/api/v1/accommodation-reviews/**",
-                        "/api/v1/review-complaints/**",
-                        "/api/v1/user-complaints/**")
+                        "/api/v1/reviews/**",
+                        "/api/v1/complaints/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated()

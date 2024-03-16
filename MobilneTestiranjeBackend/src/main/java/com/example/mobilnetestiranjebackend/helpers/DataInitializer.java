@@ -28,9 +28,14 @@ private final ReservationRepository reservationRepository;
 private final AccommodationReviewRepository accommodationReviewRepository;
 private final OwnerReviewRepository ownerReviewRepository;
 private final ReviewComplaintRepository reviewComplaintRepository;
+private final UserRepository userRepository;
 
     @Override
     public void run(String... args) throws Exception {
+
+
+
+
         Owner ownerDusan = Owner.builder()
                 .firstName("Dusan")
                 .lastname("Bibin")
@@ -103,6 +108,23 @@ private final ReviewComplaintRepository reviewComplaintRepository;
         ownerDusan = ownerRepository.save(ownerDusan);
         guestDusan1 = guestRepository.save(guestDusan1);
         guestDusan2 = guestRepository.save(guestDusan2);
+
+
+        Admin admin = Admin.builder()
+                .firstName("admin")
+                .lastname("admin")
+                .email("supportadmin@support.com")
+                .password(passwordEncoder.encode("123"))
+                .phoneNumber("0691917839")
+                .address("Neka ulica 123")
+                .emailConfirmed(true)
+                .blocked(false)
+                .role(Role.ADMIN)
+                .build();
+
+        admin = userRepository.save(admin);
+
+
 
         var accommodationRequest = AccommodationRequest.builder()
                 .name("AccName")

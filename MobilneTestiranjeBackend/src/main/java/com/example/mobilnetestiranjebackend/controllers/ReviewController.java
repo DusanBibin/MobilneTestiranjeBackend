@@ -3,7 +3,6 @@ package com.example.mobilnetestiranjebackend.controllers;
 
 import com.example.mobilnetestiranjebackend.DTOs.ReviewDTO;
 import com.example.mobilnetestiranjebackend.model.Guest;
-import com.example.mobilnetestiranjebackend.services.OwnerService;
 import com.example.mobilnetestiranjebackend.services.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -12,11 +11,31 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/accommodation-reviews")
+@RequestMapping("/api/v1/reviews")
 @RequiredArgsConstructor
-public class AccommodationReviewController {
-
+public class ReviewController {
     private final ReviewService reviewService;
+
+    @PreAuthorize("hasAuthority('GUEST')")
+    @PostMapping("/owners/{ownerId}")
+    public ResponseEntity<?> createOwnerReview(@PathVariable("ownerId") Long ownerId,
+                                               @RequestBody ReviewDTO reviewDTO,
+                                               @AuthenticationPrincipal Guest guest){
+        reviewService.createOwnerReview(reviewDTO, ownerId, guest.getId());
+
+        return ResponseEntity.ok().body("Successfully created new owner review");
+    }
+
+
+    @PreAuthorize("hasAuthority('GUEST')")
+    @DeleteMapping("/owner-reviews/{reviewId}")
+    public ResponseEntity<?> deleteOwnerReview(@PathVariable("reviewId") Long reviewId,
+                                               @AuthenticationPrincipal Guest guest){
+        reviewService.deleteOwnerReview(reviewId, guest.getId());
+        return ResponseEntity.ok().body("Successfully deleted owner review");
+    }
+
+
 
     @PreAuthorize("hasAuthority('GUEST')")
     @PostMapping("/accommodations/{accommodationId}/reservation/{reservationId}")
@@ -30,10 +49,12 @@ public class AccommodationReviewController {
     }
 
     @PreAuthorize("hasAuthority('GUEST')")
-    @DeleteMapping("{reviewId}")
+    @DeleteMapping("/accommodation-reviews/{reviewId}")
     public ResponseEntity<?> deleteAccommodationReview(@PathVariable("reviewId") Long reviewId,
-                                               @AuthenticationPrincipal Guest guest) {
+                                                       @AuthenticationPrincipal Guest guest) {
         reviewService.deleteAccommodationReview(reviewId, guest.getId());
         return ResponseEntity.ok().body("Successfully deleted owner review");
     }
+
+
 }

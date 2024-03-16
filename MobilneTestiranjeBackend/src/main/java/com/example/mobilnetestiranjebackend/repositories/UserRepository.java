@@ -10,7 +10,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
 
-    Optional<User> findById(int id);
+
+    @Query("select u from User u where u.id = :userId")
+    Optional<User> findByUserId(Long userId);
 
 
     Optional<User> findUserByVerification_VerificationCode(String code);

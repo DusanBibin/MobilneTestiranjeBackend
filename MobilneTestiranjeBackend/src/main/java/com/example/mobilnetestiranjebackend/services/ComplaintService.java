@@ -2,12 +2,14 @@ package com.example.mobilnetestiranjebackend.services;
 
 
 import com.example.mobilnetestiranjebackend.enums.RequestStatus;
+import com.example.mobilnetestiranjebackend.enums.ReservationStatus;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthorizationException;
 import com.example.mobilnetestiranjebackend.exceptions.NonExistingEntityException;
 import com.example.mobilnetestiranjebackend.model.*;
 import com.example.mobilnetestiranjebackend.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.InvalidIsolationLevelException;
 
 import java.util.Optional;
 
@@ -22,6 +24,7 @@ public class ComplaintService {
     private final AccommodationReviewRepository accommodationReviewRepository;
     private final UserComplaintRepository userComplaintRepository;
     private final ReservationRepository reservationRepository;
+    private final UserRepository userRepository;
 
     public void createReviewComplaint(Long ownerId, Long reviewId, String reason) {
 
@@ -157,4 +160,64 @@ public class ComplaintService {
 
 
     }
+
+    public void reviewReviewComplaint(Long complaintId, String response, RequestStatus status) {
+
+        var reviewComplaintWrapper = reviewComplaintRepository.findById(complaintId);
+        if(reviewComplaintWrapper.isEmpty()) throw new NonExistingEntityException("Review with this id doesn't exist");
+        var reviewComplaint = reviewComplaintWrapper.get();
+
+
+        if(!reviewComplaint.getStatus().equals(RequestStatus.PENDING))
+            throw new InvalidAuthorizationException("You cannot already review already reviewed complaint");
+
+        reviewComplaint.setStatus(status);
+        reviewComplaint.setResponse(response);
+        reviewComplaint = reviewComplaintRepository.save(reviewComplaint);
+
+    }
+
+
+    public void reviewUserComplaint(Long complaintId, String response, RequestStatus status) {
+
+        var userComplaintWrapper = userComplaintRepository.findById(complaintId);
+        if(userComplaintWrapper.isEmpty()) throw new NonExistingEntityException("Review with this id doesn't exist");
+        var userComplaint = userComplaintWrapper.get();
+
+
+        if(!userComplaint.getStatus().equals(RequestStatus.PENDING))
+            throw new InvalidAuthorizationException("You cannot already review already reviewed complaint");
+        
+        var userWrapper = userRepository.findByUserId(userComplaint.getReported().getId());
+        if(userWrapper.isEmpty()) throw new NonExistingEntityException("User with this id doesn't exist");
+        var user = userWrapper.get();
+
+        if(user.getBlocked()) throw new InvalidIsolationLevelException("User is already blocked");
+
+
+        if(status.equals(RequestStatus.ACCEPTED)){
+
+            user.setBlocked(true);
+            user = userRepository.save(user);
+
+            if(user instanceof Guest){
+                Guest guest = (Guest) user;
+
+                for(Reservation reservation: guest.getReservations()){
+                    reservation.setStatus(ReservationStatus.CANCELED);
+                    reservation = reservationRepository.save(reservation);
+                }
+            }
+        }
+
+
+        userComplaint.setStatus(status);
+        userComplaint.setResponse(response);
+        userComplaint = userComplaintRepository.save(userComplaint);
+        
+    }
+
+
+
+
 }
