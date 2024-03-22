@@ -39,7 +39,6 @@ public class UserService {
         user.setFirstName(userDTO.getFirstName());
         user.setAddress(userDTO.getAddress());
         user.setLastname(userDTO.getLastName());
-        user.setPhoneNumber(userDTO.getPhoneNumber());
 
         userRepository.save(user);
     }
@@ -59,5 +58,11 @@ public class UserService {
 
     }
 
+
+    public User findByEmail(String email) {
+        var userWrapper = userRepository.findByEmail(email);
+        if(userWrapper.isEmpty()) throw new NonExistingEntityException("User with this email doesn't exist");
+        return userWrapper.get();
+    }
 
 }

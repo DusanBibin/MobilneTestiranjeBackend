@@ -32,11 +32,29 @@ public class UserController {
         return new ResponseEntity<>((userDTOResponse), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAuthority('OWNER')")
+    @PreAuthorize("hasAuthority('OWNER') or hasAuthority('GUEST')")
     @PutMapping()
     public ResponseEntity<?> changeUserInfo(@RequestBody UserDTO userDTO, @AuthenticationPrincipal User user){
 
         userService.changeUserInfo(userDTO, user);
+
+        return new ResponseEntity<>((userDTO), HttpStatus.OK);
+
+    }
+
+    @PreAuthorize("hasAuthority('OWNER') or hasAuthority('GUEST')")
+    @PutMapping("/change-email")
+    public ResponseEntity<?> changeEmail(@RequestBody UserDTO userDTO, @AuthenticationPrincipal User user){
+
+
+        return new ResponseEntity<>((userDTO), HttpStatus.OK);
+
+    }
+
+    @PreAuthorize("hasAuthority('OWNER') or hasAuthority('GUEST')")
+    @PutMapping("/change-phone-number")
+    public ResponseEntity<?> changePhoneNumber(@RequestBody UserDTO userDTO, @AuthenticationPrincipal User user){
+
 
         return new ResponseEntity<>((userDTO), HttpStatus.OK);
 

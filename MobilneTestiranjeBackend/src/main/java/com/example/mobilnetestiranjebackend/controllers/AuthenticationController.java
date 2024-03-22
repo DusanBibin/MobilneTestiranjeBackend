@@ -9,6 +9,7 @@ import com.example.mobilnetestiranjebackend.exceptions.InvalidEnumValueException
 import com.example.mobilnetestiranjebackend.exceptions.InvalidRepeatPasswordException;
 import com.example.mobilnetestiranjebackend.exceptions.UserAlreadyExistsException;
 import com.example.mobilnetestiranjebackend.services.AuthenticationService;
+import com.example.mobilnetestiranjebackend.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,11 +32,11 @@ public class AuthenticationController {
         if(request.getRole().equals(Role.ADMIN)) throw new InvalidEnumValueException("You cannot register as an admin");
 
 
-        if(authService.userExist(request.getEmail()))
-            throw new UserAlreadyExistsException("User with email " + request.getEmail() + " already exists");
+        authService.userExist(request.getEmail(), request.getPhoneNumber());
 
         authService.register(request);
-        return new ResponseEntity<>(("Verification email has been sent to " + request.getEmail()), HttpStatus.OK);
+
+        return new ResponseEntity<>(("Verification sms has been sent to " + request.getPhoneNumber()), HttpStatus.OK);
     }
 
 
@@ -52,6 +53,16 @@ public class AuthenticationController {
 
         authService.verifyUser(verificationCode);
         return new ResponseEntity<>(("Account activated!"), HttpStatus.OK);
+    }
+
+    @GetMapping("/{email}/check-sms-code/{smsCode}")
+    public ResponseEntity<?> checkSendSms(@PathVariable("smsCode") String smsCode,
+                                          @PathVariable("email") String email){
+
+
+        authService.checkVerificationSms(smsCode, email);
+
+        return new ResponseEntity<>(("Confirmation email has been sent to " + email), HttpStatus.OK);
     }
 
 

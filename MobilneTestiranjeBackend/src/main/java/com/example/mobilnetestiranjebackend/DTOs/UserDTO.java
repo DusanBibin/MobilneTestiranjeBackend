@@ -22,13 +22,6 @@ public class UserDTO {
     @NotBlank(message = "Last name is required")
     private String lastName;
 
-    @NotBlank(message = "Email is required")
-    private String email;
-
-    @NotBlank(message = "Phone number is required")
-    @Size(min = 10, message = "Phone number must be at least 10 digits")
-    private String phoneNumber;
-
     @NotBlank(message = "Address is required")
     private String address;
 }
