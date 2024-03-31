@@ -1,4 +1,4 @@
-package com.example.mobilneprojekat;
+package com.example.projekatmobilne;
 
 import org.junit.Test;
 
