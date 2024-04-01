@@ -175,7 +175,7 @@ public class AuthenticationService {
                     )
             );
         }catch (AuthenticationException e){
-            throw new InvalidAuthenticationException("Invalid credentials");
+            throw new InvalidAuthenticationException("Email or password is invalid");
         }
 
 

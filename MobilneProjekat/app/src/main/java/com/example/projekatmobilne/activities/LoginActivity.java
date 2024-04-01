@@ -34,11 +34,12 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(binding.getRoot());
 
-        binding.button.setOnClickListener(v -> {
-
+        binding.loginButton.setOnClickListener(v -> {
+            binding.emailInputLayout.setError(null);
+            binding.passwordInputLayout.setError(null);
             AuthenticationRequestDTO request = new AuthenticationRequestDTO();
-            request.setEmail(binding.editTextTextEmailAddress.getText().toString());
-            request.setPassword(binding.editTextTextPassword.getText().toString());
+            request.setEmail(binding.emailInputEditText.getText().toString());
+            request.setPassword(binding.passwordInputEditText.getText().toString());
 
             Call<ResponseBody> call = ClientUtils.apiService.authenticate(request);
             call.enqueue(new Callback<ResponseBody>() {
@@ -46,10 +47,20 @@ public class LoginActivity extends AppCompatActivity {
                 public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                     if(response.code() == 400){
 
-                        Map map = ResponseParser.parseResponse(response, Map.class , true);
+                        Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
 
-                        System.out.println("kuraci");
-                        System.out.println(map);
+                        if(map.containsKey("message")){
+                            String errMessage = map.get("message");
+                            binding.emailInputLayout.setError(errMessage);
+                            binding.passwordInputLayout.setError(errMessage);
+                        }
+                        if(map.containsKey("email")){
+                            binding.emailInputLayout.setError(map.get("email"));
+                        }
+                        if(map.containsKey("password")){
+                            binding.passwordInputLayout.setError(map.get("password"));
+                        }
+
 
                     }
                     if(response.code() == 200) {
