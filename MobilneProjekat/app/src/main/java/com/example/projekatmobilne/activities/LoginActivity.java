@@ -3,18 +3,21 @@ package com.example.projekatmobilne.activities;
 import android.os.Bundle;
 import android.util.Log;
 
-import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
-import com.example.projekatmobilne.R;
 import com.example.projekatmobilne.clients.ClientUtils;
 import com.example.projekatmobilne.databinding.ActivityLoginBinding;
 import com.example.projekatmobilne.model.AuthenticationRequestDTO;
 import com.example.projekatmobilne.model.AuthenticationResponseDTO;
+import com.example.projekatmobilne.tools.JWTManager;
+import com.example.projekatmobilne.tools.ResponseParser;
+import com.google.gson.Gson;
 
+import java.io.IOException;
+import java.util.Map;
+
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,18 +40,29 @@ public class LoginActivity extends AppCompatActivity {
             request.setEmail(binding.editTextTextEmailAddress.getText().toString());
             request.setPassword(binding.editTextTextPassword.getText().toString());
 
-            Call<AuthenticationResponseDTO> call = ClientUtils.apiService.authenticate(request);
-            call.enqueue(new Callback<AuthenticationResponseDTO>() {
+            Call<ResponseBody> call = ClientUtils.apiService.authenticate(request);
+            call.enqueue(new Callback<ResponseBody>() {
                 @Override
-                public void onResponse(Call<AuthenticationResponseDTO> call, Response<AuthenticationResponseDTO> response) {
-                    Log.i("uspeh", "uspeh");
-                    System.out.println(response);
+                public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                    if(response.code() == 400){
+
+                        Map map = ResponseParser.parseResponse(response, Map.class , true);
+
+                        System.out.println("kuraci");
+                        System.out.println(map);
+
+                    }
+                    if(response.code() == 200) {
+                        AuthenticationResponseDTO responseDTO =
+                                ResponseParser.parseResponse(response, AuthenticationResponseDTO.class, false);
+
+                          JWTManager.saveJWT(getApplicationContext(), responseDTO.getToken());
+                    }
                 }
 
                 @Override
-                public void onFailure(Call<AuthenticationResponseDTO> call, Throwable t) {
+                public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
                     Log.i("neuspeh", "neuspeh");
-                    System.out.println(t);
                 }
             });
         });

@@ -16,10 +16,10 @@ public class Receiver extends BroadcastReceiver {
         int status = CheckConnectionTools.getConnectivityStatus(context);
 
         System.out.println(status);
-        if (status == CheckConnectionTools.TYPE_MOBILE  || status == CheckConnectionTools.TYPE_WIFI) {
-            Toast.makeText(context, "KONEKTOVAN JE NA INTERNET", Toast.LENGTH_SHORT).show();
+        if (status == CheckConnectionTools.TYPE_NOT_CONNECTED) {
+            Toast.makeText(context, "NIJE KONEKTOVAN JE NA INTERNET", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(context, "NIJE KONEKTOVAN NA INTERNET", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "KONEKTOVAN NA INTERNET", Toast.LENGTH_SHORT).show();
         }
     }
 }
