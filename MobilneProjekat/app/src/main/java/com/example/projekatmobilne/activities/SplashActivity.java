@@ -23,7 +23,7 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        getSupportActionBar().hide();
+        //getSupportActionBar().hide();
         int SPLASH_TIME_OUT = 3000;
         new Timer().schedule(new TimerTask() {
             @Override

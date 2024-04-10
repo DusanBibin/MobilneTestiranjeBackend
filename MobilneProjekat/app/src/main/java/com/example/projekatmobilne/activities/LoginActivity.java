@@ -1,5 +1,6 @@
 package com.example.projekatmobilne.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -30,7 +31,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
-        getSupportActionBar().hide();
+        //getSupportActionBar().hide();
 
         setContentView(binding.getRoot());
 
@@ -68,6 +69,9 @@ public class LoginActivity extends AppCompatActivity {
                                 ResponseParser.parseResponse(response, AuthenticationResponseDTO.class, false);
 
                           JWTManager.saveJWT(getApplicationContext(), responseDTO.getToken());
+                        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                        startActivity(intent);
+                        finish();
                     }
                 }
 

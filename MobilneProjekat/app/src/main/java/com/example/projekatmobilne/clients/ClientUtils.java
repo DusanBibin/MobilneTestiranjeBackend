@@ -18,6 +18,7 @@ public class ClientUtils {
      * Ovo ce nam sluziti za debug, da vidimo da li zahtevi i odgovori idu
      * odnosno dolaze i kako izgeldaju.
      * */
+
     public static OkHttpClient test(){
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
