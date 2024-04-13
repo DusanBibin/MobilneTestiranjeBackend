@@ -3,6 +3,7 @@ package com.example.projekatmobilne.activities;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +14,8 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.projekatmobilne.R;
 import com.example.projekatmobilne.receivers.Receiver;
 
+import java.io.IOException;
+import java.net.InetAddress;
 import java.util.Timer;
 import java.util.TimerTask;
 

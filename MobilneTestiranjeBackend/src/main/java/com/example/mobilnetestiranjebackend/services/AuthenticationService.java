@@ -223,7 +223,7 @@ public class AuthenticationService {
                 .setTo(user.getPhoneNumber())
                 .setCode(smsCode)
                 .create();
-
+        System.out.println(verificationCheck.getStatus());
         if(!verificationCheck.getValid()) throw new InvalidAuthenticationException("The sms code is invalid");
 
 

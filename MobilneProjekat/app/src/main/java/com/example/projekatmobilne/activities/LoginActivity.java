@@ -3,6 +3,7 @@ package com.example.projekatmobilne.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -77,7 +78,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                    Log.i("neuspeh", "neuspeh");
+                    Toast.makeText(LoginActivity.this, "There was a problem, try again later", Toast.LENGTH_SHORT).show();
                 }
             });
         });
