@@ -36,6 +36,12 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(binding.getRoot());
 
+
+        binding.textRedirectRegister.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+            startActivity(intent);
+        });
+
         binding.loginButton.setOnClickListener(v -> {
             binding.emailInputLayout.setError(null);
             binding.passwordInputLayout.setError(null);

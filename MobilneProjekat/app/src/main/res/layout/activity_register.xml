@@ -7,167 +7,163 @@
     android:layout_height="match_parent"
     tools:context=".activities.RegisterActivity">
 
-
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/nameInputLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:hint="Name"
-        app:endIconMode="clear_text"
-        app:errorEnabled="true"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.13">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.001"
+        >
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/nameInputEditText"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textPersonName" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|enterAlways">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/surnameInputLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:hint="Surname"
-        app:endIconMode="clear_text"
-        app:errorEnabled="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/nameInputLayout"
-        app:layout_constraintVertical_bias="0.13">
+        app:layout_constraintTop_toBottomOf="@+id/app_bar">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/surnameInputEditText"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/nameInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:hint="Name"
+            app:endIconMode="clear_text"
+            app:errorEnabled="true">
 
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/nameInputEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/addressInputLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:hint="Address"
-        app:endIconMode="clear_text"
-        app:errorEnabled="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/surnameInputLayout"
-        app:layout_constraintVertical_bias="0.13">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/addressInputEditText"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/surnameInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:hint="Surname"
+            app:endIconMode="clear_text"
+            app:errorEnabled="true">
 
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/surnameInputEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/emailInputLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:hint="Email"
-        app:endIconMode="clear_text"
-        app:errorEnabled="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/addressInputLayout"
-        app:layout_constraintVertical_bias="0.13">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/emailInputEditText"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/addressInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textEmailAddress" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:hint="Address"
+            app:endIconMode="clear_text"
+            app:errorEnabled="true">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/phoneNumberInputLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:hint="Phone number"
-        app:endIconMode="clear_text"
-        app:errorEnabled="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/emailInputLayout"
-        app:layout_constraintVertical_bias="0.13">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/addressInputEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPostalAddress" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/phoneNumberInputEditText"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/emailInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="phone" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:hint="Email"
+            app:endIconMode="clear_text"
+            app:errorEnabled="true">
 
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/emailInputEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/passwordInputLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:hint="Password"
-        app:endIconMode="clear_text"
-        app:errorEnabled="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/phoneNumberInputLayout"
-        app:layout_constraintVertical_bias="0.13">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/passwordInputEditText"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/phoneInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPassword" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:hint="Phone number"
+            app:endIconMode="clear_text"
+            app:errorEnabled="true">
 
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/phoneInputEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/repeatPasswordInputLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:hint="Repeat password"
-        app:endIconMode="clear_text"
-        app:errorEnabled="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/passwordInputLayout"
-        app:layout_constraintVertical_bias="0.13">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/repeatPasswordInputEditText"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/passwordInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPassword" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:hint="Password"
+            app:endIconMode="clear_text"
+            app:errorEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/passwordInputEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/passwordRepeatInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Repeat password"
+            app:endIconMode="clear_text"
+            app:errorEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/passwordRepeatInputEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/registerButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Register" />
+
+    </LinearLayout>
+
+
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

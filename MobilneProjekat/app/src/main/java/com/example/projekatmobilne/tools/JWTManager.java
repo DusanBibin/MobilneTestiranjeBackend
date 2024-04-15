@@ -74,6 +74,8 @@ public class JWTManager {
         return getSharedPreferences(context).getString("role", null);
     }
 
+
+
     public static void clearUserData(Context context) {
         SharedPreferences.Editor editor = getSharedPreferences(context).edit();
         editor.remove("jwt");
