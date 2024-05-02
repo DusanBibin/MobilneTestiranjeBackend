@@ -36,7 +36,7 @@ public class AuthenticationController {
 
         authService.register(request);
 
-        return new ResponseEntity<>(("Verification sms has been sent to " + request.getPhoneNumber()), HttpStatus.OK);
+        return new ResponseEntity<>(("Verification email has been sent to " + request.getEmail()), HttpStatus.OK);
     }
 
 

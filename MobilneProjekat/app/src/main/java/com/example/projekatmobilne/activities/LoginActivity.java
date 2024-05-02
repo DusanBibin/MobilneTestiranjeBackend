@@ -12,6 +12,7 @@ import com.example.projekatmobilne.clients.ClientUtils;
 import com.example.projekatmobilne.databinding.ActivityLoginBinding;
 import com.example.projekatmobilne.model.AuthenticationRequestDTO;
 import com.example.projekatmobilne.model.AuthenticationResponseDTO;
+import com.example.projekatmobilne.services.ConnectionCheckService;
 import com.example.projekatmobilne.tools.JWTManager;
 import com.example.projekatmobilne.tools.ResponseParser;
 import com.google.gson.Gson;
@@ -36,6 +37,8 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(binding.getRoot());
 
+        Intent serviceIntent = new Intent(this, ConnectionCheckService.class);
+        startService(serviceIntent);
 
         binding.textRedirectRegister.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);

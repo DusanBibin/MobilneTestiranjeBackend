@@ -51,11 +51,8 @@ public class AuthenticationService {
 
     private static final String VERIFICATION_TEMPLATE_ID = "d-3d2f42ee76ed4904bb916951f3471b95";
     public void userExist(String email, String phoneNumber){
-
-        var userWrapper = userRepository.findByEmail(email);
-        if(userWrapper.isPresent()) throw new EntityAlreadyExistsException("User with this email already exists");
-
-
+        userRepository.findByEmail(email).ifPresent(user -> {throw new EntityAlreadyExistsException("User with this email already exists");});
+        userRepository.findByPhoneNumber(phoneNumber).ifPresent(user -> {throw new EntityAlreadyExistsException("User with this phone number already exists");});
     }
 
     public void register(RegisterRequestDTO request) {
@@ -107,11 +104,11 @@ public class AuthenticationService {
             guestRepository.save(guest);
         }
 
-        try {
-            sendVerificationEmail(user);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            sendVerificationEmail(user);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
         //sendVerificationSms(user.getPhoneNumber());
 
     }

@@ -3,6 +3,7 @@ package com.example.projekatmobilne.clients;
 
 import com.example.projekatmobilne.model.AuthenticationRequestDTO;
 import com.example.projekatmobilne.model.AuthenticationResponseDTO;
+import com.example.projekatmobilne.model.RegisterRequestDTO;
 
 import java.util.ArrayList;
 
@@ -24,4 +25,10 @@ public interface ApiService {
     Call<ResponseBody> authenticate(@Body AuthenticationRequestDTO request);
 
 
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @POST("auth/register")
+    Call<ResponseBody> register(@Body RegisterRequestDTO request);
 }

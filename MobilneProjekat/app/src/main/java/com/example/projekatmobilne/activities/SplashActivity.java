@@ -1,8 +1,11 @@
 package com.example.projekatmobilne.activities;
 
 import android.app.Dialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -11,7 +14,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.projekatmobilne.R;
 import com.example.projekatmobilne.databinding.ActivitySplashBinding;
-import com.example.projekatmobilne.receivers.Receiver;
+import com.example.projekatmobilne.receivers.ConnectionStatusReceiver;
+import com.example.projekatmobilne.services.ConnectionCheckService;
+import com.example.projekatmobilne.tools.CheckConnectionTools;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -20,6 +25,7 @@ public class SplashActivity extends AppCompatActivity {
     private Timer splashTimer;
     private Button btnExit, btnOpenSettings;
 
+    private Dialog dialog;
     private ActivitySplashBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,11 +34,31 @@ public class SplashActivity extends AppCompatActivity {
         binding = ActivitySplashBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        IntentFilter filter = new IntentFilter();
-        filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-        registerReceiver(new Receiver(), filter);
+        ConnectionStatusReceiver receiver = new ConnectionStatusReceiver();
+        IntentFilter filter = new IntentFilter("com.example.projekatmobilne.NO_INTERNET");
+        registerReceiver(receiver, filter);
 
 
+
+        dialog = new Dialog(this);
+        dialog.setContentView(R.layout.custom_dialog_box);
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawable(this.getDrawable(R.drawable.custom_dialog_bg));
+        dialog.setCancelable(false);
+
+        btnExit = dialog.findViewById(R.id.btnExit);
+        btnOpenSettings = dialog.findViewById(R.id.btnSettings);
+
+        btnExit.setOnClickListener(v -> {
+            dialog.dismiss();
+            finish();
+        });
+
+        btnOpenSettings.setOnClickListener(v -> {
+            Intent intent = new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS);
+            startActivity(intent);
+            dialog.dismiss();
+        });
 
 
         //getSupportActionBar().hide();
@@ -42,13 +68,17 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void run() {
 
-
-
                 Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();
             }
         }, SPLASH_TIME_OUT);
+
+        int status = CheckConnectionTools.getConnectivityStatus(getApplicationContext());
+        if(status == CheckConnectionTools.TYPE_NOT_CONNECTED){
+            dialog.show();
+            stopSplashTimer();
+        }
 
     }
 
@@ -57,5 +87,7 @@ public class SplashActivity extends AppCompatActivity {
             splashTimer.cancel();
             splashTimer = null;
         }
+
     }
+    
 }

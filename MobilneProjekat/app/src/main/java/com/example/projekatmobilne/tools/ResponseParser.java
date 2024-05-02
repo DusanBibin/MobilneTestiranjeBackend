@@ -16,12 +16,12 @@ public class ResponseParser {
         try {
             if(isErrorResponse) responseBody = response.errorBody().string();
             else responseBody = response.body().string();
+            System.out.println(responseBody);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         Gson gson = new Gson();
-        return gson.fromJson(responseBody, classOfT);
-
-
+        if(classOfT == String.class) return (T) responseBody;
+        else return gson.fromJson(responseBody, classOfT);
     }
 }
