@@ -3,6 +3,7 @@ package com.example.projekatmobilne.activities;
 import android.app.Dialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
@@ -17,6 +18,7 @@ import com.example.projekatmobilne.databinding.ActivitySplashBinding;
 import com.example.projekatmobilne.receivers.ConnectionStatusReceiver;
 import com.example.projekatmobilne.services.ConnectionCheckService;
 import com.example.projekatmobilne.tools.CheckConnectionTools;
+import com.example.projekatmobilne.tools.JWTManager;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -60,16 +62,24 @@ public class SplashActivity extends AppCompatActivity {
             dialog.dismiss();
         });
 
-
+        JWTManager.setup(this);
         //getSupportActionBar().hide();
         int SPLASH_TIME_OUT = 3000;
+        String jwt = JWTManager.getJWT();
+
+        System.out.println("Sta je ovo koji kurac " + jwt);
         splashTimer = new Timer();
         splashTimer.schedule(new TimerTask() {
             @Override
             public void run() {
 
-                Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
-                startActivity(intent);
+                if(jwt != null){
+                    Intent intent = new Intent(SplashActivity.this, HomeActivity.class);
+                    startActivity(intent);
+                }else{
+                    Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                }
                 finish();
             }
         }, SPLASH_TIME_OUT);

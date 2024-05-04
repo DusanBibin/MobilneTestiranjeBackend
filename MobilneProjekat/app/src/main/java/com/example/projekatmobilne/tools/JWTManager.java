@@ -2,6 +2,7 @@ package com.example.projekatmobilne.tools;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import androidx.preference.PreferenceManager;
 import android.util.Base64;
 
 import org.json.JSONArray;
@@ -9,6 +10,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class JWTManager {
+    private static SharedPreferences sharedPreferences;
+
+    public static void setup(Context context) {
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+    }
 
     private static JSONObject decodeJWT(String jwtToken) {
         try {
@@ -28,62 +34,57 @@ public class JWTManager {
     }
 
 
-    private static SharedPreferences getSharedPreferences(Context context) {
-        return context.getSharedPreferences("pref_file", Context.MODE_PRIVATE);
+
+    public static void saveJWT(String jwtToken) {
+        sharedPreferences.edit().putString("jwt", jwtToken).apply();
+
+        saveUserData(jwtToken);
     }
 
-    public static void saveJWT(Context context, String jwtToken) {
-        SharedPreferences.Editor editor = getSharedPreferences(context).edit();
-        editor.putString("jwt", jwtToken);
-        editor.apply();
-
-        saveUserData(context, jwtToken);
+    public static String getJWT() {
+        return sharedPreferences.getString("jwt", null);
     }
 
-    public static String getJWT(Context context) {
-        return getSharedPreferences(context).getString("jwt", null);
-    }
-
-    private static void saveUserData(Context context, String jwtToken) {
+    private static void saveUserData(String jwtToken) {
         JSONObject userData = decodeJWT(jwtToken);
 
-        SharedPreferences.Editor editor = getSharedPreferences(context).edit();
+
         try {
-            editor.putString("id", userData.getString("id"));
-            editor.putString("email", userData.getString("sub"));
-            editor.putString("exp", userData.getString("exp"));
+            sharedPreferences.edit().putString("id", userData.getString("id")).apply();
+
+            sharedPreferences.edit().putString("email", userData.getString("sub")).apply();
+
+            sharedPreferences.edit().putString("exp", userData.getString("exp")).apply();
 
             JSONArray rolesArray = userData.getJSONArray("role");
             JSONObject firstRoleObject = rolesArray.getJSONObject(0);
-            editor.putString("role", firstRoleObject.getString("authority"));
+
+            sharedPreferences.edit().putString("role", firstRoleObject.getString("authority")).apply();
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        editor.apply();
     }
 
-    public static String getUserId(Context context) {
-        return getSharedPreferences(context).getString("id", null);
+    public static String getUserId() {
+        return sharedPreferences.getString("id", null);
     }
 
-    public static String getEmail(Context context) {
-        return getSharedPreferences(context).getString("email", null);
+    public static String getEmail() {
+        return sharedPreferences.getString("email", null);
     }
 
-    public static String getRole(Context context) {
-        return getSharedPreferences(context).getString("role", null);
+    public static String getRole() {
+        return sharedPreferences.getString("role", null);
     }
 
 
 
-    public static void clearUserData(Context context) {
-        SharedPreferences.Editor editor = getSharedPreferences(context).edit();
-        editor.remove("jwt");
-        editor.remove("id");
-        editor.remove("email");
-        editor.remove("role");
-        editor.remove("exp");
-        editor.apply();
+    public static void clearUserData() {
+        sharedPreferences.edit().remove("jwt").apply();
+        sharedPreferences.edit().remove("id").apply();
+        sharedPreferences.edit().remove("email").apply();
+        sharedPreferences.edit().remove("role").apply();
+        sharedPreferences.edit().remove("exp").apply();
     }
 
 }

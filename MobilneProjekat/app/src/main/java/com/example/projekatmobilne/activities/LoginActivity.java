@@ -90,7 +90,7 @@ public class LoginActivity extends AppCompatActivity {
                         AuthenticationResponseDTO responseDTO =
                                 ResponseParser.parseResponse(response, AuthenticationResponseDTO.class, false);
 
-                          JWTManager.saveJWT(getApplicationContext(), responseDTO.getToken());
+                          JWTManager.saveJWT(responseDTO.getToken());
                         Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                         startActivity(intent);
                         finish();

@@ -1,66 +1,101 @@
 package com.example.projekatmobilne.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.projekatmobilne.R;
+import com.example.projekatmobilne.activities.HomeActivity;
+import com.example.projekatmobilne.activities.LoginActivity;
+import com.example.projekatmobilne.activities.RegisterActivity;
+import com.example.projekatmobilne.clients.ClientUtils;
+import com.example.projekatmobilne.databinding.ActivityLoginBinding;
+import com.example.projekatmobilne.databinding.FragmentAccountBinding;
+import com.example.projekatmobilne.model.AuthenticationResponseDTO;
+import com.example.projekatmobilne.model.UserDTOResponse;
+import com.example.projekatmobilne.tools.JWTManager;
+import com.example.projekatmobilne.tools.ResponseParser;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link AccountFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.Map;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+
 public class AccountFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
+    private FragmentAccountBinding binding;
     public AccountFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AccountFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static AccountFragment newInstance(String param1, String param2) {
-        AccountFragment fragment = new AccountFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_account, container, false);
+        binding = FragmentAccountBinding.inflate(inflater, container, false);
+
+        return binding.getRoot();
+    }
+
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+
+        Call<ResponseBody> call = ClientUtils.apiService.getUserData();
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+
+                if(response.code() == 400){
+                    Toast.makeText(getActivity(), "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                }
+                if(response.code() == 200) {
+                    UserDTOResponse responseDTO =
+                            ResponseParser.parseResponse(response, UserDTOResponse.class, false);
+                    System.out.println(responseDTO);
+
+                    binding.nameValueTxt.setText(responseDTO.getFirstName());
+                    binding.surnameValueTxt.setText(responseDTO.getLastName());
+                    binding.addressValueTxt.setText(responseDTO.getAddress());
+                    binding.emailValueTxt.setText(responseDTO.getEmail());
+                    binding.phoneValueTxt.setText(responseDTO.getPhoneNumber());
+                    binding.roleValueTxt.setText(responseDTO.getRole().toString());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                Toast.makeText(getActivity(), "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+        binding.logoutBtn.setOnClickListener(v -> {
+            JWTManager.clearUserData();
+            Intent intent = new Intent(requireContext(), LoginActivity.class); // Replace with your Activity2 class name
+            startActivity(intent);
+            getActivity().finish();
+        });
+
     }
 }

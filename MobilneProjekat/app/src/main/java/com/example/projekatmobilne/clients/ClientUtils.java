@@ -1,6 +1,7 @@
 package com.example.projekatmobilne.clients;
 
 import com.example.projekatmobilne.BuildConfig;
+import com.example.projekatmobilne.tools.CustomInterceptor;
 
 import java.util.concurrent.TimeUnit;
 
@@ -20,8 +21,11 @@ public class ClientUtils {
      * */
 
     public static OkHttpClient test(){
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+//        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+//        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+
+        CustomInterceptor interceptor = new CustomInterceptor();
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .connectTimeout(5, TimeUnit.SECONDS)

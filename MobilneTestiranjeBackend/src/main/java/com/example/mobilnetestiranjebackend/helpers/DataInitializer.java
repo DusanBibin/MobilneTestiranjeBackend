@@ -41,7 +41,7 @@ private final UserRepository userRepository;
                 .lastname("Bibin")
                 .email("probamejl@gmail.com")
                 .password(passwordEncoder.encode("123"))
-                .phoneNumber(" ")
+                .phoneNumber("0691817839")
                 .address("Neka ulica 123")
                 .emailConfirmed(true)
                 .blocked(false)
