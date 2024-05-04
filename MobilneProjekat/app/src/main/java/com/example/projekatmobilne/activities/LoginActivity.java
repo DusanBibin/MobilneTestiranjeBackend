@@ -48,6 +48,15 @@ public class LoginActivity extends AppCompatActivity {
         binding.loginButton.setOnClickListener(v -> {
             binding.emailInputLayout.setError(null);
             binding.passwordInputLayout.setError(null);
+
+            if (binding.emailInputEditText.getText().toString().isEmpty()) {
+                binding.emailInputLayout.setError("This field cannot be empty");
+            }
+
+            if (binding.passwordInputEditText.getText().toString().isEmpty()) {
+                binding.passwordInputLayout.setError("This field cannot be em  pty");
+            }
+
             AuthenticationRequestDTO request = new AuthenticationRequestDTO();
             request.setEmail(binding.emailInputEditText.getText().toString());
             request.setPassword(binding.passwordInputEditText.getText().toString());
@@ -56,6 +65,9 @@ public class LoginActivity extends AppCompatActivity {
             call.enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+
+
+
                     if(response.code() == 400){
 
                         Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);

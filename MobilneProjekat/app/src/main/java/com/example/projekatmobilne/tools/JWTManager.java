@@ -70,7 +70,7 @@ public class JWTManager {
         return getSharedPreferences(context).getString("email", null);
     }
 
-    public static String getRoles(Context context) {
+    public static String getRole(Context context) {
         return getSharedPreferences(context).getString("role", null);
     }
 

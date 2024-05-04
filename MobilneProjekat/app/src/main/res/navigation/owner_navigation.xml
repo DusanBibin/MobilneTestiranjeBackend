@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/owner_navigation"
+    app:startDestination="@id/nav_home_host">
+
+    <fragment
+        android:id="@+id/nav_home_host"
+        android:name="com.example.projekatmobilne.fragments.HomeHostFragment"
+        android:label="fragment_home_host"
+        tools:layout="@layout/fragment_home_host" />
+    <fragment
+        android:id="@+id/nav_account"
+        android:name="com.example.projekatmobilne.fragments.AccountFragment"
+        android:label="fragment_account"
+        tools:layout="@layout/fragment_account" />
+    <fragment
+        android:id="@+id/nav_notifications"
+        android:name="com.example.projekatmobilne.fragments.NotificationsFragment"
+        android:label="fragment_notifications"
+        tools:layout="@layout/fragment_notifications" />
+    <fragment
+        android:id="@+id/nav_reservations_host"
+        android:name="com.example.projekatmobilne.fragments.ReseravationHostFragment"
+        android:label="fragment_reseravation_host"
+        tools:layout="@layout/fragment_reseravation_host" />
+    <fragment
+        android:id="@+id/nav_accommodations_host"
+        android:name="com.example.projekatmobilne.fragments.AccommodationsHostFragment"
+        android:label="fragment_accommodations_host"
+        tools:layout="@layout/fragment_accommodations_host" />
+</navigation>

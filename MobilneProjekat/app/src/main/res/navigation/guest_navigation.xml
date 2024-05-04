@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/base_navigation"
+    app:startDestination="@id/nav_home_guest">
+
+    <fragment
+        android:id="@+id/nav_home_guest"
+        android:name="com.example.projekatmobilne.fragments.HomeGuestFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home_guest" />
+    <fragment
+        android:id="@+id/nav_account"
+        android:name="com.example.projekatmobilne.fragments.AccountFragment"
+        android:label="fragment_account"
+        tools:layout="@layout/fragment_account" />
+    <fragment
+        android:id="@+id/nav_notifications"
+        android:name="com.example.projekatmobilne.fragments.NotificationsFragment"
+        android:label="fragment_notifications"
+        tools:layout="@layout/fragment_notifications" />
+    <fragment
+        android:id="@+id/nav_reservations_guest"
+        android:name="com.example.projekatmobilne.fragments.ReservationsGuestFragment"
+        android:label="fragment_reservations_guest"
+        tools:layout="@layout/fragment_reservations_guest" />
+</navigation>
