@@ -9,6 +9,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+
 public class JWTManager {
     private static SharedPreferences sharedPreferences;
 
@@ -77,6 +81,19 @@ public class JWTManager {
         return sharedPreferences.getString("role", null);
     }
 
+
+    public static String getExp(){ return sharedPreferences.getString("exp", null);}
+    public static Boolean isExpired(){
+
+        long expSeconds = Long.parseLong(getExp());
+        LocalDateTime expirationDateTime = LocalDateTime.ofInstant(
+                Instant.ofEpochSecond(expSeconds), ZoneId.systemDefault());
+        LocalDateTime currentDateTime = LocalDateTime.now();
+
+        System.out.println(expirationDateTime);
+        System.out.println(currentDateTime);
+        return currentDateTime.isAfter(expirationDateTime);
+    }
 
 
     public static void clearUserData() {

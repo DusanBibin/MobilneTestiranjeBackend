@@ -63,11 +63,15 @@ public class SplashActivity extends AppCompatActivity {
         });
 
         JWTManager.setup(this);
+
         //getSupportActionBar().hide();
         int SPLASH_TIME_OUT = 3000;
         String jwt = JWTManager.getJWT();
 
-        System.out.println("Sta je ovo koji kurac " + jwt);
+        if(jwt != null) { if(JWTManager.isExpired()) JWTManager.clearUserData(); }
+
+
+
         splashTimer = new Timer();
         splashTimer.schedule(new TimerTask() {
             @Override

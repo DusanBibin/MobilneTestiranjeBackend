@@ -1,12 +1,16 @@
 package com.example.projekatmobilne.fragments;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +28,7 @@ import com.example.projekatmobilne.model.UserDTOResponse;
 import com.example.projekatmobilne.tools.JWTManager;
 import com.example.projekatmobilne.tools.ResponseParser;
 
+import java.io.IOException;
 import java.util.Map;
 
 import okhttp3.ResponseBody;
@@ -34,6 +39,7 @@ import retrofit2.Response;
 
 public class AccountFragment extends Fragment {
     private FragmentAccountBinding binding;
+    private Dialog changeDetailsDialog;
     public AccountFragment() {
         // Required empty public constructor
     }
@@ -59,15 +65,23 @@ public class AccountFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
+        setUpDialogs();
         Call<ResponseBody> call = ClientUtils.apiService.getUserData();
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
 
+
+
                 if(response.code() == 400){
-                    Toast.makeText(getActivity(), "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                    try {
+                        System.out.println(response.body().string());
+                        Toast.makeText(getActivity(), "KURINAAA", Toast.LENGTH_SHORT).show();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
                 }
                 if(response.code() == 200) {
                     UserDTOResponse responseDTO =
@@ -85,17 +99,41 @@ public class AccountFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                Toast.makeText(getActivity(), "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "kurcinaa", Toast.LENGTH_SHORT).show();
+                Log.e("Retrofit", "Request failed: " + t.getMessage());
+                // You can also log the stack trace for more detailed information
+                t.printStackTrace();
             }
         });
 
-
         binding.logoutBtn.setOnClickListener(v -> {
             JWTManager.clearUserData();
-            Intent intent = new Intent(requireContext(), LoginActivity.class); // Replace with your Activity2 class name
+            Intent intent = new Intent(requireContext(), LoginActivity.class);
             startActivity(intent);
             getActivity().finish();
         });
+
+
+        binding.btnChangeDetails.setOnClickListener(v -> {
+            changeDetailsDialog.show();
+        });
+
+    }
+
+    private void setUpDialogs() {
+        changeDetailsDialog = new Dialog(getActivity());
+        changeDetailsDialog.setContentView(R.layout.custom_dialog_change_info);
+        changeDetailsDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        changeDetailsDialog.getWindow().setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.custom_dialog_bg));
+        changeDetailsDialog.setCancelable(false);
+
+//        changeDetailsDialog.findViewById(R.id.btnCancelInfo).setOnClickListener(v -> {
+//            changeDetailsDialog.dismiss();
+//        });
+//
+//        changeDetailsDialog.findViewById(R.id.btnConfirmInfo).setOnClickListener(v -> {
+//            changeDetailsDialog.dismiss();
+//        });
 
     }
 }

@@ -1,6 +1,7 @@
 package com.example.mobilnetestiranjebackend.helpers;
 
 import com.example.mobilnetestiranjebackend.exceptions.*;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -138,10 +139,6 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(ex.getMessage());
     }
 
-
-
-
-
     @ExceptionHandler(value
             = TooManyFilesException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -187,6 +184,7 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(ex.getMessage());
     }
 
+
     @ExceptionHandler(value
             = ReservationNotEndedException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -194,6 +192,16 @@ public class GlobalExceptionHandler {
     handleReservationNotEndedException(ReservationNotEndedException ex)
     {
         return new ErrorResponse(ex.getMessage());
+    }
+
+
+    @ExceptionHandler(value
+            = ExpiredJwtException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public @ResponseBody ErrorResponse
+    handleExpiredJwtException(ExpiredJwtException ex)
+    {
+        return new ErrorResponse("Session has expired, please login again");
     }
 
 }

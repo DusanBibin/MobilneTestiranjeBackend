@@ -94,7 +94,6 @@ public class HomeActivity extends AppCompatActivity {
 //
 //        });
 
-        System.out.println("ZASTO SI OVDE " + JWTManager.getRole());
         populateNavigationToolbarMenu(Role.valueOf(JWTManager.getRole()));
         //addMenu();
 //        mAppBarConfiguration = new AppBarConfiguration
@@ -120,7 +119,6 @@ public class HomeActivity extends AppCompatActivity {
             inflater.inflate(R.menu.host_nav_menu, navigationView.getMenu());
             navController.setGraph(R.navigation.owner_navigation);
         }
-
 
     }
 
