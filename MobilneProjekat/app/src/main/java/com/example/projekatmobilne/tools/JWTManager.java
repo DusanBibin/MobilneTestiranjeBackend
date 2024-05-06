@@ -90,8 +90,6 @@ public class JWTManager {
                 Instant.ofEpochSecond(expSeconds), ZoneId.systemDefault());
         LocalDateTime currentDateTime = LocalDateTime.now();
 
-        System.out.println(expirationDateTime);
-        System.out.println(currentDateTime);
         return currentDateTime.isAfter(expirationDateTime);
     }
 

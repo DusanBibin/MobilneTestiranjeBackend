@@ -32,8 +32,8 @@ public class UserController {
         return new ResponseEntity<>((userDTOResponse), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAuthority('OWNER') or hasAuthority('GUEST')")
-    @PutMapping()
+    @PreAuthorize("hasAuthority('OWNER') or hasAuthority('GUEST') or hasAuthority('ADMIN')")
+    @PutMapping("/change-info")
     public ResponseEntity<?> changeUserInfo(@RequestBody UserDTO userDTO, @AuthenticationPrincipal User user){
 
         userService.changeUserInfo(userDTO, user);
@@ -42,7 +42,7 @@ public class UserController {
 
     }
 
-    @PreAuthorize("hasAuthority('OWNER') or hasAuthority('GUEST')")
+    @PreAuthorize("hasAuthority('OWNER') or hasAuthority('GUEST') or hasAuthority('ADMIN')")
     @PutMapping("/change-email")
     public ResponseEntity<?> changeEmail(@RequestBody UserDTO userDTO, @AuthenticationPrincipal User user){
 
