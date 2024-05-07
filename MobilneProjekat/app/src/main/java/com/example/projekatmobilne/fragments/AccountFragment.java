@@ -19,6 +19,7 @@ import com.example.projekatmobilne.R;
 import com.example.projekatmobilne.activities.LoginActivity;
 import com.example.projekatmobilne.clients.ClientUtils;
 import com.example.projekatmobilne.databinding.FragmentAccountBinding;
+import com.example.projekatmobilne.model.ChangePasswordDTO;
 import com.example.projekatmobilne.model.UserDTO;
 import com.example.projekatmobilne.model.UserDTOResponse;
 import com.example.projekatmobilne.tools.JWTManager;
@@ -39,10 +40,15 @@ public class AccountFragment extends Fragment {
     EditText nameEdit;
     EditText surnameEdit;
     EditText addressEdit;
+
+    EditText passwordEdit;
+    EditText newPasswordEdit;
+    EditText repeatPasswordEdit;
     private FragmentAccountBinding binding;
     private Dialog changeDetailsDialog;
+    private Dialog changePasswordDialog;
     public AccountFragment() {
-        // Required empty public constructor
+
     }
 
 
@@ -67,8 +73,8 @@ public class AccountFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         setUpEditInfoDialog();
+        setUpEditPasswordDialog();
         Call<ResponseBody> call = ClientUtils.apiService.getUserData();
-
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
@@ -115,18 +121,127 @@ public class AccountFragment extends Fragment {
             }
         });
 
-        binding.logoutBtn.setOnClickListener(v -> {
+        binding.btnLogout.setOnClickListener(v -> {
             JWTManager.clearUserData();
             Intent intent = new Intent(requireContext(), LoginActivity.class);
             startActivity(intent);
             getActivity().finish();
         });
 
-
         binding.btnChangeDetails.setOnClickListener(v -> {
             changeDetailsDialog.show();
         });
 
+
+        binding.btnChangePassword.setOnClickListener(v -> {
+            changePasswordDialog.show();
+        });
+
+    }
+
+    private void setUpEditPasswordDialog() {
+        changePasswordDialog = new Dialog(getActivity());
+        changePasswordDialog.setContentView(R.layout.custom_dialog_change_password);
+        changePasswordDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        changePasswordDialog.getWindow().setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.custom_dialog_bg));
+
+        passwordEdit = changePasswordDialog.findViewById(R.id.inputEditTextPassword);
+        newPasswordEdit = changePasswordDialog.findViewById(R.id.inputEditTextNewPassword);
+        repeatPasswordEdit = changePasswordDialog.findViewById(R.id.inputEditTextRepeatPassword);
+        TextInputLayout passwordInput = changePasswordDialog.findViewById(R.id.inputLayoutPassword);
+        TextInputLayout newPasswordInput = changePasswordDialog.findViewById(R.id.inputLayoutNewPassword);
+        TextInputLayout repeatPasswordInput = changePasswordDialog.findViewById(R.id.inputLayoutRepeatPassword);
+
+        changePasswordDialog.findViewById(R.id.btnCancelInfo).setOnClickListener(v -> {
+            changePasswordDialog.dismiss();
+        });
+
+        changePasswordDialog.findViewById(R.id.btnConfirmInfo).setOnClickListener(v -> {
+
+            passwordInput.setError(null);
+            newPasswordInput.setError(null);
+            repeatPasswordInput.setError(null);
+
+            boolean isValid = true;
+            if (passwordEdit.getText().toString().isEmpty()) {
+                passwordInput.setError("This field cannot be empty"); isValid = false;
+            }
+            if (newPasswordEdit.getText().toString().isEmpty()) {
+                newPasswordInput.setError("This field cannot be empty"); isValid = false;
+            }
+            if (repeatPasswordEdit.getText().toString().isEmpty()) {
+                repeatPasswordInput.setError("This field cannot be empty"); isValid = false;
+            }
+            if (!newPasswordEdit.getText().toString().equals(repeatPasswordEdit.getText().toString())) {
+                newPasswordInput.setError("Passwords do not match");
+                repeatPasswordInput.setError("Passwords do not match");
+                isValid = false;
+            }
+
+
+            if(!isValid) return;
+
+
+            ChangePasswordDTO request = new ChangePasswordDTO();
+            request.setCurrentPassword(passwordEdit.getText().toString());
+            request.setNewPassword(newPasswordEdit.getText().toString());
+            request.setRepeatNewPassword(repeatPasswordEdit.getText().toString());
+
+
+            Call<ResponseBody> call = ClientUtils.apiService.changePassword(request);
+
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+
+                    if(response.code() == 400){
+
+                        Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
+
+                        if(map.containsKey("message")){
+                            String errMessage = map.get("message");
+                            if(errMessage.equals("Password is incorrect")){
+                                passwordInput.setError(errMessage);
+                            }
+                            if(errMessage.equals("You cannot put your old password as your new one")){
+                                passwordInput.setError(errMessage);
+                            }
+                        }
+
+
+                        if(map.containsKey("currentPassword")){
+                            passwordInput.setError(map.get("currentPassword"));
+                        }
+                        if(map.containsKey("newPassword")){
+                            newPasswordInput.setError(map.get("newPassword"));
+                        }
+                        if(map.containsKey("repeatNewPassword")){
+                            repeatPasswordInput.setError(map.get("repeatNewPassword"));
+                        }
+
+
+
+
+                    }
+                    if(response.code() == 200) {
+                        String responseMessage =
+                                ResponseParser.parseResponse(response, String.class, false);
+
+
+                        Toast.makeText(getActivity(), responseMessage, Toast.LENGTH_SHORT).show();
+                        changePasswordDialog.dismiss();
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                    Toast.makeText(getActivity(), "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                    t.printStackTrace();
+                }
+            });
+
+
+        });
     }
 
     private void setUpEditInfoDialog() {
@@ -135,12 +250,12 @@ public class AccountFragment extends Fragment {
         changeDetailsDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         changeDetailsDialog.getWindow().setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.custom_dialog_bg));
 
-        nameEdit = changeDetailsDialog.findViewById(R.id.nameInputEditText);
-        surnameEdit = changeDetailsDialog.findViewById(R.id.surnameInputEditText);
-        addressEdit = changeDetailsDialog.findViewById(R.id.addressInputEditText);
-        TextInputLayout nameInput = changeDetailsDialog.findViewById(R.id.nameInputLayout);
-        TextInputLayout surnameInput = changeDetailsDialog.findViewById(R.id.surnameInputLayout);
-        TextInputLayout addressInput = changeDetailsDialog.findViewById(R.id.addressInputLayout);
+        nameEdit = changeDetailsDialog.findViewById(R.id.inputEditTextName);
+        surnameEdit = changeDetailsDialog.findViewById(R.id.inputEditTextSurname);
+        addressEdit = changeDetailsDialog.findViewById(R.id.inputEditTextAddress);
+        TextInputLayout nameInput = changeDetailsDialog.findViewById(R.id.inputLayoutName);
+        TextInputLayout surnameInput = changeDetailsDialog.findViewById(R.id.inputLayoutSurname);
+        TextInputLayout addressInput = changeDetailsDialog.findViewById(R.id.inputLayoutAddress);
 
         changeDetailsDialog.findViewById(R.id.btnCancelInfo).setOnClickListener(v -> {
             changeDetailsDialog.dismiss();

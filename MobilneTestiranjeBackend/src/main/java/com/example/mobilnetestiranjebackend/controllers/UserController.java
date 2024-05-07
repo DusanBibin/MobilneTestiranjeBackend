@@ -65,7 +65,7 @@ public class UserController {
 
         userService.changeUserPassword(changePasswordDTO, user);
 
-        return new ResponseEntity<>((changePasswordDTO), HttpStatus.OK);
+        return new ResponseEntity<>(("Successfully changed password"), HttpStatus.OK);
 
     }
 

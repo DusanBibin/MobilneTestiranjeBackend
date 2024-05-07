@@ -45,12 +45,14 @@ public class UserService {
 
     public void changeUserPassword(ChangePasswordDTO changePasswordDTO, User user) {
 
-
-        if(!user.getPassword().equals(passwordEncoder.encode(changePasswordDTO.getCurrentPassword())))
-            throw new InvalidAuthenticationException("Current password is incorrect");
+        if(!passwordEncoder.matches(changePasswordDTO.getCurrentPassword(), user.getPassword()))
+            throw new InvalidAuthenticationException("Password is incorrect");
 
         if(!changePasswordDTO.getNewPassword().equals(changePasswordDTO.getRepeatNewPassword()))
             throw new InvalidInputException("Passwords do not match");
+
+        if(passwordEncoder.matches(changePasswordDTO.getNewPassword(), user.getPassword()))
+            throw new InvalidInputException("You cannot put your old password as your new one");
 
         user.setPassword(passwordEncoder.encode(changePasswordDTO.getNewPassword()));
 

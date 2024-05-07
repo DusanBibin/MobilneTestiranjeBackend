@@ -2,6 +2,7 @@ package com.example.projekatmobilne.clients;
 
 
 import com.example.projekatmobilne.model.AuthenticationRequestDTO;
+import com.example.projekatmobilne.model.ChangePasswordDTO;
 import com.example.projekatmobilne.model.RegisterRequestDTO;
 import com.example.projekatmobilne.model.UserDTO;
 
@@ -45,4 +46,12 @@ public interface ApiService {
     })
     @PUT("user/change-info")
     Call<ResponseBody> changeUserData(@Body UserDTO request);
+
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @PUT("user/change-password")
+    Call<ResponseBody> changePassword(@Body ChangePasswordDTO request);
 }

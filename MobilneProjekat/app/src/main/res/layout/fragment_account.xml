@@ -129,7 +129,7 @@
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/materialButton2"
+            android:id="@+id/btnChangePassword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Change password"
@@ -137,7 +137,7 @@
             app:layout_constraintTop_toTopOf="@+id/linearLayout4" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/logoutBtn"
+            android:id="@+id/btnLogout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Logout"

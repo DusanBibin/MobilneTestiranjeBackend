@@ -41,9 +41,9 @@ public class RegisterActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         TextInputLayout[] inputLayouts = {
-                binding.nameInputLayout,
-                binding.surnameInputLayout,
-                binding.addressInputLayout,
+                binding.inputLayoutName,
+                binding.inputLayoutSurname,
+                binding.inputLayoutAddress,
                 binding.emailInputLayout,
                 binding.phoneInputLayout,
                 binding.passwordInputLayout,
@@ -51,9 +51,9 @@ public class RegisterActivity extends AppCompatActivity {
         };
 
         EditText[] editTexts = {
-                binding.nameInputEditText,
-                binding.surnameInputEditText,
-                binding.addressInputEditText,
+                binding.inputEditTextName,
+                binding.inputEditTextSurname,
+                binding.inputEditTextAddress,
                 binding.emailInputEditText,
                 binding.phoneInputEditText,
                 binding.passwordInputEditText,
@@ -147,9 +147,9 @@ public class RegisterActivity extends AppCompatActivity {
     private RegisterRequestDTO createDTO(){
 
         RegisterRequestDTO req = new RegisterRequestDTO();
-        req.setFirstName(binding.nameInputEditText.getText().toString());
-        req.setLastName(binding.surnameInputEditText.getText().toString());
-        req.setAddress(binding.addressInputEditText.getText().toString());
+        req.setFirstName(binding.inputEditTextName.getText().toString());
+        req.setLastName(binding.inputEditTextSurname.getText().toString());
+        req.setAddress(binding.inputEditTextAddress.getText().toString());
         req.setEmail(binding.emailInputEditText.getText().toString());
         req.setPhoneNumber(binding.phoneInputEditText.getText().toString());
         req.setPassword(binding.passwordInputEditText.getText().toString());
