@@ -9,6 +9,7 @@ import com.example.projekatmobilne.model.UserDTO;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
@@ -54,4 +55,19 @@ public interface ApiService {
     })
     @PUT("user/change-password")
     Call<ResponseBody> changePassword(@Body ChangePasswordDTO request);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @DELETE("guest")
+    Call<ResponseBody> deleteGuest();
+
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @DELETE("owner")
+    Call<ResponseBody> deleteOwner();
 }

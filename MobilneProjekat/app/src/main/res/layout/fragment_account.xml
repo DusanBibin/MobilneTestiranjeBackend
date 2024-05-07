@@ -145,6 +145,7 @@
             app:layout_constraintStart_toStartOf="parent" />
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDeleteAccount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Delete account"

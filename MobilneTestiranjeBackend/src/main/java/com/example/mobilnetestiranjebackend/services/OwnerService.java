@@ -21,7 +21,7 @@ public class OwnerService {
 
         var accommodations = accommodationRepository.findByOwnerId(owner.getId());
         for(Accommodation acc: accommodations){
-            if(reservationService.reservationsNotEnded(acc.getId())) throw new ReservationNotEndedException("Some reservations haven't ended");
+            if(reservationService.reservationsNotEnded(acc.getId())) throw new ReservationNotEndedException("Unable to delete account as some of your reservations haven't ended");
         }
 
 

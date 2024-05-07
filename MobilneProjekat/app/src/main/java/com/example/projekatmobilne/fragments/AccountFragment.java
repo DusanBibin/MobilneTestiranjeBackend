@@ -44,9 +44,12 @@ public class AccountFragment extends Fragment {
     EditText passwordEdit;
     EditText newPasswordEdit;
     EditText repeatPasswordEdit;
+
+    EditText confirmDeletionEdit;
     private FragmentAccountBinding binding;
     private Dialog changeDetailsDialog;
     private Dialog changePasswordDialog;
+    private Dialog deleteAccountDialog;
     public AccountFragment() {
 
     }
@@ -72,6 +75,7 @@ public class AccountFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        setUpDeleteAccountDialog();
         setUpEditInfoDialog();
         setUpEditPasswordDialog();
         Call<ResponseBody> call = ClientUtils.apiService.getUserData();
@@ -137,9 +141,82 @@ public class AccountFragment extends Fragment {
             changePasswordDialog.show();
         });
 
+        if(JWTManager.getRole().equals("ADMIN")) binding.btnDeleteAccount.setVisibility(View.INVISIBLE);
+
+        binding.btnDeleteAccount.setOnClickListener(v -> {
+            deleteAccountDialog.show();
+        });
+
     }
 
-    private void setUpEditPasswordDialog() {
+    private void setUpDeleteAccountDialog() {
+        deleteAccountDialog = new Dialog(getActivity());
+        deleteAccountDialog.setContentView(R.layout.custom_dialog_delete_account);
+        deleteAccountDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        deleteAccountDialog.getWindow().setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.custom_dialog_bg));
+
+        confirmDeletionEdit = deleteAccountDialog.findViewById(R.id.inputEditTextConfirmDelete);
+        TextInputLayout confirmDeletionInput = deleteAccountDialog.findViewById(R.id.inputLayoutConfirmDelete);
+
+
+        deleteAccountDialog.findViewById(R.id.btnCancelInfo).setOnClickListener(v -> {
+            deleteAccountDialog.dismiss();
+        });
+
+
+        deleteAccountDialog.findViewById(R.id.btnConfirmInfo).setOnClickListener(v -> {
+            confirmDeletionInput.setError(null);
+
+            if (!confirmDeletionEdit.getText().toString().equals("DELETE")) {
+                confirmDeletionInput.setError("Please type DELETE to confirm deletion"); return;
+            }
+
+            Call<ResponseBody> call;
+            if(JWTManager.getRole().equals("GUEST")) call = ClientUtils.apiService.deleteGuest();
+            else call = ClientUtils.apiService.deleteOwner();
+
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+                    if(response.code() == 400){
+
+                        Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
+
+                        if(map.containsKey("message")){
+                            String errMessage = map.get("message");
+                            confirmDeletionInput.setError(errMessage);
+
+                        }
+
+                    }
+                    if(response.code() == 200) {
+                        String responseMessage =
+                                ResponseParser.parseResponse(response, String.class, false);
+
+                        Toast.makeText(getActivity(), responseMessage, Toast.LENGTH_SHORT).show();
+
+                        deleteAccountDialog.dismiss();
+                        JWTManager.clearUserData();
+                        Intent intent = new Intent(requireContext(), LoginActivity.class);
+                        startActivity(intent);
+                        getActivity().finish();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Toast.makeText(getActivity(), "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                    t.printStackTrace();
+                }
+            });
+
+
+
+        });
+    }
+
+    private void setUpEditPasswordDialog()  {
         changePasswordDialog = new Dialog(getActivity());
         changePasswordDialog.setContentView(R.layout.custom_dialog_change_password);
         changePasswordDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -219,9 +296,6 @@ public class AccountFragment extends Fragment {
                             repeatPasswordInput.setError(map.get("repeatNewPassword"));
                         }
 
-
-
-
                     }
                     if(response.code() == 200) {
                         String responseMessage =
@@ -236,7 +310,6 @@ public class AccountFragment extends Fragment {
                 @Override
                 public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
                     Toast.makeText(getActivity(), "There was a problem, try again later", Toast.LENGTH_SHORT).show();
-                    t.printStackTrace();
                 }
             });
 
