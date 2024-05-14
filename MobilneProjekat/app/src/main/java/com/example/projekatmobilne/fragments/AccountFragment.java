@@ -50,6 +50,7 @@ public class AccountFragment extends Fragment {
     private Dialog changeDetailsDialog;
     private Dialog changePasswordDialog;
     private Dialog deleteAccountDialog;
+    private Dialog confirmCodeDialog;
     public AccountFragment() {
 
     }
@@ -78,6 +79,7 @@ public class AccountFragment extends Fragment {
         setUpDeleteAccountDialog();
         setUpEditInfoDialog();
         setUpEditPasswordDialog();
+        setUpConfirmCodeDialog();
         Call<ResponseBody> call = ClientUtils.apiService.getUserData();
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -103,12 +105,12 @@ public class AccountFragment extends Fragment {
                     UserDTOResponse responseDTO =
                             ResponseParser.parseResponse(response, UserDTOResponse.class, false);
 
-                    binding.nameValueTxt.setText(responseDTO.getFirstName());
-                    binding.surnameValueTxt.setText(responseDTO.getLastName());
-                    binding.addressValueTxt.setText(responseDTO.getAddress());
-                    binding.emailValueTxt.setText(responseDTO.getEmail());
-                    binding.phoneValueTxt.setText(responseDTO.getPhoneNumber());
-                    binding.roleValueTxt.setText(responseDTO.getRole().toString());
+                    binding.txtNameValue.setText(responseDTO.getFirstName());
+                    binding.txtSurnameValue.setText(responseDTO.getLastName());
+                    binding.txtAddressValue.setText(responseDTO.getAddress());
+                    binding.txtEmailValue.setText(responseDTO.getEmail());
+                    binding.txtPhoneValue.setText(responseDTO.getPhoneNumber());
+                    binding.txtRoleValue.setText(responseDTO.getRole().toString());
 
                     nameEdit.setText(responseDTO.getFirstName());
                     surnameEdit.setText(responseDTO.getLastName());
@@ -147,6 +149,59 @@ public class AccountFragment extends Fragment {
             deleteAccountDialog.show();
         });
 
+
+        binding.btnChangeEmail.setOnClickListener(v -> {
+
+
+            Call<ResponseBody> callEmail = ClientUtils.apiService.sendCodeEmail();
+            callEmail.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                    confirmCodeDialog.show();
+                    try {
+                        if(response.code() == 200){
+                            Toast.makeText(getActivity(), response.body().string(), Toast.LENGTH_SHORT).show();
+                        }
+
+                        if(response.code() == 400){
+                            Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
+                            if(map.containsKey("message")){
+                                String errMessage = map.get("message");
+                                Toast.makeText(getActivity(), errMessage, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                    Toast.makeText(getActivity(), "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                    t.printStackTrace();
+                }
+            });
+        });
+
+
+
+
+    }
+
+    private void setUpConfirmCodeDialog() {
+        confirmCodeDialog = new Dialog(getActivity());
+        confirmCodeDialog.setContentView(R.layout.custom_dialog_confirm_code);
+        confirmCodeDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        confirmCodeDialog.getWindow().setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.custom_dialog_bg));
+
+        confirmDeletionEdit = confirmCodeDialog.findViewById(R.id.inputEditTextConfirmDelete);
+        TextInputLayout confirmDeletionInput = confirmCodeDialog.findViewById(R.id.inputLayoutConfirmDelete);
+
+
+        confirmCodeDialog.findViewById(R.id.btnCancelInfo).setOnClickListener(v -> {
+            confirmCodeDialog.dismiss();
+        });
     }
 
     private void setUpDeleteAccountDialog() {
@@ -387,9 +442,9 @@ public class AccountFragment extends Fragment {
                         surnameEdit.setText(responseDTO.getLastName());
                         addressEdit.setText(responseDTO.getAddress());
 
-                        binding.nameValueTxt.setText(responseDTO.getFirstName());
-                        binding.surnameValueTxt.setText(responseDTO.getLastName());
-                        binding.addressValueTxt.setText(responseDTO.getAddress());
+                        binding.txtNameValue.setText(responseDTO.getFirstName());
+                        binding.txtSurnameValue.setText(responseDTO.getLastName());
+                        binding.txtAddressValue.setText(responseDTO.getAddress());
 
                         Toast.makeText(getActivity(), "Successfully changed user info", Toast.LENGTH_SHORT).show();
                         changeDetailsDialog.dismiss();

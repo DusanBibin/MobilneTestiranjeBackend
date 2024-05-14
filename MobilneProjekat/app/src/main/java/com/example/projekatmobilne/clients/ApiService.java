@@ -70,4 +70,11 @@ public interface ApiService {
     })
     @DELETE("owner")
     Call<ResponseBody> deleteOwner();
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @GET("auth/send-email-change-code")
+    Call<ResponseBody> sendCodeEmail();
 }

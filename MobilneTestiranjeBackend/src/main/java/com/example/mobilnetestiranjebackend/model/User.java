@@ -36,6 +36,8 @@ public class User implements UserDetails{
     private Boolean blocked;
     @OneToOne(cascade = {CascadeType.PERSIST}, fetch = FetchType.EAGER)
     private Verification verification;
+    @OneToOne(cascade = {CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    private Verification emailChangeVerification;
     @Enumerated(EnumType.STRING)
     private Role role;
 

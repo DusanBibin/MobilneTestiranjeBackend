@@ -17,7 +17,6 @@ import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Email;
 import com.sendgrid.helpers.mail.objects.Personalization;
-import com.twilio.Twilio;
 import com.twilio.rest.lookups.v2.PhoneNumber;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +30,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -49,7 +49,9 @@ public class AuthenticationService {
     @Value("${spring.sendgrid.api-key}")
     private String SENDGRID_API_KEY;
 
-    private static final String VERIFICATION_TEMPLATE_ID = "d-3d2f42ee76ed4904bb916951f3471b95";
+    private static final String VERIFICATION_TEMPLATE_REGISTER_ID = "d-3d2f42ee76ed4904bb916951f3471b95";
+    private static final String VERIFICATION_TEMPLATE_VERIFICATION_CODE_ID = "d-ae64c14258e64521b9d4978bba356b73";
+
     public void userExist(String email, String phoneNumber){
         userRepository.findByEmail(email).ifPresent(user -> {throw new EntityAlreadyExistsException("User with this email already exists");});
         userRepository.findByPhoneNumber(phoneNumber).ifPresent(user -> {throw new EntityAlreadyExistsException("User with this phone number already exists");});
@@ -75,6 +77,7 @@ public class AuthenticationService {
                     .role(Role.OWNER)
                     .blocked(false)
                     .verification(new Verification(code, LocalDateTime.now().plusDays(1)))
+                    .emailChangeVerification(null)
                     .accommodations(new ArrayList<Accommodation>())
                     .accommodationRequests(new ArrayList<>())
                     .ownerReviews(new ArrayList<>())
@@ -95,6 +98,7 @@ public class AuthenticationService {
                     .verification(new Verification(code, LocalDateTime.now().plusDays(1)))
                     .blocked(false)
                     .reservations(new ArrayList<>())
+                    .emailChangeVerification(null)
                     .ownerReviews(new ArrayList<>())
                     .accommodationReviews(new ArrayList<>())
                     .favorites(new ArrayList<>())
@@ -130,22 +134,34 @@ public class AuthenticationService {
 
     }
 
-    public void sendVerificationEmail(User user) throws MessagingException, IOException {
+    public void sendVerificationEmail(User user, Boolean isNewAccount) throws MessagingException, IOException {
         Email from = new Email("mobilnebackendtest@gmail.com");
-        String subject = "Verify Email Address";
+        String subject = "";
+
         Email to = new Email(user.getEmail());
 
 
         Personalization personalization = new Personalization();
         personalization.addTo(to);
-        personalization.addDynamicTemplateData("firstName", user.getFirstName());
-        personalization.addDynamicTemplateData("verificationLink", "http://localhost:8080/api/v1/auth/activate/" + user.getVerification().getVerificationCode());
+
 
         Mail mail = new Mail();
         mail.setFrom(from);
+        if(isNewAccount) {
+            subject = "Verify email Address";
+            personalization.addDynamicTemplateData("firstName", user.getFirstName());
+            personalization.addDynamicTemplateData("verificationLink", "http://localhost:8080/api/v1/auth/activate/" + user.getVerification().getVerificationCode());
+            mail.setTemplateId(VERIFICATION_TEMPLATE_REGISTER_ID);
+        }else{
+
+            subject = "Verification code for email change";
+            personalization.addDynamicTemplateData("email", user.getEmail());
+            personalization.addDynamicTemplateData("confirmationCode", user.getEmailChangeVerification().getVerificationCode());
+            mail.setTemplateId(VERIFICATION_TEMPLATE_VERIFICATION_CODE_ID);
+        }
         mail.setSubject(subject);
         mail.addPersonalization(personalization);
-        mail.setTemplateId(VERIFICATION_TEMPLATE_ID);
+
 
 
         SendGrid sg = new SendGrid(SENDGRID_API_KEY);
@@ -161,6 +177,27 @@ public class AuthenticationService {
         }
     }
 
+
+    public void sendEmailVerificationCode(User user) {
+        Optional<User> userWrapper = userRepository.findByEmail(user.getEmail());
+        user = userWrapper.get();
+
+        if(user.getEmailChangeVerification() == null || user.getEmailChangeVerification().getExpirationDate().isBefore(LocalDateTime.now())){
+            Random random = new Random();
+            String code = String.format("%05d", random.nextInt(100000));
+            user.setEmailChangeVerification(new Verification(code, LocalDateTime.now().plusMinutes(1)));
+            user = userRepository.save(user);
+            try {
+                sendVerificationEmail(user, false);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }else{
+            throw new EntityAlreadyExistsException("An verification code has been already sent to email " + user.getEmail());
+        }
+
+
+    }
 
 
     public AuthenticationResponseDTO authenticate(AuthenticationRequestDTO request) {
@@ -226,11 +263,13 @@ public class AuthenticationService {
 
         if(!user.getEmailConfirmed()){
             try {
-                sendVerificationEmail(user);
+                sendVerificationEmail(user, true);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
 
     }
+
+
 }

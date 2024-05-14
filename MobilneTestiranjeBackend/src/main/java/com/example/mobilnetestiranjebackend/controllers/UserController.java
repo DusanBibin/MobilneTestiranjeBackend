@@ -42,15 +42,6 @@ public class UserController {
 
     }
 
-    @PreAuthorize("hasAuthority('OWNER') or hasAuthority('GUEST') or hasAuthority('ADMIN')")
-    @PutMapping("/change-email")
-    public ResponseEntity<?> changeEmail(@RequestBody UserDTO userDTO, @AuthenticationPrincipal User user){
-
-
-        return new ResponseEntity<>((userDTO), HttpStatus.OK);
-
-    }
-
     @PreAuthorize("hasAuthority('OWNER') or hasAuthority('GUEST')")
     @PutMapping("/change-phone-number")
     public ResponseEntity<?> changePhoneNumber(@RequestBody UserDTO userDTO, @AuthenticationPrincipal User user){

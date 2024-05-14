@@ -39,7 +39,7 @@ private final UserRepository userRepository;
         Owner ownerDusan = Owner.builder()
                 .firstName("Dusan")
                 .lastname("Bibin")
-                .email("probamejl@gmail.com")
+                .email("dusanbibin2@gmail.com")
                 .password(passwordEncoder.encode("123"))
                 .phoneNumber("0691817839")
                 .address("Neka ulica 123")
@@ -50,6 +50,7 @@ private final UserRepository userRepository;
                 .accommodations(new ArrayList<>())
                 .ownerReviews(new ArrayList<>())
                 .reviewComplaints(new ArrayList<>())
+                .emailChangeVerification(null)
                 .build();
         ownerDusan = ownerRepository.save(ownerDusan);
         Owner ownerSomeoneElse = Owner.builder()
@@ -66,6 +67,7 @@ private final UserRepository userRepository;
                 .accommodations(new ArrayList<>())
                 .ownerReviews(new ArrayList<>())
                 .reviewComplaints(new ArrayList<>())
+                .emailChangeVerification(null)
                 .build();
 
         ownerSomeoneElse = ownerRepository.save(ownerSomeoneElse);
@@ -85,6 +87,7 @@ private final UserRepository userRepository;
                 .emailConfirmed(true)
                 .blocked(false)
                 .role(Role.GUEST)
+                .emailChangeVerification(null)
                 .build();
 
 
@@ -103,6 +106,7 @@ private final UserRepository userRepository;
                 .emailConfirmed(true)
                 .blocked(false)
                 .role(Role.GUEST)
+                .emailChangeVerification(null)
                 .build();
 
         ownerDusan = ownerRepository.save(ownerDusan);
@@ -120,6 +124,7 @@ private final UserRepository userRepository;
                 .emailConfirmed(true)
                 .blocked(false)
                 .role(Role.ADMIN)
+                .emailChangeVerification(null)
                 .build();
 
         admin = userRepository.save(admin);

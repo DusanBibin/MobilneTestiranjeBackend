@@ -7,13 +7,14 @@ import com.example.mobilnetestiranjebackend.DTOs.RegisterRequestDTO;
 import com.example.mobilnetestiranjebackend.enums.Role;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidEnumValueException;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidRepeatPasswordException;
-import com.example.mobilnetestiranjebackend.exceptions.UserAlreadyExistsException;
+import com.example.mobilnetestiranjebackend.model.User;
 import com.example.mobilnetestiranjebackend.services.AuthenticationService;
-import com.example.mobilnetestiranjebackend.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -53,6 +54,23 @@ public class AuthenticationController {
 
         authService.verifyUser(verificationCode);
         return new ResponseEntity<>(("Account activated!"), HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('OWNER') or hasAuthority('GUEST') or hasAuthority('ADMIN')")
+    @GetMapping("/send-email-change-code")
+    public ResponseEntity<?> changeEmail(@AuthenticationPrincipal User user){
+
+        authService.sendEmailVerificationCode(user);
+        return new ResponseEntity<>(("Confirmation code has been sent to " + user.getEmail()), HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('OWNER') or hasAuthority('GUEST') or hasAuthority('ADMIN')")
+    @GetMapping("/send-email-change-code")
+    public ResponseEntity<?> verifyEmail(@AuthenticationPrincipal User user){
+
+        authService.sendEmailVerificationCode(user);
+        return new ResponseEntity<>(("Confirmation code has been sent to " + user.getEmail()), HttpStatus.OK);
+
     }
 
     @GetMapping("/{email}/check-sms-code/{smsCode}")
