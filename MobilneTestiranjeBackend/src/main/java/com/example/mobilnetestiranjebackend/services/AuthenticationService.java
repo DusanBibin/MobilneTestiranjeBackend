@@ -7,10 +7,7 @@ import com.example.mobilnetestiranjebackend.enums.Role;
 import com.example.mobilnetestiranjebackend.exceptions.*;
 import com.example.mobilnetestiranjebackend.helpers.TwilioService;
 import com.example.mobilnetestiranjebackend.model.*;
-import com.example.mobilnetestiranjebackend.repositories.GuestRepository;
-import com.example.mobilnetestiranjebackend.repositories.OwnerRepository;
-import com.example.mobilnetestiranjebackend.repositories.UserRepository;
-import com.example.mobilnetestiranjebackend.repositories.VerificationRepository;
+import com.example.mobilnetestiranjebackend.repositories.*;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
@@ -46,6 +43,7 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final TwilioService twilioService;
+    private final VerificationEmailChangeRepository verificationEmailChangeRepository;
     private final VerificationRepository verificationRepository;
 
     @Value("${spring.sendgrid.api-key}")
@@ -136,11 +134,21 @@ public class AuthenticationService {
 
     }
 
-    public void sendVerificationEmail(User user, Boolean isNewAccount) throws MessagingException, IOException {
+    public void sendVerificationEmail(User user, Boolean isConfirmationCodeMail) throws MessagingException, IOException {
         Email from = new Email("mobilnebackendtest@gmail.com");
+        System.out.println("USLI SMO OVDE: " + user.getEmail());
         String subject = "";
 
-        Email to = new Email(user.getEmail());
+        String toEmail = "";
+        if(isConfirmationCodeMail){
+            toEmail = user.getEmail();
+        }else{
+            Optional<VerificationEmailChange> verWrapper = verificationEmailChangeRepository.findByUserId(user.getId());
+            var verName = verWrapper.get();
+            toEmail = verName.getNewEmail();
+        }
+        System.out.println("KURCINAA: " + toEmail);
+        Email to = new Email(toEmail);
 
 
         Personalization personalization = new Personalization();
@@ -149,7 +157,7 @@ public class AuthenticationService {
 
         Mail mail = new Mail();
         mail.setFrom(from);
-        if(isNewAccount) {
+        if(!isConfirmationCodeMail) {
             subject = "Verify email Address";
             personalization.addDynamicTemplateData("firstName", user.getFirstName());
             personalization.addDynamicTemplateData("verificationLink", "http://localhost:8080/api/v1/auth/activate/" + user.getVerification().getVerificationCode());
@@ -217,7 +225,9 @@ public class AuthenticationService {
         } else if (user.getVerification().getExpirationDate().isBefore(LocalDateTime.now())) {
             throw new CodeExpiredException("Verification code expired. Register again!");
         }else if (user.getEmailConfirmed()){
-            throw new UserAlreadyConfirmedException("User is already confirmed");
+            var newEmail = user.getEmailChangeVerification().getNewEmail();
+            user.setEmail(newEmail);
+            userRepository.save(user);
         }
         else {
             user.setEmailConfirmed(true);
@@ -238,7 +248,7 @@ public class AuthenticationService {
                 .setTo(user.getPhoneNumber())
                 .setCode(smsCode)
                 .create();
-        System.out.println(verificationCheck.getStatus());
+
         if(!verificationCheck.getValid()) throw new InvalidAuthenticationException("The sms code is invalid");
 
 
@@ -264,8 +274,25 @@ public class AuthenticationService {
         if(user.getEmailChangeVerification().getExpirationDate().isBefore(LocalDateTime.now())) throw new InvalidAuthorizationException("The code has expired, please try again");
         if(!user.getEmailChangeVerification().getVerificationCode().equals(verification)) throw new InvalidAuthenticationException("Code is incorrect");
 
+        Random random = new Random();
+        String code = String.format("%05d", random.nextInt(100000));
+
+        Optional<Verification> verWrapper = verificationRepository.findByUserId(user.getId());
+        var ver = verWrapper.get();
+
+
         user.getEmailChangeVerification().setNewEmail(newEmail);
+        user.setVerification(new Verification(code, LocalDateTime.now().plusDays(1)));
         user = userRepository.save(user);
+        System.out.println("mejl je" + user.getEmail());
+        verificationRepository.delete(ver);
+
+        try {
+            sendVerificationEmail(user, false);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
 
     }
 
@@ -279,26 +306,27 @@ public class AuthenticationService {
             String code = String.format("%05d", random.nextInt(100000));
 
             if(user.getEmailChangeVerification() != null){
-                Optional<VerificationEmailChange> verWrapper = verificationRepository.findById(user.getId());
+                Optional<VerificationEmailChange> verWrapper = verificationEmailChangeRepository.findByUserId(user.getId());
                 var ver = verWrapper.get();
 
                 user.setEmailChangeVerification(null);
                 user = userRepository.save(user);
 
-                verificationRepository.delete(ver);
+                verificationEmailChangeRepository.delete(ver);
             }
 
             var verification = new VerificationEmailChange();
             verification.setNewEmail(null);
             verification.setVerificationCode(code);
             verification.setExpirationDate(LocalDateTime.now().plusMinutes(5));
+            verification = verificationEmailChangeRepository.save(verification);
 
             user.setEmailChangeVerification(verification);
             user = userRepository.save(user);
 
 
             try {
-                sendVerificationEmail(user, false);
+                sendVerificationEmail(user, true);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

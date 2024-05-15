@@ -51,6 +51,7 @@ private final UserRepository userRepository;
                 .ownerReviews(new ArrayList<>())
                 .reviewComplaints(new ArrayList<>())
                 .emailChangeVerification(null)
+                .verification(new Verification())
                 .build();
         ownerDusan = ownerRepository.save(ownerDusan);
         Owner ownerSomeoneElse = Owner.builder()
@@ -68,6 +69,7 @@ private final UserRepository userRepository;
                 .ownerReviews(new ArrayList<>())
                 .reviewComplaints(new ArrayList<>())
                 .emailChangeVerification(null)
+                .verification(new Verification())
                 .build();
 
         ownerSomeoneElse = ownerRepository.save(ownerSomeoneElse);
@@ -88,6 +90,7 @@ private final UserRepository userRepository;
                 .blocked(false)
                 .role(Role.GUEST)
                 .emailChangeVerification(null)
+                .verification(new Verification())
                 .build();
 
 
@@ -107,6 +110,7 @@ private final UserRepository userRepository;
                 .blocked(false)
                 .role(Role.GUEST)
                 .emailChangeVerification(null)
+                .verification(new Verification())
                 .build();
 
         ownerDusan = ownerRepository.save(ownerDusan);
@@ -125,6 +129,7 @@ private final UserRepository userRepository;
                 .blocked(false)
                 .role(Role.ADMIN)
                 .emailChangeVerification(null)
+                .verification(new Verification())
                 .build();
 
         admin = userRepository.save(admin);

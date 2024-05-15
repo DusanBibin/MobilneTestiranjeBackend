@@ -78,7 +78,7 @@ public class AuthenticationController {
         if(!email.equals(user.getEmail())) throw new InvalidAuthenticationException("Email is not valid");
 
         authService.validateCode(user, verification, newEmail.asText());
-        return new ResponseEntity<>("Code is valid", HttpStatus.OK);
+        return new ResponseEntity<>("Confirm validation email sent to " + newEmail.asText() + " to finish changing email", HttpStatus.OK);
     }
 
     @GetMapping("/{email}/check-sms-code/{smsCode}")
