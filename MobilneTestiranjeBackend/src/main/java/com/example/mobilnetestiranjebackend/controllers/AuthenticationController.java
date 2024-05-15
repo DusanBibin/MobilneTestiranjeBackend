@@ -89,6 +89,7 @@ public class AuthenticationController {
         authService.checkVerificationSms(smsCode, email);
 
         return new ResponseEntity<>(("Confirmation email has been sent to " + email), HttpStatus.OK);
+
     }
 
 

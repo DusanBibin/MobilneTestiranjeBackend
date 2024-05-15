@@ -37,7 +37,7 @@ public class User implements UserDetails{
     @OneToOne(cascade = {CascadeType.PERSIST}, fetch = FetchType.EAGER)
     private Verification verification;
     @OneToOne(cascade = {CascadeType.PERSIST}, fetch = FetchType.EAGER)
-    private Verification emailChangeVerification;
+    private VerificationEmailChange emailChangeVerification;
     @Enumerated(EnumType.STRING)
     private Role role;
 

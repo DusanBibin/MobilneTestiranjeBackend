@@ -10,6 +10,7 @@ import com.example.mobilnetestiranjebackend.model.*;
 import com.example.mobilnetestiranjebackend.repositories.GuestRepository;
 import com.example.mobilnetestiranjebackend.repositories.OwnerRepository;
 import com.example.mobilnetestiranjebackend.repositories.UserRepository;
+import com.example.mobilnetestiranjebackend.repositories.VerificationRepository;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
@@ -45,6 +46,7 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final TwilioService twilioService;
+    private final VerificationRepository verificationRepository;
 
     @Value("${spring.sendgrid.api-key}")
     private String SENDGRID_API_KEY;
@@ -178,27 +180,6 @@ public class AuthenticationService {
     }
 
 
-    public void sendEmailVerificationCode(User user) {
-        Optional<User> userWrapper = userRepository.findByEmail(user.getEmail());
-        user = userWrapper.get();
-
-        if(user.getEmailChangeVerification() == null || user.getEmailChangeVerification().getExpirationDate().isBefore(LocalDateTime.now())){
-            Random random = new Random();
-            String code = String.format("%05d", random.nextInt(100000));
-            user.setEmailChangeVerification(new Verification(code, LocalDateTime.now().plusMinutes(1)));
-            user = userRepository.save(user);
-            try {
-                sendVerificationEmail(user, false);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }else{
-            throw new EntityAlreadyExistsException("An verification code has been already sent to email " + user.getEmail());
-        }
-
-
-    }
-
 
     public AuthenticationResponseDTO authenticate(AuthenticationRequestDTO request) {
         try {
@@ -272,7 +253,7 @@ public class AuthenticationService {
     }
 
     public void validateCode(User user, String verification, String newEmail) {
-        
+
         Optional<User> checkWrapper = userRepository.findByEmail(newEmail);
         if(checkWrapper.isPresent()) throw new EntityAlreadyExistsException("User with this email already exists");
 
@@ -283,7 +264,47 @@ public class AuthenticationService {
         if(user.getEmailChangeVerification().getExpirationDate().isBefore(LocalDateTime.now())) throw new InvalidAuthorizationException("The code has expired, please try again");
         if(!user.getEmailChangeVerification().getVerificationCode().equals(verification)) throw new InvalidAuthenticationException("Code is incorrect");
 
+        user.getEmailChangeVerification().setNewEmail(newEmail);
+        user = userRepository.save(user);
 
+    }
+
+    public void sendEmailVerificationCode(User user) {
+
+        Optional<User> userWrapper = userRepository.findByEmail(user.getEmail());
+        user = userWrapper.get();
+
+        if(user.getEmailChangeVerification() == null || user.getEmailChangeVerification().getExpirationDate().isBefore(LocalDateTime.now())){
+            Random random = new Random();
+            String code = String.format("%05d", random.nextInt(100000));
+
+            if(user.getEmailChangeVerification() != null){
+                Optional<VerificationEmailChange> verWrapper = verificationRepository.findById(user.getId());
+                var ver = verWrapper.get();
+
+                user.setEmailChangeVerification(null);
+                user = userRepository.save(user);
+
+                verificationRepository.delete(ver);
+            }
+
+            var verification = new VerificationEmailChange();
+            verification.setNewEmail(null);
+            verification.setVerificationCode(code);
+            verification.setExpirationDate(LocalDateTime.now().plusMinutes(5));
+
+            user.setEmailChangeVerification(verification);
+            user = userRepository.save(user);
+
+
+            try {
+                sendVerificationEmail(user, false);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }else{
+            throw new EntityAlreadyExistsException("An verification code has been already sent to email " + user.getEmail());
+        }
 
     }
 
