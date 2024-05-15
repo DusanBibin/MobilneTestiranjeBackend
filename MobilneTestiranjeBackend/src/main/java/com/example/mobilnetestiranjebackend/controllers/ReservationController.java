@@ -10,6 +10,7 @@ import com.example.mobilnetestiranjebackend.model.*;
 import com.example.mobilnetestiranjebackend.services.AccommodationService;
 import com.example.mobilnetestiranjebackend.services.AvailabilityService;
 import com.example.mobilnetestiranjebackend.services.ReservationService;
+import com.fasterxml.jackson.databind.node.TextNode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -81,7 +82,7 @@ public class ReservationController {
 
     @PreAuthorize("hasAuthority('OWNER')")
     @PutMapping(value = "/reservations/{reservationId}/{status}")
-    public ResponseEntity<?> declineReservationRequest(@RequestBody String reason,
+    public ResponseEntity<?> declineReservationRequest(@RequestBody TextNode reason,
                                                        @PathVariable("reservationId") Long reservationId,
                                                        @PathVariable("accommodationId") Long accommodationId,
                                                        @PathVariable("status") ReservationStatus status,
@@ -105,7 +106,7 @@ public class ReservationController {
         if(!reservation.getStatus().equals(ReservationStatus.PENDING))
             throw new InvalidEnumValueException("You can only do this action for a pending request reservation");
 
-        if(status.equals(ReservationStatus.DECLINED)) reservationService.declineRequest(reason, reservation);
+        if(status.equals(ReservationStatus.DECLINED)) reservationService.declineRequest(reason.asText(), reservation);
         else if(status.equals(ReservationStatus.ACCEPTED))reservationService.acceptRequest(reservation);
         else throw new InvalidEnumValueException("Unsupported action");
 

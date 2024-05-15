@@ -271,5 +271,20 @@ public class AuthenticationService {
 
     }
 
+    public void validateCode(User user, String verification, String newEmail) {
+        
+        Optional<User> checkWrapper = userRepository.findByEmail(newEmail);
+        if(checkWrapper.isPresent()) throw new EntityAlreadyExistsException("User with this email already exists");
+
+
+        Optional<User> userWrapper = userRepository.findByEmail(user.getEmail());
+        user = userWrapper.get();
+
+        if(user.getEmailChangeVerification().getExpirationDate().isBefore(LocalDateTime.now())) throw new InvalidAuthorizationException("The code has expired, please try again");
+        if(!user.getEmailChangeVerification().getVerificationCode().equals(verification)) throw new InvalidAuthenticationException("Code is incorrect");
+
+
+
+    }
 
 }

@@ -46,6 +46,9 @@ public class AccountFragment extends Fragment {
     EditText repeatPasswordEdit;
 
     EditText confirmDeletionEdit;
+
+    EditText confirmationCodeEdit;
+    EditText newEmailEdit;
     private FragmentAccountBinding binding;
     private Dialog changeDetailsDialog;
     private Dialog changePasswordDialog;
@@ -152,7 +155,6 @@ public class AccountFragment extends Fragment {
 
         binding.btnChangeEmail.setOnClickListener(v -> {
 
-
             Call<ResponseBody> callEmail = ClientUtils.apiService.sendCodeEmail();
             callEmail.enqueue(new Callback<ResponseBody>() {
                 @Override
@@ -195,12 +197,66 @@ public class AccountFragment extends Fragment {
         confirmCodeDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         confirmCodeDialog.getWindow().setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.custom_dialog_bg));
 
-        confirmDeletionEdit = confirmCodeDialog.findViewById(R.id.inputEditTextConfirmDelete);
-        TextInputLayout confirmDeletionInput = confirmCodeDialog.findViewById(R.id.inputLayoutConfirmDelete);
+        confirmationCodeEdit = confirmCodeDialog.findViewById(R.id.inputEditTextConfirmCode);
+        TextInputLayout confirmationCodeInput = confirmCodeDialog.findViewById(R.id.inputLayoutConfirmCode);
+
+        newEmailEdit = confirmCodeDialog.findViewById(R.id.inputEditTextNewEmail);
+        TextInputLayout newEmailInput = confirmCodeDialog.findViewById(R.id.inputLayoutNewEmail);
 
 
         confirmCodeDialog.findViewById(R.id.btnCancelInfo).setOnClickListener(v -> {
             confirmCodeDialog.dismiss();
+        });
+
+        confirmCodeDialog.findViewById(R.id.btnConfirmInfo).setOnClickListener(v -> {
+            confirmationCodeInput.setError(null);
+            newEmailInput.setError(null);
+
+            boolean isValid = true;
+            if (confirmationCodeEdit.getText().toString().isEmpty()) {
+                confirmationCodeInput.setError("This field cannot be empty"); isValid = false;
+            }
+            if (newEmailEdit.getText().toString().isEmpty()) {
+                newEmailInput.setError("This field cannot be empty"); isValid = false;
+            }
+            if(!isValid) return;
+
+            String email = JWTManager.getEmail();
+            String code = confirmationCodeEdit.getText().toString();
+            String newEmail = newEmailEdit.getText().toString();
+
+            System.out.println(code);
+            System.out.println(newEmail);
+            Call<ResponseBody> call = ClientUtils.apiService.validateCode(code, email, newEmail);
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    if(response.code() == 200){
+                        Toast.makeText(getActivity(), "USPEH", Toast.LENGTH_SHORT).show();
+                    }
+
+                    if(response.code() == 400){
+                        Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
+
+                        if(map.containsKey("message")){
+                            String errMessage = map.get("message");
+                            if(errMessage.equals("Email is not valid") || errMessage.equals("User with this email already exists")){
+                                newEmailInput.setError(errMessage);
+                            }
+
+                            if(errMessage.equals("The code has expired, please try again") || errMessage.equals("Code is incorrect")){
+                                confirmationCodeInput.setError(errMessage);
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Toast.makeText(getActivity(), "There was a problem try again later", Toast.LENGTH_SHORT).show();
+                    t.printStackTrace();
+                }
+            });
         });
     }
 

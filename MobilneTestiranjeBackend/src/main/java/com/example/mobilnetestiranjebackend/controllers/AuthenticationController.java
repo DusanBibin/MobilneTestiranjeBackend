@@ -5,10 +5,12 @@ import com.example.mobilnetestiranjebackend.DTOs.AuthenticationRequestDTO;
 import com.example.mobilnetestiranjebackend.DTOs.AuthenticationResponseDTO;
 import com.example.mobilnetestiranjebackend.DTOs.RegisterRequestDTO;
 import com.example.mobilnetestiranjebackend.enums.Role;
+import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthenticationException;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidEnumValueException;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidRepeatPasswordException;
 import com.example.mobilnetestiranjebackend.model.User;
 import com.example.mobilnetestiranjebackend.services.AuthenticationService;
+import com.fasterxml.jackson.databind.node.TextNode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -56,6 +58,8 @@ public class AuthenticationController {
         return new ResponseEntity<>(("Account activated!"), HttpStatus.OK);
     }
 
+
+
     @PreAuthorize("hasAuthority('OWNER') or hasAuthority('GUEST') or hasAuthority('ADMIN')")
     @GetMapping("/send-email-change-code")
     public ResponseEntity<?> changeEmail(@AuthenticationPrincipal User user){
@@ -64,13 +68,17 @@ public class AuthenticationController {
         return new ResponseEntity<>(("Confirmation code has been sent to " + user.getEmail()), HttpStatus.OK);
     }
 
+
     @PreAuthorize("hasAuthority('OWNER') or hasAuthority('GUEST') or hasAuthority('ADMIN')")
-    @GetMapping("/send-email-change-code")
-    public ResponseEntity<?> verifyEmail(@AuthenticationPrincipal User user){
+    @PutMapping(value = "/{email}/validate-code/{verification}")
+    public ResponseEntity<?> validateChangeEmail(@AuthenticationPrincipal User user, @PathVariable("verification") String verification,
+                                                 @PathVariable("email") String email,
+                                                 @RequestBody TextNode newEmail){
 
-        authService.sendEmailVerificationCode(user);
-        return new ResponseEntity<>(("Confirmation code has been sent to " + user.getEmail()), HttpStatus.OK);
+        if(!email.equals(user.getEmail())) throw new InvalidAuthenticationException("Email is not valid");
 
+        authService.validateCode(user, verification, newEmail.asText());
+        return new ResponseEntity<>("Code is valid", HttpStatus.OK);
     }
 
     @GetMapping("/{email}/check-sms-code/{smsCode}")
