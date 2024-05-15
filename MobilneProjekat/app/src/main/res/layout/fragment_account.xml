@@ -36,7 +36,7 @@
 
             <TextView
                 android:id="@+id/txtNameValue"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:textSize="15sp" />
 
@@ -48,7 +48,7 @@
 
             <TextView
                 android:id="@+id/txtSurnameValue"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:textSize="15sp" />
 
@@ -60,7 +60,7 @@
 
             <TextView
                 android:id="@+id/txtAddressValue"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:textSize="15sp" />
 
@@ -91,7 +91,7 @@
 
             <TextView
                 android:id="@+id/txtEmailValue"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:textSize="15sp" />
 
@@ -119,7 +119,7 @@
 
             <TextView
                 android:id="@+id/txtPhoneValue"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:textSize="15sp" />
 
@@ -171,7 +171,7 @@
 
             <TextView
                 android:id="@+id/txtRoleValue"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:textSize="15sp" />
         </LinearLayout>

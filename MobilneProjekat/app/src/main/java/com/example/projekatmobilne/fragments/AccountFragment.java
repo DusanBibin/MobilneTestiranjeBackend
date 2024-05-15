@@ -37,23 +37,37 @@ import retrofit2.Response;
 
 public class AccountFragment extends Fragment {
 
-    EditText nameEdit;
-    EditText surnameEdit;
-    EditText addressEdit;
+    private EditText nameEdit;
+    private EditText surnameEdit;
+    private EditText addressEdit;
+    private TextInputLayout nameInput;
+    private TextInputLayout surnameInput;
+    private TextInputLayout addressInput;
 
-    EditText passwordEdit;
-    EditText newPasswordEdit;
-    EditText repeatPasswordEdit;
+    private EditText passwordEdit;
+    private EditText newPasswordEdit;
+    private EditText repeatPasswordEdit;
+    private TextInputLayout passwordInput;
+    private TextInputLayout newPasswordInput;
+    private TextInputLayout repeatPasswordInput;
 
-    EditText confirmDeletionEdit;
 
-    EditText confirmationCodeEdit;
-    EditText newEmailEdit;
+    private EditText confirmDeletionEdit;
+    private TextInputLayout confirmDeletionInput;
+
+
+    private EditText confirmationCodeEdit;
+    private EditText newEmailEdit;
+
+    private TextInputLayout confirmationCodeInput;
+    private TextInputLayout newEmailInput;
+
     private FragmentAccountBinding binding;
     private Dialog changeDetailsDialog;
     private Dialog changePasswordDialog;
     private Dialog deleteAccountDialog;
     private Dialog confirmCodeDialog;
+    private UserDTOResponse data;
     public AccountFragment() {
 
     }
@@ -107,6 +121,7 @@ public class AccountFragment extends Fragment {
                 if(response.code() == 200) {
                     UserDTOResponse responseDTO =
                             ResponseParser.parseResponse(response, UserDTOResponse.class, false);
+                    data = responseDTO;
 
                     binding.txtNameValue.setText(responseDTO.getFirstName());
                     binding.txtSurnameValue.setText(responseDTO.getLastName());
@@ -139,21 +154,32 @@ public class AccountFragment extends Fragment {
 
         binding.btnChangeDetails.setOnClickListener(v -> {
             changeDetailsDialog.show();
+            nameInput.setError(null);
+            surnameInput.setError(null);
+            addressInput.setError(null);
+            nameEdit.setText(data.getFirstName());
+            surnameEdit.setText(data.getLastName());
+            addressEdit.setText(data.getAddress());
         });
 
 
         binding.btnChangePassword.setOnClickListener(v -> {
             changePasswordDialog.show();
+            passwordInput.setError(null);
+            repeatPasswordInput.setError(null);
+            newPasswordInput.setError(null);
         });
 
         if(JWTManager.getRole().equals("ADMIN")) binding.btnDeleteAccount.setVisibility(View.INVISIBLE);
-
         binding.btnDeleteAccount.setOnClickListener(v -> {
             deleteAccountDialog.show();
+            confirmDeletionInput.setError(null);
         });
 
 
         binding.btnChangeEmail.setOnClickListener(v -> {
+            confirmationCodeInput.setError(null);
+            newEmailInput.setError(null);
 
             Call<ResponseBody> callEmail = ClientUtils.apiService.sendCodeEmail();
             callEmail.enqueue(new Callback<ResponseBody>() {
@@ -198,10 +224,10 @@ public class AccountFragment extends Fragment {
         confirmCodeDialog.getWindow().setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.custom_dialog_bg));
 
         confirmationCodeEdit = confirmCodeDialog.findViewById(R.id.inputEditTextConfirmCode);
-        TextInputLayout confirmationCodeInput = confirmCodeDialog.findViewById(R.id.inputLayoutConfirmCode);
+        confirmationCodeInput = confirmCodeDialog.findViewById(R.id.inputLayoutConfirmCode);
 
         newEmailEdit = confirmCodeDialog.findViewById(R.id.inputEditTextNewEmail);
-        TextInputLayout newEmailInput = confirmCodeDialog.findViewById(R.id.inputLayoutNewEmail);
+        newEmailInput = confirmCodeDialog.findViewById(R.id.inputLayoutNewEmail);
 
 
         confirmCodeDialog.findViewById(R.id.btnCancelInfo).setOnClickListener(v -> {
@@ -225,8 +251,6 @@ public class AccountFragment extends Fragment {
             String code = confirmationCodeEdit.getText().toString();
             String newEmail = newEmailEdit.getText().toString();
 
-            System.out.println(code);
-            System.out.println(newEmail);
             Call<ResponseBody> call = ClientUtils.apiService.validateCode(code, email, newEmail);
             call.enqueue(new Callback<ResponseBody>() {
                 @Override
@@ -267,7 +291,7 @@ public class AccountFragment extends Fragment {
         deleteAccountDialog.getWindow().setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.custom_dialog_bg));
 
         confirmDeletionEdit = deleteAccountDialog.findViewById(R.id.inputEditTextConfirmDelete);
-        TextInputLayout confirmDeletionInput = deleteAccountDialog.findViewById(R.id.inputLayoutConfirmDelete);
+        confirmDeletionInput = deleteAccountDialog.findViewById(R.id.inputLayoutConfirmDelete);
 
 
         deleteAccountDialog.findViewById(R.id.btnCancelInfo).setOnClickListener(v -> {
@@ -336,9 +360,9 @@ public class AccountFragment extends Fragment {
         passwordEdit = changePasswordDialog.findViewById(R.id.inputEditTextPassword);
         newPasswordEdit = changePasswordDialog.findViewById(R.id.inputEditTextNewPassword);
         repeatPasswordEdit = changePasswordDialog.findViewById(R.id.inputEditTextRepeatPassword);
-        TextInputLayout passwordInput = changePasswordDialog.findViewById(R.id.inputLayoutPassword);
-        TextInputLayout newPasswordInput = changePasswordDialog.findViewById(R.id.inputLayoutNewPassword);
-        TextInputLayout repeatPasswordInput = changePasswordDialog.findViewById(R.id.inputLayoutRepeatPassword);
+        passwordInput = changePasswordDialog.findViewById(R.id.inputLayoutPassword);
+        newPasswordInput = changePasswordDialog.findViewById(R.id.inputLayoutNewPassword);
+        repeatPasswordInput = changePasswordDialog.findViewById(R.id.inputLayoutRepeatPassword);
 
         changePasswordDialog.findViewById(R.id.btnCancelInfo).setOnClickListener(v -> {
             changePasswordDialog.dismiss();
@@ -437,9 +461,9 @@ public class AccountFragment extends Fragment {
         nameEdit = changeDetailsDialog.findViewById(R.id.inputEditTextName);
         surnameEdit = changeDetailsDialog.findViewById(R.id.inputEditTextSurname);
         addressEdit = changeDetailsDialog.findViewById(R.id.inputEditTextAddress);
-        TextInputLayout nameInput = changeDetailsDialog.findViewById(R.id.inputLayoutName);
-        TextInputLayout surnameInput = changeDetailsDialog.findViewById(R.id.inputLayoutSurname);
-        TextInputLayout addressInput = changeDetailsDialog.findViewById(R.id.inputLayoutAddress);
+        nameInput = changeDetailsDialog.findViewById(R.id.inputLayoutName);
+        surnameInput = changeDetailsDialog.findViewById(R.id.inputLayoutSurname);
+        addressInput = changeDetailsDialog.findViewById(R.id.inputLayoutAddress);
 
         changeDetailsDialog.findViewById(R.id.btnCancelInfo).setOnClickListener(v -> {
             changeDetailsDialog.dismiss();
@@ -497,6 +521,10 @@ public class AccountFragment extends Fragment {
                         nameEdit.setText(responseDTO.getFirstName());
                         surnameEdit.setText(responseDTO.getLastName());
                         addressEdit.setText(responseDTO.getAddress());
+
+                        data.setFirstName(responseDTO.getFirstName());
+                        data.setLastName(responseDTO.getLastName());
+                        data.setAddress(responseDTO.getAddress());
 
                         binding.txtNameValue.setText(responseDTO.getFirstName());
                         binding.txtSurnameValue.setText(responseDTO.getLastName());
