@@ -93,7 +93,7 @@ public class HomeActivity extends AppCompatActivity {
 ////            }
 //
 //        });
-
+        System.out.println("ROLA ZA OVU GRESKU STO HOCU DA ULOVIM JE: " + JWTManager.getRole());
         populateNavigationToolbarMenu(Role.valueOf(JWTManager.getRole()));
         //addMenu();
 //        mAppBarConfiguration = new AppBarConfiguration

@@ -17,4 +17,7 @@ public interface VerificationEmailChangeRepository extends JpaRepository<Verific
 
     @Query("select v from User u join u.emailChangeVerification v where u.id = :userId")
     Optional<VerificationEmailChange> findByUserId(Long userId);
+
+    @Query("select v from User u join u.emailChangeVerification v where v.oldEmail = :userEmail")
+    Optional<VerificationEmailChange> findByOldEmail(String userEmail);
 }

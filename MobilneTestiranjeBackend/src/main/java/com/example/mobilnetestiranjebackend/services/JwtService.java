@@ -1,6 +1,8 @@
 package com.example.mobilnetestiranjebackend.services;
 
 
+import com.example.mobilnetestiranjebackend.model.VerificationEmailChange;
+import com.example.mobilnetestiranjebackend.repositories.VerificationEmailChangeRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -13,12 +15,18 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 @Service
 public class JwtService {
+    private final VerificationEmailChangeRepository verificationEmailChangeRepository;
 
     private static final String SECRET_KEY = "73b65149d2e77ab667711a01e6e68a89a75e8e506faead08c8c3f50d80a00d38";
+
+    public JwtService(VerificationEmailChangeRepository verificationEmailChangeRepository) {
+        this.verificationEmailChangeRepository = verificationEmailChangeRepository;
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -62,7 +70,12 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails){
-        final String username = extractUsername(token);
+
+        String username = extractUsername(token);
+
+        Optional<VerificationEmailChange> verWrapper = verificationEmailChangeRepository.findByOldEmail(username);
+        if(verWrapper.isPresent()) username = verWrapper.get().getNewEmail();
+
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 

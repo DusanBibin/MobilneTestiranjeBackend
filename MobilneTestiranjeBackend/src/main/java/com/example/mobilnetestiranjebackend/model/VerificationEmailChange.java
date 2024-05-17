@@ -13,4 +13,5 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "verification_code_email")
 public class VerificationEmailChange extends Verification{
     private String newEmail;
+    private String oldEmail;
 }

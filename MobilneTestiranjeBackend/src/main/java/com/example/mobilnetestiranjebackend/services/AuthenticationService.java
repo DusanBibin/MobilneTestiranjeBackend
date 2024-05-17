@@ -136,7 +136,6 @@ public class AuthenticationService {
 
     public void sendVerificationEmail(User user, Boolean isConfirmationCodeMail) throws MessagingException, IOException {
         Email from = new Email("mobilnebackendtest@gmail.com");
-        System.out.println("USLI SMO OVDE: " + user.getEmail());
         String subject = "";
 
         String toEmail = "";
@@ -147,7 +146,6 @@ public class AuthenticationService {
             var verName = verWrapper.get();
             toEmail = verName.getNewEmail();
         }
-        System.out.println("KURCINAA: " + toEmail);
         Email to = new Email(toEmail);
 
 
@@ -202,6 +200,7 @@ public class AuthenticationService {
         }
 
 
+
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
 
@@ -209,6 +208,18 @@ public class AuthenticationService {
         if(!user.getEmailConfirmed()) throw new EmailNotConfirmedException("Email not confirmed for this user");
 
         if(user.getBlocked() && user instanceof Guest) throw new InvalidAuthenticationException("Your account has been blocked. Contact support for more information");
+
+
+        if(user.getEmailChangeVerification() != null){
+            Optional<VerificationEmailChange> verWrapper = verificationEmailChangeRepository.findByUserId(user.getId());
+            var ver = verWrapper.get();
+
+            user.setEmailChangeVerification(null);
+            user = userRepository.save(user);
+
+            verificationEmailChangeRepository.delete(ver);
+        }
+
 
         var jwtToken = jwtService.generateToken(user, user.getId());
         return AuthenticationResponseDTO.builder()
@@ -282,9 +293,9 @@ public class AuthenticationService {
 
 
         user.getEmailChangeVerification().setNewEmail(newEmail);
+        user.getEmailChangeVerification().setOldEmail(user.getEmail());
         user.setVerification(new Verification(code, LocalDateTime.now().plusDays(1)));
         user = userRepository.save(user);
-        System.out.println("mejl je" + user.getEmail());
         verificationRepository.delete(ver);
 
         try {
@@ -305,15 +316,7 @@ public class AuthenticationService {
             Random random = new Random();
             String code = String.format("%05d", random.nextInt(100000));
 
-            if(user.getEmailChangeVerification() != null){
-                Optional<VerificationEmailChange> verWrapper = verificationEmailChangeRepository.findByUserId(user.getId());
-                var ver = verWrapper.get();
-
-                user.setEmailChangeVerification(null);
-                user = userRepository.save(user);
-
-                verificationEmailChangeRepository.delete(ver);
-            }
+           //OVDE SE VRATITI ZA SLUCAJ KADA KORISNIK PONOVO MENJA EMAIL NAKON STO GA JE VEC PROMENIO I NIJE SE IZLOGOVAO
 
             var verification = new VerificationEmailChange();
             verification.setNewEmail(null);
