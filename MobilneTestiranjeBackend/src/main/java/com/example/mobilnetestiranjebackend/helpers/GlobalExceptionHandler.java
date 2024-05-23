@@ -169,11 +169,11 @@ public class GlobalExceptionHandler {
     }
 
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
-        return new ErrorResponse("Invalid enum value");
-    }
+//    @ExceptionHandler(HttpMessageNotReadableException.class)
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    public ErrorResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+//        return new ErrorResponse("Invalid enum value");
+//    }
 
 
     @ExceptionHandler(value

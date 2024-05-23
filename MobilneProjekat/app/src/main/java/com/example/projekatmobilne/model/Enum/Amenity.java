@@ -1,4 +1,4 @@
-package com.example.mobilnetestiranjebackend.enums;
+package com.example.projekatmobilne.model.Enum;
 
 public enum Amenity {
     WIFI, POOL, AC, PARKING

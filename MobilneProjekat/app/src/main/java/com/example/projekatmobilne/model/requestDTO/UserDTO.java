@@ -1,4 +1,4 @@
-package com.example.projekatmobilne.model;
+package com.example.projekatmobilne.model.requestDTO;
 
 
 public class UserDTO {

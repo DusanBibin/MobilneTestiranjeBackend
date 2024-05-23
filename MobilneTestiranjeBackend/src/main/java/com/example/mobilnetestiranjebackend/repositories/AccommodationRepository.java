@@ -1,10 +1,13 @@
 package com.example.mobilnetestiranjebackend.repositories;
 
+import com.example.mobilnetestiranjebackend.enums.AccommodationType;
+import com.example.mobilnetestiranjebackend.enums.Amenity;
 import com.example.mobilnetestiranjebackend.model.Accommodation;
 import com.example.mobilnetestiranjebackend.model.Owner;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,4 +24,14 @@ public interface AccommodationRepository extends JpaRepository<Accommodation, Lo
 
     @Query("select a from Guest g join g.favorites a where g.id = :guestId and a.id = :accommodationId ")
     Optional<Accommodation> findFavoritesByAccommodationIdAndGuestId(Long accommodationId, Long guestId);
+
+    @Query("select distinct a from Accommodation a join Availability av join a.amenities am where (:guestNum between a.minGuests and a.maxGuests) and" +
+            " (lower(a.address) like LOWER(CONCAT('%', :address, '%'))) and" +
+            " (:startDate between av.startDate and av.endDate) and" +
+            " (:endDate between av.startDate and av.endDate) and" +
+            " (:accommodationType is null or a.accommodationType = :accommodationType) and" +
+            " (:minPrice is null or av.price >= :minPrice) and" +
+            " (:maxPrice is null or av.price <= :maxPrice)")
+    List<Accommodation> searchAccommodations(Long guestNum, String address, LocalDate startDate, LocalDate endDate,
+                                             AccommodationType accommodationType, Long minPrice, Long maxPrice);
 }

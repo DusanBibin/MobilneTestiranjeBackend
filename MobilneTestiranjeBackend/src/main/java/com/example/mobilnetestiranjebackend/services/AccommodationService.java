@@ -1,20 +1,33 @@
 package com.example.mobilnetestiranjebackend.services;
 
 
+import com.example.mobilnetestiranjebackend.DTOs.AccommodationSearchDTO;
+import com.example.mobilnetestiranjebackend.enums.AccommodationType;
+import com.example.mobilnetestiranjebackend.enums.Amenity;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthorizationException;
 import com.example.mobilnetestiranjebackend.exceptions.NonExistingEntityException;
 import com.example.mobilnetestiranjebackend.model.*;
 import com.example.mobilnetestiranjebackend.repositories.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
 public class AccommodationService {
     private final AccommodationRepository accommodationRepository;
     private final GuestRepository guestRepository;
+    private final AvailabilityRepository availabilityRepository;
+    private final ReservationRepository reservationRepository;
+    private final AccommodationReviewRepository accommodationReviewRepository;
 
     public Optional<Accommodation> findAccommodationById(Long accommodationId) {
         return accommodationRepository.findAccommodationById(accommodationId);
@@ -22,7 +35,6 @@ public class AccommodationService {
 
 
     public void addToFavorites(Long accommodationId, Long guestId) {
-
 
         var guestWrapper = guestRepository.findGuestById(guestId);
         if(guestWrapper.isEmpty()) throw new NonExistingEntityException("Guest with this id doesn't exist");
@@ -63,5 +75,101 @@ public class AccommodationService {
 
     }
 
+    public Page<AccommodationSearchDTO> searchAccommodations(Long guestNum, String address, LocalDate startDate, LocalDate endDate,
+                                     List<Amenity> amenities, AccommodationType accommodationType, Long minPrice,
+                                     Long maxPrice, int pageNo, int pageSize) {
+
+        //RADIMO QUERY ZA ULAZNE PARAMETRE
+        List<Accommodation> temp1 = accommodationRepository.searchAccommodations(guestNum, address,
+                startDate, endDate, accommodationType, minPrice, maxPrice);
+
+        List<Accommodation> temp2 = new ArrayList<>();
+
+        //PROVERA AMENITIES DA LI SU SVI TU
+        if(amenities == null || amenities.isEmpty()) temp2 = temp1;
+        else{
+            Set<Amenity> tempAmenities = new HashSet<>(amenities);
+            for(Accommodation a: temp1){
+                var tempSet = new HashSet<>(a.getAmenities());
+                if(tempSet.equals(tempAmenities)) temp2.add(a);
+            }
+        }
+
+        List<Accommodation> foundAccommodations = new ArrayList<>();
+
+        Map<Long, Availability> map = new HashMap<Long, Availability>();
+        //PROVERA REZERVACIJA DA LI SE NEKE POKLAPAJU
+        for(Accommodation a: temp2){
+
+            boolean availabilityFree = false;
+            List<Availability> availabilities = availabilityRepository.findAllByAccommodationId(a.getId());
+            for(Availability av: availabilities){
+                List<Reservation> conflictedReservations = reservationRepository.findAcceptedReservationsInConflict(startDate, endDate, a.getId(), av.getId());
+                System.out.println(conflictedReservations.isEmpty());
+                if(conflictedReservations.isEmpty()) {availabilityFree = true; map.put(a.getId(), av); break;}
+            }
+            if(availabilityFree) foundAccommodations.add(a);
+
+        }
+
+
+        for(Accommodation a: foundAccommodations){
+            System.out.println(a.getId());
+            System.out.println(a.getAddress());
+            System.out.println("-----------");
+        }
+
+        if(foundAccommodations.isEmpty()) System.out.println("Prazna je lista");
+        else System.out.println("Lista ima :" + foundAccommodations.size());
+
+        Page<Accommodation> pagedAccoms = convertListToPage(pageNo, pageSize, foundAccommodations);
+        Page<AccommodationSearchDTO> dtoPage = pagedAccoms.map(new Function<Accommodation, AccommodationSearchDTO>() {
+            @Override
+            public AccommodationSearchDTO apply(Accommodation a) {
+
+                Availability av = map.get(a.getId());
+                Long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
+                Long totalPrice = 0L;
+
+                if(av.getPricePerGuest()) totalPrice = daysBetween * av.getPrice() * guestNum;
+                else totalPrice = daysBetween * av.getPrice();
+
+                List<AccommodationReview> accommodationsRatings = accommodationReviewRepository.findByAccommodationId(a.getId());
+
+                double ratingSum = 0;
+                for(AccommodationReview ar: accommodationsRatings){
+                    ratingSum += ar.getRating();
+                }
+                double ratingAvg = ratingSum / accommodationsRatings.size();
+
+                AccommodationSearchDTO dto = new AccommodationSearchDTO();
+                dto.setAccommodationId(a.getId());
+                dto.setName(a.getName());
+                dto.setAddress(a.getAddress());
+                dto.setAmenities(a.getAmenities());
+                dto.setTotalPrice(totalPrice);
+                dto.setOneNightPrice(av.getPrice());
+                dto.setIsPerPerson(av.getPricePerGuest());
+                dto.setMinGuests(a.getMinGuests());
+                dto.setMaxGuests(a.getMaxGuests());
+                dto.setAccommodationType(a.getAccommodationType());
+                dto.setRating(ratingAvg);
+
+                return dto;
+            }
+        });
+
+        return dtoPage;
+    }
+
+    private Page<Accommodation> convertListToPage(int page, int size, List<Accommodation> accommodationList){
+        Pageable pageRequest = PageRequest.of(page, size);
+
+        int start = (int) pageRequest.getOffset();
+        int end = Math.min((start + pageRequest.getPageSize()), accommodationList.size());
+
+        List<Accommodation> pageContent = accommodationList.subList(start, end);
+        return new PageImpl<>(pageContent, pageRequest, accommodationList.size());
+    }
 }
 

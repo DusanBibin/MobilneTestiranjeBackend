@@ -11,7 +11,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.example.projekatmobilne.clients.ClientUtils;
 import com.example.projekatmobilne.databinding.ActivityRegisterBinding;
 import com.example.projekatmobilne.model.Enum.Role;
-import com.example.projekatmobilne.model.RegisterRequestDTO;
+import com.example.projekatmobilne.model.requestDTO.RegisterRequestDTO;
 import com.example.projekatmobilne.tools.ResponseParser;
 import com.google.android.material.textfield.TextInputLayout;
 

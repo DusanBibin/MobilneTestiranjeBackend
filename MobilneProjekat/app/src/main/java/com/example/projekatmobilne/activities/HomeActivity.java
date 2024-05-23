@@ -139,7 +139,7 @@ public class HomeActivity extends AppCompatActivity {
                     System.out.println("OVDE SMO USLI");
                     menuInflater.inflate(R.menu.host_nav_menu, menu);
                 }
-                //dodati za admina isto
+                //TODO dodati za admina isto
 
             }
 

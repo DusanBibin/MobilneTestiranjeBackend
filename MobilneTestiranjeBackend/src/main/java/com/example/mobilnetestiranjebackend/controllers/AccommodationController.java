@@ -1,16 +1,20 @@
 package com.example.mobilnetestiranjebackend.controllers;
 
 import com.example.mobilnetestiranjebackend.DTOs.AccommodationDTOResponse;
+import com.example.mobilnetestiranjebackend.DTOs.AccommodationSearchDTO;
 import com.example.mobilnetestiranjebackend.DTOs.AvailabilityDTO;
-import com.example.mobilnetestiranjebackend.DTOs.AccommodationDTO;
-import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthorizationException;
+import com.example.mobilnetestiranjebackend.enums.AccommodationType;
+import com.example.mobilnetestiranjebackend.enums.Amenity;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidFileExtensionException;
+import com.example.mobilnetestiranjebackend.exceptions.InvalidInputException;
 import com.example.mobilnetestiranjebackend.exceptions.NonExistingEntityException;
 import com.example.mobilnetestiranjebackend.model.Availability;
 import com.example.mobilnetestiranjebackend.model.Guest;
-import com.example.mobilnetestiranjebackend.model.User;
 import com.example.mobilnetestiranjebackend.services.AccommodationService;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,7 +27,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/accommodations")
@@ -120,8 +126,31 @@ public class AccommodationController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(foundImgType);
         headers.setContentLength(imageBytes.length);
-
+        System.out.println("UZIMAMO SLIKU");
         return new ResponseEntity<>(imageBytes, headers, 200);
+    }
+
+
+    @GetMapping("")
+    public ResponseEntity<?> getAccommodationsSearch(@RequestParam(defaultValue = "1") Long guestNum, @RequestParam @NotBlank(message = "Address must be present") String address,
+                                                     @RequestParam @FutureOrPresent(message = "Start date must be in the future") LocalDate startDate,
+                                                     @RequestParam @FutureOrPresent(message = "End date must be in the future") LocalDate endDate,
+                                                     @RequestParam(required = false) List<Amenity> amenities,
+                                                     @RequestParam(required = false) AccommodationType accommodationType,
+                                                     @RequestParam(required = false) Long minPrice,
+                                                     @RequestParam(required = false) Long maxPrice,
+                                                     @RequestParam(defaultValue = "0") int pageNo,
+                                                     @RequestParam(defaultValue = "10") int pageSize){
+
+
+        if(startDate.isBefore(LocalDate.now())) throw new InvalidInputException("Start date must be in the future");
+        if(endDate.isBefore(LocalDate.now())) throw new InvalidInputException("End date must be in the future");
+        if(startDate.isAfter(endDate) || startDate.isEqual(endDate)) throw new InvalidInputException("Start date must be before end date");
+
+        Page<AccommodationSearchDTO> pagedAccommodations = accommodationService.searchAccommodations(guestNum, address, startDate, endDate, amenities, accommodationType,
+                minPrice, maxPrice, pageNo, pageSize);
+
+        return ResponseEntity.ok().body(pagedAccommodations);
     }
 
 

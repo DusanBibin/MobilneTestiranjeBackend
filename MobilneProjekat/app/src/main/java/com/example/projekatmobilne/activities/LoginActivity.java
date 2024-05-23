@@ -2,7 +2,6 @@ package com.example.projekatmobilne.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -10,14 +9,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.projekatmobilne.clients.ClientUtils;
 import com.example.projekatmobilne.databinding.ActivityLoginBinding;
-import com.example.projekatmobilne.model.AuthenticationRequestDTO;
-import com.example.projekatmobilne.model.AuthenticationResponseDTO;
+import com.example.projekatmobilne.model.requestDTO.AuthenticationRequestDTO;
+import com.example.projekatmobilne.model.responseDTO.AuthenticationResponseDTO;
 import com.example.projekatmobilne.services.ConnectionCheckService;
 import com.example.projekatmobilne.tools.JWTManager;
 import com.example.projekatmobilne.tools.ResponseParser;
-import com.google.gson.Gson;
 
-import java.io.IOException;
 import java.util.Map;
 
 import okhttp3.ResponseBody;

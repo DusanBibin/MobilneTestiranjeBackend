@@ -1,4 +1,4 @@
-package com.example.projekatmobilne.model;
+package com.example.projekatmobilne.model.responseDTO;
 
 import com.example.projekatmobilne.model.Enum.Role;
 

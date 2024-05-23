@@ -143,7 +143,7 @@ private final UserRepository userRepository;
                 .lat(90.0)
                 .lon(90.0)
                 .amenities(List.of(Amenity.WIFI))
-                .imagePaths(List.of("/probamejl@gmail.com/AccName/1_1704322662222_soba.png"))
+                .imagePaths(List.of("/dusanbibin2@gmail.com/AccName/1_1704322662222_soba.png"))
                 .minGuests(1L)
                 .maxGuests(1L)
                 .accommodationType(AccommodationType.valueOf("STUDIO"))
@@ -179,11 +179,11 @@ private final UserRepository userRepository;
                 .address("Some address")
                 .lat(90.0)
                 .lon(90.0)
-                .amenities(List.of(Amenity.WIFI))
-                .imagePaths(List.of("/probamejl@gmail.com/NewAcc/1_new_room.jpg",
-                        "/probamejl@gmail.com/NewAcc/2_new_room.jpg"))
+                .amenities(List.of(Amenity.WIFI, Amenity.AC))
+                .imagePaths(List.of("/dusanbibin2@gmail.com/NewAcc/1_new_room.jpg",
+                        "/dusanbibin2@gmail.com/NewAcc/2_new_room.jpg"))
                 .minGuests(1L)
-                .maxGuests(1L)
+                .maxGuests(4L)
                 .accommodationType(AccommodationType.valueOf("STUDIO"))
                 .autoAcceptEnabled(false)
                 .owner(ownerDusan)
@@ -224,9 +224,6 @@ private final UserRepository userRepository;
                 .accommodation(accommodation)
                 .build();
 
-
-
-
         availabilityEditTest = availabilityRepository.save(availabilityEditTest);
         availabilityDeleteTest = availabilityRepository.save(availabilityDeleteTest);
         availabilityNew = availabilityRepository.save(availabilityNew);
@@ -235,6 +232,10 @@ private final UserRepository userRepository;
         accommodation.getAvailabilityList().add(availabilityDeleteTest);
 
         accommodation = accommodationRepository.save(accommodation);
+
+
+
+
 
         var reservation = Reservation.builder()
                 .availability(availabilityDeleteTest)
@@ -248,6 +249,8 @@ private final UserRepository userRepository;
 
 
 
+
+
         reservation = reservationRepository.save(reservation);
 
         guestDusan1.getReservations().add(reservation);
@@ -255,6 +258,9 @@ private final UserRepository userRepository;
 
         accommodation.getReservations().add(reservation);
         accommodation = accommodationRepository.save(accommodation);
+
+
+
 
 
 
@@ -313,6 +319,94 @@ private final UserRepository userRepository;
         accommodationReview = accommodationReviewRepository.save(accommodationReview);
 
 
+        //thirtyMore();
+    }
 
+    private void thirtyMore(){
+
+        Owner ownerSomeoneElse = Owner.builder()
+                .firstName("Neko")
+                .lastname("Neko")
+                .email("nekonekad@gmail.com")
+                .password(passwordEncoder.encode("123"))
+                .phoneNumber("654653")
+                .address("Neka ulica 123")
+                .emailConfirmed(true)
+                .blocked(false)
+                .role(Role.OWNER)
+                .accommodationRequests(new ArrayList<>())
+                .accommodations(new ArrayList<>())
+                .ownerReviews(new ArrayList<>())
+                .reviewComplaints(new ArrayList<>())
+                .emailChangeVerification(null)
+                .verification(new Verification())
+                .build();
+
+        ownerSomeoneElse = ownerRepository.save(ownerSomeoneElse);
+
+
+        for(int i = 0; i < 30; i++){
+
+
+            var accommodation = Accommodation.builder()
+                    .name("NewAcc")
+                    .description("Accommodation description")
+                    .address("Some address")
+                    .lat(90.0)
+                    .lon(90.0)
+                    .amenities(List.of(Amenity.WIFI, Amenity.AC))
+                    .imagePaths(List.of("/dusanbibin2@gmail.com/NewAcc/1_new_room.jpg",
+                            "/dusanbibin2@gmail.com/NewAcc/2_new_room.jpg"))
+                    .minGuests(1L)
+                    .maxGuests(4L)
+                    .accommodationType(AccommodationType.valueOf("STUDIO"))
+                    .autoAcceptEnabled(false)
+                    .owner(ownerSomeoneElse)
+                    .availabilityList(new ArrayList<>())
+                    .reservations(new ArrayList<>())
+                    .accommodationReviews(new ArrayList<>())
+                    .build();
+            accommodation = accommodationRepository.save(accommodation);
+
+            ownerSomeoneElse.getAccommodations().add(accommodation);
+            ownerSomeoneElse = ownerRepository.save(ownerSomeoneElse);
+
+            var availabilityEditTest = Availability.builder()
+                    .startDate(LocalDate.now().plusDays(5))
+                    .endDate(LocalDate.now().plusDays(15))
+                    .cancelDeadline(LocalDate.now().plusDays(4))
+                    .price(200L)
+                    .pricePerGuest(true)
+                    .accommodation(accommodation)
+                    .build();
+
+
+            var availabilityDeleteTest = Availability.builder()
+                    .startDate(LocalDate.now().plusDays(15))
+                    .endDate(LocalDate.now().plusDays(20))
+                    .cancelDeadline(LocalDate.now().plusDays(8))
+                    .price(250L)
+                    .pricePerGuest(true)
+                    .accommodation(accommodation)
+                    .build();
+
+            var availabilityNew = Availability.builder()
+                    .startDate(LocalDate.now().plusDays(20))
+                    .endDate(LocalDate.now().plusDays(30))
+                    .cancelDeadline(LocalDate.now().plusDays(12))
+                    .price(2500L)
+                    .pricePerGuest(true)
+                    .accommodation(accommodation)
+                    .build();
+
+            availabilityEditTest = availabilityRepository.save(availabilityEditTest);
+            availabilityDeleteTest = availabilityRepository.save(availabilityDeleteTest);
+            availabilityNew = availabilityRepository.save(availabilityNew);
+
+            accommodation.getAvailabilityList().add(availabilityEditTest);
+            accommodation.getAvailabilityList().add(availabilityDeleteTest);
+
+            accommodation = accommodationRepository.save(accommodation);
+        }
     }
 }

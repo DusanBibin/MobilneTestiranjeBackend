@@ -1,10 +1,15 @@
 package com.example.projekatmobilne.clients;
 
 
-import com.example.projekatmobilne.model.AuthenticationRequestDTO;
-import com.example.projekatmobilne.model.ChangePasswordDTO;
-import com.example.projekatmobilne.model.RegisterRequestDTO;
-import com.example.projekatmobilne.model.UserDTO;
+import com.example.projekatmobilne.model.requestDTO.AuthenticationRequestDTO;
+import com.example.projekatmobilne.model.requestDTO.ChangePasswordDTO;
+import com.example.projekatmobilne.model.Enum.AccommodationType;
+import com.example.projekatmobilne.model.Enum.Amenity;
+import com.example.projekatmobilne.model.requestDTO.RegisterRequestDTO;
+import com.example.projekatmobilne.model.requestDTO.UserDTO;
+
+import java.time.LocalDate;
+import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -15,6 +20,7 @@ import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 
 public interface ApiService {
@@ -80,6 +86,37 @@ public interface ApiService {
     Call<ResponseBody> sendCodeEmail();
 
 
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
     @PUT("auth/{email}/validate-code/{verification}")
     Call<ResponseBody> validateCode(@Path("verification") String verification, @Path("email") String email, @Body String newEmail);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @GET("accommodations")
+    Call<ResponseBody> getAccommodationsSearch(
+            @Query("guestNum") Long guestNum,
+            @Query("address") String address,
+            @Query("startDate") LocalDate startDate,
+            @Query("endDate") LocalDate endDate,
+            @Query("amenities") List<Amenity> amenities,
+            @Query("accommodationType") AccommodationType accommodationType,
+            @Query("minPrice") Long minPrice,
+            @Query("maxPrice") Long maxPrice,
+            @Query("pageNo") int pageNo,
+            @Query("pageSize") int pageSize
+    );
+
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @GET("accommodations/{accommodationId}/images/{imageId}")
+    Call<ResponseBody> getAccommodationImage(@Path("accommodationId") Long accommodationId, @Path("imageId") Long imageId);
+
 }

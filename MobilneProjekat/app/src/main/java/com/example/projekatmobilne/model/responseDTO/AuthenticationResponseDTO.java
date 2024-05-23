@@ -1,4 +1,4 @@
-package com.example.projekatmobilne.model;
+package com.example.projekatmobilne.model.responseDTO;
 
 public class AuthenticationResponseDTO {
     private String token;
