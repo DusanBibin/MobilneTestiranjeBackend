@@ -41,7 +41,7 @@ public class AccommodationSearchAdapter extends RecyclerView.Adapter<MyViewHolde
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.imageView.setImageResource(dataList.get(position).getImage());
+        holder.imageView.setImageBitmap(dataList.get(position).getImageBitmap());
         holder.txtAddress.setText(dataList.get(position).getAddress());
         holder.txtName.setText(dataList.get(position).getName());
         holder.txtType.setText(dataList.get(position).getType().toString());
@@ -62,7 +62,7 @@ public class AccommodationSearchAdapter extends RecyclerView.Adapter<MyViewHolde
 
     @Override
     public int getItemCount() {
-        return 0;
+        return dataList.size();
     }
 }
 

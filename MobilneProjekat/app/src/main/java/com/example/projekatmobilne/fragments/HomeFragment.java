@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import com.example.projekatmobilne.adapters.AccommodationCard;
 import com.example.projekatmobilne.adapters.AccommodationSearchAdapter;
 import com.example.projekatmobilne.clients.ClientUtils;
 import com.example.projekatmobilne.databinding.FragmentHomeBinding;
+import com.example.projekatmobilne.model.Enum.Amenity;
 import com.example.projekatmobilne.model.paging.PagingDTOs.AccommodationSearchDTO;
 import com.example.projekatmobilne.model.paging.PagingDTOs.PagedSearchDTOResponse;
 import com.example.projekatmobilne.tools.ResponseParser;
@@ -32,6 +34,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -48,11 +51,12 @@ public class HomeFragment extends Fragment {
    private LocalDate dateStart;
    private LocalDate dateEnd;
 
-   List<AccommodationCard> dataList;
+   private List<AccommodationCard> dataList;
 
-   AccommodationSearchAdapter adapter;
+   private AccommodationSearchAdapter adapter;
 
-   AccommodationCard androidData;
+   private AccommodationCard androidData;
+
 
     public HomeFragment() {
 
@@ -78,6 +82,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
 
 
         binding.dateRangeInputEditText.setOnClickListener(v -> {
@@ -109,6 +114,7 @@ public class HomeFragment extends Fragment {
         binding.btnSearch.setOnClickListener(v -> {
             String search = binding.searchAccommodations.getQuery().toString();
             Long guestNum = Long.valueOf(binding.guestNumberInputEditText.getText().toString());
+            dataList = new ArrayList<>();
 
             Call<ResponseBody> call = ClientUtils.apiService.getAccommodationsSearch(guestNum,
                     search, dateStart, dateEnd, null, null, null,
@@ -118,9 +124,28 @@ public class HomeFragment extends Fragment {
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     PagedSearchDTOResponse responseDTO =
                             ResponseParser.parseResponse(response, PagedSearchDTOResponse.class, false);
-                    System.out.println(responseDTO);
+
+
+
+
 
                     for(AccommodationSearchDTO a: responseDTO.getContent()){
+
+                        StringBuilder amenities = new StringBuilder();
+                        for(int i = 0; i < a.getAmenities().size(); i++){
+                            if(i != a.getAmenities().size() - 1) amenities.append(a.getAmenities().get(i)).append(", ");
+                            else amenities.append(a.getAmenities().get(i));
+                        }
+
+
+                        AccommodationCard ac = new AccommodationCard(a.getAddress(),
+                            a.getMinGuests() + "-" +  a.getMaxGuests(),
+                            a.getAccommodationType(), a.getPerPerson(), a.getOneNightPrice(),
+                            a.getTotalPrice(), a.getName(), amenities.toString(), a.getRating());
+                        dataList.add(ac);
+
+
+
 
                         Call<ResponseBody> imageCall = ClientUtils.apiService.getAccommodationImage(a.getAccommodationId(), 1L);
                         imageCall.enqueue(new Callback<ResponseBody>() {
@@ -132,6 +157,9 @@ public class HomeFragment extends Fragment {
                                         imageBytes = response.body().bytes();
                                         Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
                                         a.setImageBitmap(bitmap);
+                                        ac.setImageBitmap(bitmap);
+                                        System.out.println("TEK SE SAD UPALILO AJAOOO");
+                                        adapter.setSearchList(dataList);
                                     }catch (IOException e){
                                         e.printStackTrace();
                                         Toast.makeText(getActivity(), "Failed to load image", Toast.LENGTH_SHORT).show();
@@ -146,9 +174,15 @@ public class HomeFragment extends Fragment {
                                 t.printStackTrace();
                             }
                         });
-
-
                     }
+
+                    GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 1);
+                    binding.recyclerView.setLayoutManager(gridLayoutManager);
+
+
+                    adapter = new AccommodationSearchAdapter(getActivity(), dataList);
+                    binding.recyclerView.setAdapter(adapter);
+
 
 
                 }

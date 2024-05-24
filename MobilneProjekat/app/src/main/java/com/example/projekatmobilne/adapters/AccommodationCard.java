@@ -1,19 +1,33 @@
 package com.example.projekatmobilne.adapters;
 
+import android.graphics.Bitmap;
+
 import com.example.projekatmobilne.model.Enum.AccommodationType;
 
 public class AccommodationCard {
-    private int image;
+    private Bitmap imageBitmap;
     private String name;
     private String address;
-    private String guests;
     private AccommodationType type;
     private Boolean isPerPerson;
     private Long oneNightPrice;
     private Long totalPrice;
+    private Double rating;
+    private String amenities;
+    private String guests;
 
-    public AccommodationCard(int image, String address, String guests, AccommodationType type, Boolean isPerPerson, Long oneNightPrice, Long totalPrice, String name) {
-        this.image = image;
+
+    public Double getRating() {
+        return rating;
+    }
+
+    public void setRating(Double rating) {
+        this.rating = rating;
+    }
+
+    public AccommodationCard(String address, String guests, AccommodationType type,
+                             Boolean isPerPerson, Long oneNightPrice, Long totalPrice, String name,
+                             String amenities, Double rating) {
         this.address = address;
         this.guests = guests;
         this.type = type;
@@ -21,14 +35,16 @@ public class AccommodationCard {
         this.oneNightPrice = oneNightPrice;
         this.totalPrice = totalPrice;
         this.name = name;
+        this.amenities = amenities;
+        this.rating = rating;
     }
 
-    public int getImage() {
-        return image;
+    public Bitmap getImageBitmap() {
+        return imageBitmap;
     }
 
-    public void setImage(int image) {
-        this.image = image;
+    public void setImageBitmap(Bitmap imageBitmap) {
+        this.imageBitmap = imageBitmap;
     }
 
     public String getAddress() {
@@ -85,5 +101,29 @@ public class AccommodationCard {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getAmenities() {
+        return amenities;
+    }
+
+    public void setAmenities(String amenities) {
+        this.amenities = amenities;
+    }
+
+    @Override
+    public String toString() {
+        return "AccommodationCard{" +
+                "imageBitmap=" + imageBitmap +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                ", type=" + type +
+                ", isPerPerson=" + isPerPerson +
+                ", oneNightPrice=" + oneNightPrice +
+                ", totalPrice=" + totalPrice +
+                ", rating=" + rating +
+                ", amenities='" + amenities + '\'' +
+                ", guests='" + guests + '\'' +
+                '}';
     }
 }

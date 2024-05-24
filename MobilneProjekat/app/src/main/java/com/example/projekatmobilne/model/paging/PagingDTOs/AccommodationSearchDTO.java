@@ -2,13 +2,16 @@ package com.example.projekatmobilne.model.paging.PagingDTOs;
 
 import android.graphics.Bitmap;
 
+import com.example.projekatmobilne.model.Enum.AccommodationType;
+import com.example.projekatmobilne.model.Enum.Amenity;
+
 import java.util.List;
 
 public class AccommodationSearchDTO {
     public AccommodationSearchDTO(Long accommodationId, String name, String address,
-                                  List<String> amenities, Long totalPrice, Long oneNightPrice,
+                                  List<Amenity> amenities, Long totalPrice, Long oneNightPrice,
                                   Boolean isPerPerson, Long minGuests, Long maxGuests,
-                                  String accommodationType, Double rating) {
+                                  AccommodationType accommodationType, Double rating) {
         this.accommodationId = accommodationId;
         this.name = name;
         this.address = address;
@@ -40,20 +43,32 @@ public class AccommodationSearchDTO {
                 ", rating=" + rating +
                 '}';
     }
-
-    private Long accommodationId;
+    private Bitmap imageBitmap;
     private String name;
     private String address;
-    private List<String> amenities;
-    private Long totalPrice;
-    private Long oneNightPrice;
+    private AccommodationType accommodationType;
     private Boolean isPerPerson;
+    private Long oneNightPrice;
+    private Long totalPrice;
+    private Double rating;
+    private List<Amenity> amenities;
     private Long minGuests;
     private Long maxGuests;
-    private String accommodationType;
-    private Double rating;
 
-    private Bitmap imageBitmap;
+
+
+    private Long accommodationId;
+
+
+
+
+
+
+
+
+
+
+
 
     public Bitmap getImageBitmap() {
         return imageBitmap;
@@ -87,11 +102,11 @@ public class AccommodationSearchDTO {
         this.address = address;
     }
 
-    public List<String> getAmenities() {
+    public List<Amenity> getAmenities() {
         return amenities;
     }
 
-    public void setAmenities(List<String> amenities) {
+    public void setAmenities(List<Amenity> amenities) {
         this.amenities = amenities;
     }
 
@@ -135,11 +150,11 @@ public class AccommodationSearchDTO {
         this.maxGuests = maxGuests;
     }
 
-    public String getAccommodationType() {
+    public AccommodationType getAccommodationType() {
         return accommodationType;
     }
 
-    public void setAccommodationType(String accommodationType) {
+    public void setAccommodationType(AccommodationType accommodationType) {
         this.accommodationType = accommodationType;
     }
 
