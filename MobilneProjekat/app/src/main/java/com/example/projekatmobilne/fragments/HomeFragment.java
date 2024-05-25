@@ -14,13 +14,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.example.projekatmobilne.R;
 import com.example.projekatmobilne.adapters.AccommodationCard;
 import com.example.projekatmobilne.adapters.AccommodationSearchAdapter;
 import com.example.projekatmobilne.clients.ClientUtils;
+import com.example.projekatmobilne.databinding.BottomSheetFilterBinding;
+import com.example.projekatmobilne.databinding.CustomDialogBoxBinding;
 import com.example.projekatmobilne.databinding.FragmentHomeBinding;
+import com.example.projekatmobilne.model.Enum.AccommodationType;
 import com.example.projekatmobilne.model.Enum.Amenity;
 import com.example.projekatmobilne.model.paging.PagingDTOs.AccommodationSearchDTO;
 import com.example.projekatmobilne.model.paging.PagingDTOs.PagedSearchDTOResponse;
@@ -28,6 +34,7 @@ import com.example.projekatmobilne.tools.ResponseParser;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.IOError;
 import java.io.IOException;
@@ -49,14 +56,19 @@ import retrofit2.Response;
 public class HomeFragment extends Fragment {
 
    private FragmentHomeBinding binding;
-   private LocalDate dateStart;
-   private LocalDate dateEnd;
+   private LocalDate dateStart, dateEnd;
 
    private List<AccommodationCard> dataList;
 
    private AccommodationSearchAdapter adapter;
 
    private AccommodationCard androidData;
+
+   private TextInputEditText editTextMaxValue, editTextMinValue;
+   private AccommodationType type;
+   private View dialogView;
+
+   private CheckBox checkBoxWifi, checkBoxAC, checkBoxPool, checkBoxParking;
 
 
     public HomeFragment() {
@@ -76,67 +88,36 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
-
         return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getActivity(), R.style.FullScreenBottomSheetDialog);
+        dialogView = getLayoutInflater().inflate(R.layout.bottom_sheet_filter, null);
+        bottomSheetDialog.setContentView(dialogView);
 
-        binding.guestNumberInputEditText.setError(null);
-        binding.dateRangeInputLayout.setError(null);
-
-        binding.dateRangeInputEditText.setOnClickListener(v -> {
-            MaterialDatePicker<Pair<Long, Long>> materialDatePicker = MaterialDatePicker.Builder.dateRangePicker().setSelection(new androidx.core.util.Pair<>(
-                    MaterialDatePicker.thisMonthInUtcMilliseconds(),
-                    MaterialDatePicker.todayInUtcMilliseconds()
-            )).build();
-
-            materialDatePicker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>>() {
-                @Override
-                public void onPositiveButtonClick(Pair<Long, Long> selection) {
-                    String start = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date(selection.first));
-                    String end = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date(selection.second));
-                    String display = start + "  " + end;
-                    binding.dateRangeInputEditText.setText(display);
-
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-
-                    dateStart = LocalDate.parse(start, formatter);
-                    dateEnd = LocalDate.parse(end,formatter);
-
-                }
-            });
-
-
-            materialDatePicker.show(getActivity().getSupportFragmentManager(), "iksde");
-        });
+        setupRadioGroup();
+        setupDateRangePicker();
 
         binding.btnSearch.setOnClickListener(v -> {
 
-            binding.guestNumberInputLayout.setError(null);
-            binding.dateRangeInputLayout.setError(null);
-            String search = binding.searchAccommodations.getQuery().toString();
 
-            boolean isValid = true;
-            if (binding.guestNumberInputEditText.getText().toString().isEmpty()) {
-                binding.guestNumberInputLayout.setError("This field cannot be empty");
-                isValid = false;
-            }
+            checkInputs();
 
-            if (binding.dateRangeInputEditText.getText().toString().isEmpty()) {
-                binding.dateRangeInputLayout.setError("This field cannot be empty");
-                isValid = false;
-            }
-            if(!isValid) return;
 
             Long guestNum = Long.valueOf(binding.guestNumberInputEditText.getText().toString());
-            dataList = new ArrayList<>();
+            String search = binding.searchAccommodations.getQuery().toString();
+
+            Long maxValue = null;
+            Long minValue = null;
+            if(editTextMinValue.getText() != null && !editTextMinValue.getText().toString().isEmpty()) minValue = Long.parseLong(editTextMinValue.getText().toString());
+            if(editTextMaxValue.getText() != null && !editTextMaxValue.getText().toString().isEmpty()) maxValue = Long.parseLong(editTextMaxValue.getText().toString());
 
             Call<ResponseBody> call = ClientUtils.apiService.getAccommodationsSearch(guestNum,
-                    search, dateStart, dateEnd, null, null, null,
-                    null, 0, 10);
+                    search, dateStart, dateEnd, getCheckBoxAmenities(), type, minValue,
+                    maxValue, 0, 10);
             call.enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -149,9 +130,6 @@ public class HomeFragment extends Fragment {
                         if(responseDTO.getContent().isEmpty()){
                             Toast.makeText(getActivity(), "There are no accommodations that are available within this period", Toast.LENGTH_SHORT).show();
                         }
-
-
-
 
                         for(AccommodationSearchDTO a: responseDTO.getContent()){
 
@@ -219,11 +197,7 @@ public class HomeFragment extends Fragment {
                             String errMessage = map.get("message");
                             binding.dateRangeInputLayout.setError(errMessage);
                         }
-
                     }
-
-
-
                 }
 
                 @Override
@@ -237,12 +211,92 @@ public class HomeFragment extends Fragment {
         });
 
         binding.btnFilters.setOnClickListener(v -> {
-            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getActivity(), R.style.FullScreenBottomSheetDialog);
-            View dialogView = getLayoutInflater().inflate(R.layout.bottom_sheet_filter, null);
-            bottomSheetDialog.setContentView(dialogView);
             bottomSheetDialog.show();
         });
 
 
+    }
+
+    private void setupRadioGroup() {
+
+        checkBoxWifi = dialogView.findViewById(R.id.checkBoxWifi);
+        checkBoxAC = dialogView.findViewById(R.id.checkBoxAC);
+        checkBoxPool = dialogView.findViewById(R.id.checkBoxPool);
+        checkBoxParking = dialogView.findViewById(R.id.checkBoxParking);
+
+
+        editTextMaxValue = dialogView.findViewById(R.id.inputEditTextMaxPrice);
+        editTextMinValue = dialogView.findViewById(R.id.inputEditTextMinPrice);
+        RadioGroup radioGroup = dialogView.findViewById(R.id.radioGroupType);
+        type = null;
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton selectedRadioButton = dialogView.findViewById(checkedId);
+                String selectedText = selectedRadioButton.getText().toString();
+                if(selectedText.equals("Any")) type = null;
+                else type = AccommodationType.valueOf(selectedText.toUpperCase());
+            }
+        });
+    }
+
+    private void checkInputs() {
+        binding.guestNumberInputLayout.setError(null);
+        binding.dateRangeInputLayout.setError(null);
+
+
+        boolean isValid = true;
+        if (binding.guestNumberInputEditText.getText().toString().isEmpty()) {
+            binding.guestNumberInputLayout.setError("This field cannot be empty");
+            isValid = false;
+        }
+
+        if (binding.dateRangeInputEditText.getText().toString().isEmpty()) {
+            binding.dateRangeInputLayout.setError("This field cannot be empty");
+            isValid = false;
+        }
+        if(!isValid) return;
+
+
+        dataList = new ArrayList<>();
+    }
+
+    private void setupDateRangePicker() {
+        binding.guestNumberInputEditText.setError(null);
+        binding.dateRangeInputLayout.setError(null);
+        binding.dateRangeInputEditText.setOnClickListener(v -> {
+            MaterialDatePicker<Pair<Long, Long>> materialDatePicker = MaterialDatePicker.Builder.dateRangePicker().setSelection(new Pair<>(
+                    MaterialDatePicker.thisMonthInUtcMilliseconds(),
+                    MaterialDatePicker.todayInUtcMilliseconds()
+            )).build();
+
+            materialDatePicker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>>() {
+                @Override
+                public void onPositiveButtonClick(Pair<Long, Long> selection) {
+                    String start = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date(selection.first));
+                    String end = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date(selection.second));
+                    String display = start + "  " + end;
+                    binding.dateRangeInputEditText.setText(display);
+
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
+                    dateStart = LocalDate.parse(start, formatter);
+                    dateEnd = LocalDate.parse(end,formatter);
+
+                }
+            });
+
+            materialDatePicker.show(getActivity().getSupportFragmentManager(), "iksde");
+        });
+    }
+
+    private List<Amenity> getCheckBoxAmenities(){
+        List<Amenity> amenityList = new ArrayList<>();
+        if(checkBoxParking.isChecked()) amenityList.add(Amenity.PARKING);
+        if(checkBoxPool.isChecked()) amenityList.add(Amenity.POOL);
+        if(checkBoxAC.isChecked()) amenityList.add(Amenity.AC);
+        if(checkBoxWifi.isChecked()) amenityList.add(Amenity.WIFI);
+
+        return amenityList;
     }
 }

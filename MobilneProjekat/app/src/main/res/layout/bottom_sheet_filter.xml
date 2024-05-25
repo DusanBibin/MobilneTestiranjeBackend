@@ -38,17 +38,28 @@
             android:layout_height="wrap_content"
             android:text="AccommodationType"/>
         <RadioGroup
+            android:id="@+id/radioGroupType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <RadioButton
+                android:id="@+id/radioButtonAny"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Any"/>
+            <RadioButton
+                android:id="@+id/radioButtonStudio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Studio"/>
             <RadioButton
+                android:id="@+id/radioButtonRoom"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Room"/>
             <RadioButton
+                android:id="@+id/radioButtonApartment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Apartment"/>
@@ -64,18 +75,22 @@
             android:layout_height="wrap_content"
             android:text="Amenities"/>
         <CheckBox
+            android:id="@+id/checkBoxWifi"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="WIFI"/>
         <CheckBox
+            android:id="@+id/checkBoxPool"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Pool"/>
         <CheckBox
+            android:id="@+id/checkBoxAC"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="AC"/>
         <CheckBox
+            android:id="@+id/checkBoxParking"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Parking"/>
@@ -118,8 +133,8 @@
             app:endIconMode="clear_text">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/minPriceInputEditText"
-                android:inputType="none"
+                android:id="@+id/inputEditTextMinPrice"
+                android:inputType="number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 />
@@ -138,7 +153,7 @@
             app:endIconMode="clear_text">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/maxPriceInputEditText"
+                android:id="@+id/inputEditTextMaxPrice"
                 android:inputType="number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
