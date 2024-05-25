@@ -68,7 +68,8 @@ public class SplashActivity extends AppCompatActivity {
         int SPLASH_TIME_OUT = 3000;
         String jwt = JWTManager.getJWT();
 
-        if(jwt != null) { if(JWTManager.isExpired()) JWTManager.clearUserData(); }
+        if(jwt != null) { if(JWTManager.isExpired()) JWTManager.clearUserData();
+            else JWTManager.saveJWT(jwt);}
 
 
 

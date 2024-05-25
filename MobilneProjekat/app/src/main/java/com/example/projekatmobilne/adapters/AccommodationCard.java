@@ -8,10 +8,10 @@ public class AccommodationCard {
     private Bitmap imageBitmap;
     private String name;
     private String address;
-    private AccommodationType type;
-    private Boolean isPerPerson;
-    private Long oneNightPrice;
-    private Long totalPrice;
+    private String type;
+    private String isPerPerson;
+    private String oneNightPrice;
+    private String totalPrice;
     private Double rating;
     private String amenities;
     private String guests;
@@ -25,8 +25,8 @@ public class AccommodationCard {
         this.rating = rating;
     }
 
-    public AccommodationCard(String address, String guests, AccommodationType type,
-                             Boolean isPerPerson, Long oneNightPrice, Long totalPrice, String name,
+    public AccommodationCard(String address, String guests, String type,
+                             String isPerPerson, String oneNightPrice, String totalPrice, String name,
                              String amenities, Double rating) {
         this.address = address;
         this.guests = guests;
@@ -63,35 +63,35 @@ public class AccommodationCard {
         this.guests = guests;
     }
 
-    public AccommodationType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(AccommodationType type) {
+    public void setType(String type) {
         this.type = type;
     }
 
-    public Boolean getPerPerson() {
+    public String getPerPerson() {
         return isPerPerson;
     }
 
-    public void setPerPerson(Boolean perPerson) {
+    public void setPerPerson(String perPerson) {
         isPerPerson = perPerson;
     }
 
-    public Long getOneNightPrice() {
+    public String getOneNightPrice() {
         return oneNightPrice;
     }
 
-    public void setOneNightPrice(Long oneNightPrice) {
+    public void setOneNightPrice(String oneNightPrice) {
         this.oneNightPrice = oneNightPrice;
     }
 
-    public Long getTotalPrice() {
+    public String getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(Long totalPrice) {
+    public void setTotalPrice(String totalPrice) {
         this.totalPrice = totalPrice;
     }
 

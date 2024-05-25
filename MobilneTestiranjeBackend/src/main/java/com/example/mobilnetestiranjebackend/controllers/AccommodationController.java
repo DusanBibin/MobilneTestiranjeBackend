@@ -150,6 +150,7 @@ public class AccommodationController {
         Page<AccommodationSearchDTO> pagedAccommodations = accommodationService.searchAccommodations(guestNum, address, startDate, endDate, amenities, accommodationType,
                 minPrice, maxPrice, pageNo, pageSize);
 
+
         return ResponseEntity.ok().body(pagedAccommodations);
     }
 

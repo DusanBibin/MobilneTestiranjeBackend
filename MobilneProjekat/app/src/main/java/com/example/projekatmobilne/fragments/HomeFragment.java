@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -83,7 +84,8 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
+        binding.guestNumberInputEditText.setError(null);
+        binding.dateRangeInputLayout.setError(null);
 
         binding.dateRangeInputEditText.setOnClickListener(v -> {
             MaterialDatePicker<Pair<Long, Long>> materialDatePicker = MaterialDatePicker.Builder.dateRangePicker().setSelection(new androidx.core.util.Pair<>(
@@ -112,7 +114,23 @@ public class HomeFragment extends Fragment {
         });
 
         binding.btnSearch.setOnClickListener(v -> {
+
+            binding.guestNumberInputLayout.setError(null);
+            binding.dateRangeInputLayout.setError(null);
             String search = binding.searchAccommodations.getQuery().toString();
+
+            boolean isValid = true;
+            if (binding.guestNumberInputEditText.getText().toString().isEmpty()) {
+                binding.guestNumberInputLayout.setError("This field cannot be empty");
+                isValid = false;
+            }
+
+            if (binding.dateRangeInputEditText.getText().toString().isEmpty()) {
+                binding.dateRangeInputLayout.setError("This field cannot be empty");
+                isValid = false;
+            }
+            if(!isValid) return;
+
             Long guestNum = Long.valueOf(binding.guestNumberInputEditText.getText().toString());
             dataList = new ArrayList<>();
 
@@ -122,66 +140,87 @@ public class HomeFragment extends Fragment {
             call.enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    PagedSearchDTOResponse responseDTO =
-                            ResponseParser.parseResponse(response, PagedSearchDTOResponse.class, false);
 
 
+                    if(response.code() == 200){
+                        PagedSearchDTOResponse responseDTO =
+                                ResponseParser.parseResponse(response, PagedSearchDTOResponse.class, false);
 
-
-
-                    for(AccommodationSearchDTO a: responseDTO.getContent()){
-
-                        StringBuilder amenities = new StringBuilder();
-                        for(int i = 0; i < a.getAmenities().size(); i++){
-                            if(i != a.getAmenities().size() - 1) amenities.append(a.getAmenities().get(i)).append(", ");
-                            else amenities.append(a.getAmenities().get(i));
+                        if(responseDTO.getContent().isEmpty()){
+                            Toast.makeText(getActivity(), "There are no accommodations that are available within this period", Toast.LENGTH_SHORT).show();
                         }
 
 
-                        AccommodationCard ac = new AccommodationCard(a.getAddress(),
-                            a.getMinGuests() + "-" +  a.getMaxGuests(),
-                            a.getAccommodationType(), a.getPerPerson(), a.getOneNightPrice(),
-                            a.getTotalPrice(), a.getName(), amenities.toString(), a.getRating());
-                        dataList.add(ac);
+
+
+                        for(AccommodationSearchDTO a: responseDTO.getContent()){
+
+                            StringBuilder amenities = new StringBuilder("Amenities: ");
+                            if(a.getAmenities().isEmpty()) amenities.append(" None");
+                            for(int i = 0; i < a.getAmenities().size(); i++){
+                                if(i != a.getAmenities().size() - 1) amenities.append(a.getAmenities().get(i)).append(", ");
+                                else amenities.append(a.getAmenities().get(i));
+                            }
+                            String guests = "Possible guests: " + a.getMinGuests() + "-" +  a.getMaxGuests();
+                            String type = "Type: " + a.getAccommodationType().toString();
+                            String isPerPerson = "Is price per person:" + a.getPerPerson();
+                            String oneNightPrice = "One night price: " + a.getOneNightPrice();
+                            String totalPrice = "Total price: " + a.getTotalPrice();
+                            AccommodationCard ac = new AccommodationCard(a.getAddress(),
+                                    guests,
+                                    type, isPerPerson, oneNightPrice,
+                                    totalPrice, a.getName(), amenities.toString(), a.getRating());
+                            dataList.add(ac);
 
 
 
 
-                        Call<ResponseBody> imageCall = ClientUtils.apiService.getAccommodationImage(a.getAccommodationId(), 1L);
-                        imageCall.enqueue(new Callback<ResponseBody>() {
-                            @Override
-                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                                if(response.code() == 200){
-                                    byte[] imageBytes;
-                                    try {
-                                        imageBytes = response.body().bytes();
-                                        Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                                        a.setImageBitmap(bitmap);
-                                        ac.setImageBitmap(bitmap);
-                                        System.out.println("TEK SE SAD UPALILO AJAOOO");
-                                        adapter.setSearchList(dataList);
-                                    }catch (IOException e){
-                                        e.printStackTrace();
-                                        Toast.makeText(getActivity(), "Failed to load image", Toast.LENGTH_SHORT).show();
+                            Call<ResponseBody> imageCall = ClientUtils.apiService.getAccommodationImage(a.getAccommodationId(), 1L);
+                            imageCall.enqueue(new Callback<ResponseBody>() {
+                                @Override
+                                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                    if(response.code() == 200){
+                                        byte[] imageBytes;
+                                        try {
+                                            imageBytes = response.body().bytes();
+                                            Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                                            a.setImageBitmap(bitmap);
+                                            ac.setImageBitmap(bitmap);
+                                            System.out.println("TEK SE SAD UPALILO AJAOOO");
+                                            adapter.setSearchList(dataList);
+                                        }catch (IOException e){
+                                            e.printStackTrace();
+                                            Toast.makeText(getActivity(), "Failed to load image", Toast.LENGTH_SHORT).show();
+                                        }
                                     }
                                 }
-                            }
 
-                            @Override
-                            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                Toast.makeText(getActivity(), "There was a problem, try again later", Toast.LENGTH_SHORT).show();
-                                // You can also log the stack trace for more detailed information
-                                t.printStackTrace();
-                            }
-                        });
+                                @Override
+                                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                    Toast.makeText(getActivity(), "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                                    // You can also log the stack trace for more detailed information
+                                    t.printStackTrace();
+                                }
+                            });
+                        }
+
+
+                        GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 1);
+                        binding.recyclerView.setLayoutManager(gridLayoutManager);
+
+
+                        adapter = new AccommodationSearchAdapter(getActivity(), dataList);
+                        binding.recyclerView.setAdapter(adapter);
                     }
+                    if(response.code() == 400){
+                        Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
 
-                    GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 1);
-                    binding.recyclerView.setLayoutManager(gridLayoutManager);
+                        if(map.containsKey("message")){
+                            String errMessage = map.get("message");
+                            binding.dateRangeInputLayout.setError(errMessage);
+                        }
 
-
-                    adapter = new AccommodationSearchAdapter(getActivity(), dataList);
-                    binding.recyclerView.setAdapter(adapter);
+                    }
 
 
 

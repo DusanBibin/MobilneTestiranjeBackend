@@ -41,6 +41,7 @@ public class AccommodationSearchAdapter extends RecyclerView.Adapter<MyViewHolde
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+
         holder.imageView.setImageBitmap(dataList.get(position).getImageBitmap());
         holder.txtAddress.setText(dataList.get(position).getAddress());
         holder.txtName.setText(dataList.get(position).getName());
@@ -49,6 +50,21 @@ public class AccommodationSearchAdapter extends RecyclerView.Adapter<MyViewHolde
         holder.txtOneNightPrice.setText(dataList.get(position).getOneNightPrice().toString());
         holder.txtTotalPrice.setText(dataList.get(position).getTotalPrice().toString());
         holder.txtIsPerPerson.setText(dataList.get(position).getPerPerson().toString());
+        holder.txtAmenities.setText(dataList.get(position).getAmenities());
+
+        Double rating = dataList.get(position).getRating();
+        if(rating == 0){
+            System.out.println("UPALJEN JE 0 RATING");
+            holder.ratingBar.setVisibility(View.GONE);
+            holder.txtNoRatings.setVisibility(View.VISIBLE);
+            holder.ratingBar.setRating(0);
+        }else{
+            System.out.println("UPALJEN JE OBICAN RATING");
+            holder.ratingBar.setVisibility(View.VISIBLE);
+            holder.txtNoRatings.setVisibility(View.GONE);
+            holder.ratingBar.setRating(dataList.get(position).getRating().floatValue());
+        }
+
 
 
         holder.cardView.setOnClickListener(new View.OnClickListener() {
@@ -69,7 +85,7 @@ public class AccommodationSearchAdapter extends RecyclerView.Adapter<MyViewHolde
 class MyViewHolder extends RecyclerView.ViewHolder{
 
     ImageView imageView;
-    TextView txtName, txtAddress, txtGuests, txtType, txtIsPerPerson, txtOneNightPrice, txtTotalPrice;
+    TextView txtName, txtAddress, txtGuests, txtType, txtIsPerPerson, txtOneNightPrice, txtTotalPrice, txtNoRatings, txtAmenities;
     RatingBar ratingBar;
 
     CardView cardView;
@@ -88,6 +104,8 @@ class MyViewHolder extends RecyclerView.ViewHolder{
         txtTotalPrice = itemView.findViewById(R.id.txtTotalPrice);
         ratingBar = itemView.findViewById(R.id.ratingBar);
         cardView = itemView.findViewById(R.id.recCard);
+        txtNoRatings = itemView.findViewById(R.id.txtNoRatings);
+        txtAmenities = itemView.findViewById(R.id.txtAmenities);
 
     }
 }

@@ -12,7 +12,7 @@ public class ResponseParser {
 
     public static <T> T parseResponse(Response<ResponseBody> response, Class<T> classOfT, Boolean isErrorResponse){
 
-        String responseBody;
+        String responseBody = "";
         try {
             if(isErrorResponse) responseBody = response.errorBody().string();
             else responseBody = response.body().string();

@@ -261,9 +261,6 @@ private final UserRepository userRepository;
 
 
 
-
-
-
         var ownerReview = OwnerReview.builder()
                 .rating(5L)
                 .comment("owner Review")
@@ -319,7 +316,7 @@ private final UserRepository userRepository;
         accommodationReview = accommodationReviewRepository.save(accommodationReview);
 
 
-        //thirtyMore();
+        thirtyMore();
     }
 
     private void thirtyMore(){
