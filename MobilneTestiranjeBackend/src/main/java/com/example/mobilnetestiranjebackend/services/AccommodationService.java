@@ -168,7 +168,9 @@ public class AccommodationService {
         int start = (int) pageRequest.getOffset();
         int end = Math.min((start + pageRequest.getPageSize()), accommodationList.size());
 
-        List<Accommodation> pageContent = accommodationList.subList(start, end);
+        List<Accommodation> pageContent;
+        if(start > end) pageContent = new ArrayList<>();
+        else pageContent = accommodationList.subList(start, end);
         return new PageImpl<>(pageContent, pageRequest, accommodationList.size());
     }
 }

@@ -24,8 +24,6 @@ import com.example.projekatmobilne.R;
 import com.example.projekatmobilne.adapters.AccommodationCard;
 import com.example.projekatmobilne.adapters.AccommodationSearchAdapter;
 import com.example.projekatmobilne.clients.ClientUtils;
-import com.example.projekatmobilne.databinding.BottomSheetFilterBinding;
-import com.example.projekatmobilne.databinding.CustomDialogBoxBinding;
 import com.example.projekatmobilne.databinding.FragmentHomeBinding;
 import com.example.projekatmobilne.model.Enum.AccommodationType;
 import com.example.projekatmobilne.model.Enum.Amenity;
@@ -37,7 +35,6 @@ import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.textfield.TextInputEditText;
 
-import java.io.IOError;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -121,8 +118,10 @@ public class HomeFragment extends Fragment {
 
         binding.btnSearch.setOnClickListener(v -> {
 
-            checkInputs();
+            if(!inputsValid()) return;
             dataList = new ArrayList<>();
+            isLastPage = false;
+            currentPage = 0;
             GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 1);
             binding.recyclerView.setLayoutManager(gridLayoutManager);
 
@@ -261,7 +260,7 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private void checkInputs() {
+    private Boolean inputsValid() {
         binding.guestNumberInputLayout.setError(null);
         binding.dateRangeInputLayout.setError(null);
 
@@ -276,10 +275,11 @@ public class HomeFragment extends Fragment {
             binding.dateRangeInputLayout.setError("This field cannot be empty");
             isValid = false;
         }
-        if(!isValid) return;
+        if(!isValid) return false;
 
 
         dataList = new ArrayList<>();
+        return true;
     }
 
     private void setupDateRangePicker() {
