@@ -316,7 +316,7 @@ private final UserRepository userRepository;
         accommodationReview = accommodationReviewRepository.save(accommodationReview);
 
 
-        //thirtyMore();
+        thirtyMore();
     }
 
     private void thirtyMore(){

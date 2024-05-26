@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
@@ -70,7 +71,8 @@ public class HomeFragment extends Fragment {
 
    private CheckBox checkBoxWifi, checkBoxAC, checkBoxPool, checkBoxParking;
 
-
+    private Integer currentPage = 0;
+    private Boolean isLastPage = false;
     public HomeFragment() {
 
     }
@@ -95,118 +97,39 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getActivity(), R.style.FullScreenBottomSheetDialog);
+
         dialogView = getLayoutInflater().inflate(R.layout.bottom_sheet_filter, null);
         bottomSheetDialog.setContentView(dialogView);
 
         setupRadioGroup();
         setupDateRangePicker();
 
+        binding.recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                if (!isLastPage && layoutManager != null && layoutManager.findLastCompletelyVisibleItemPosition() == adapter.getItemCount() - 1) {
+                    currentPage++;
+                    loadPage();
+                }
+            }
+        });
+
+
         binding.btnSearch.setOnClickListener(v -> {
 
-
             checkInputs();
+            dataList = new ArrayList<>();
+            GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 1);
+            binding.recyclerView.setLayoutManager(gridLayoutManager);
 
 
-            Long guestNum = Long.valueOf(binding.guestNumberInputEditText.getText().toString());
-            String search = binding.searchAccommodations.getQuery().toString();
-
-            Long maxValue = null;
-            Long minValue = null;
-            if(editTextMinValue.getText() != null && !editTextMinValue.getText().toString().isEmpty()) minValue = Long.parseLong(editTextMinValue.getText().toString());
-            if(editTextMaxValue.getText() != null && !editTextMaxValue.getText().toString().isEmpty()) maxValue = Long.parseLong(editTextMaxValue.getText().toString());
-
-            Call<ResponseBody> call = ClientUtils.apiService.getAccommodationsSearch(guestNum,
-                    search, dateStart, dateEnd, getCheckBoxAmenities(), type, minValue,
-                    maxValue, 0, 10);
-            call.enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-
-
-                    if(response.code() == 200){
-                        PagedSearchDTOResponse responseDTO =
-                                ResponseParser.parseResponse(response, PagedSearchDTOResponse.class, false);
-
-                        if(responseDTO.getContent().isEmpty()){
-                            Toast.makeText(getActivity(), "There are no accommodations that are available within this period", Toast.LENGTH_SHORT).show();
-                        }
-
-                        for(AccommodationSearchDTO a: responseDTO.getContent()){
-
-                            StringBuilder amenities = new StringBuilder("Amenities: ");
-                            if(a.getAmenities().isEmpty()) amenities.append(" None");
-                            for(int i = 0; i < a.getAmenities().size(); i++){
-                                if(i != a.getAmenities().size() - 1) amenities.append(a.getAmenities().get(i)).append(", ");
-                                else amenities.append(a.getAmenities().get(i));
-                            }
-                            String guests = "Possible guests: " + a.getMinGuests() + "-" +  a.getMaxGuests();
-                            String type = "Type: " + a.getAccommodationType().toString();
-                            String isPerPerson = "Is price per person:" + a.getPerPerson();
-                            String oneNightPrice = "One night price: " + a.getOneNightPrice();
-                            String totalPrice = "Total price: " + a.getTotalPrice();
-                            AccommodationCard ac = new AccommodationCard(a.getAddress(),
-                                    guests,
-                                    type, isPerPerson, oneNightPrice,
-                                    totalPrice, a.getName(), amenities.toString(), a.getRating());
-                            dataList.add(ac);
-
-
-
-
-                            Call<ResponseBody> imageCall = ClientUtils.apiService.getAccommodationImage(a.getAccommodationId(), 1L);
-                            imageCall.enqueue(new Callback<ResponseBody>() {
-                                @Override
-                                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                                    if(response.code() == 200){
-                                        byte[] imageBytes;
-                                        try {
-                                            imageBytes = response.body().bytes();
-                                            Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                                            a.setImageBitmap(bitmap);
-                                            ac.setImageBitmap(bitmap);
-                                            System.out.println("TEK SE SAD UPALILO AJAOOO");
-                                            adapter.setSearchList(dataList);
-                                        }catch (IOException e){
-                                            e.printStackTrace();
-                                            Toast.makeText(getActivity(), "Failed to load image", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                                }
-
-                                @Override
-                                public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                    Toast.makeText(getActivity(), "There was a problem, try again later", Toast.LENGTH_SHORT).show();
-                                    // You can also log the stack trace for more detailed information
-                                    t.printStackTrace();
-                                }
-                            });
-                        }
-
-
-                        GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 1);
-                        binding.recyclerView.setLayoutManager(gridLayoutManager);
-
-
-                        adapter = new AccommodationSearchAdapter(getActivity(), dataList);
-                        binding.recyclerView.setAdapter(adapter);
-                    }
-                    if(response.code() == 400){
-                        Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
-
-                        if(map.containsKey("message")){
-                            String errMessage = map.get("message");
-                            binding.dateRangeInputLayout.setError(errMessage);
-                        }
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    Toast.makeText(getActivity(), "There was a problem, try again later", Toast.LENGTH_SHORT).show();
-                    // You can also log the stack trace for more detailed information
-                    t.printStackTrace();
-                }
-            });
+            adapter = new AccommodationSearchAdapter(getActivity(), dataList);
+            binding.recyclerView.setAdapter(adapter);
+            loadPage();
 
         });
 
@@ -215,6 +138,104 @@ public class HomeFragment extends Fragment {
         });
 
 
+    }
+
+    private void loadPage() {
+        Long guestNum = Long.valueOf(binding.guestNumberInputEditText.getText().toString());
+        String search = binding.searchAccommodations.getQuery().toString();
+
+        Long maxValue = null;
+        Long minValue = null;
+        if(editTextMinValue.getText() != null && !editTextMinValue.getText().toString().isEmpty()) minValue = Long.parseLong(editTextMinValue.getText().toString());
+        if(editTextMaxValue.getText() != null && !editTextMaxValue.getText().toString().isEmpty()) maxValue = Long.parseLong(editTextMaxValue.getText().toString());
+
+        Call<ResponseBody> call = ClientUtils.apiService.getAccommodationsSearch(guestNum,
+                search, dateStart, dateEnd, getCheckBoxAmenities(), type, minValue,
+                maxValue, currentPage, 10);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+
+                if(response.code() == 200){
+                    PagedSearchDTOResponse responseDTO = ResponseParser.parseResponse(response, PagedSearchDTOResponse.class, false);
+
+                    if(responseDTO.getContent().isEmpty()){
+                        Toast.makeText(getActivity(), "There are no accommodations that are available within this period", Toast.LENGTH_SHORT).show();
+                    }
+
+                    isLastPage = responseDTO.isLast();
+                    for(AccommodationSearchDTO a: responseDTO.getContent()){
+
+                        StringBuilder amenities = new StringBuilder("Amenities: ");
+                        if(a.getAmenities().isEmpty()) amenities.append(" None");
+                        for(int i = 0; i < a.getAmenities().size(); i++){
+                            if(i != a.getAmenities().size() - 1) amenities.append(a.getAmenities().get(i)).append(", ");
+                            else amenities.append(a.getAmenities().get(i));
+                        }
+                        String guests = "Possible guests: " + a.getMinGuests() + "-" +  a.getMaxGuests();
+                        String type = "Type: " + a.getAccommodationType().toString();
+                        String isPerPerson = "Is price per person:" + a.getPerPerson();
+                        String oneNightPrice = "One night price: " + a.getOneNightPrice();
+                        String totalPrice = "Total price: " + a.getTotalPrice();
+                        AccommodationCard ac = new AccommodationCard(a.getAddress(),
+                                guests,
+                                type, isPerPerson, oneNightPrice,
+                                totalPrice, a.getName(), amenities.toString(), a.getRating());
+                        dataList.add(ac);
+
+
+
+
+                        Call<ResponseBody> imageCall = ClientUtils.apiService.getAccommodationImage(a.getAccommodationId(), 1L);
+                        imageCall.enqueue(new Callback<ResponseBody>() {
+                            @Override
+                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                if(response.code() == 200){
+                                    byte[] imageBytes;
+                                    try {
+                                        imageBytes = response.body().bytes();
+                                        Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                                        a.setImageBitmap(bitmap);
+                                        ac.setImageBitmap(bitmap);
+                                        System.out.println("TEK SE SAD UPALILO AJAOOO");
+                                        adapter.setSearchList(dataList);
+                                    }catch (IOException e){
+                                        e.printStackTrace();
+                                        Toast.makeText(getActivity(), "Failed to load image", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                Toast.makeText(getActivity(), "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                                // You can also log the stack trace for more detailed information
+                                t.printStackTrace();
+                            }
+                        });
+                    }
+
+
+
+                }
+                if(response.code() == 400){
+                    Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
+
+                    if(map.containsKey("message")){
+                        String errMessage = map.get("message");
+                        binding.dateRangeInputLayout.setError(errMessage);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(getActivity(), "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                // You can also log the stack trace for more detailed information
+                t.printStackTrace();
+            }
+        });
     }
 
     private void setupRadioGroup() {
