@@ -42,6 +42,11 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        binding.btnContinueGuest.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+            startActivity(intent);
+        });
+
         binding.loginButton.setOnClickListener(v -> {
             binding.emailInputLayout.setError(null);
             binding.passwordInputLayout.setError(null);

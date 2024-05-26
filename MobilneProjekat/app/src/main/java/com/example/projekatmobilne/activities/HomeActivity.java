@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -50,33 +51,49 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-
-
         drawer = binding.drawerLayout;
         navigationView = binding.navView;
-        toolbar = binding.activityHomeBase.toolbar;
+
+        toolbar = binding.toolbar;
         setSupportActionBar(toolbar);
 
-        actionBar = getSupportActionBar();
-        if(actionBar != null){
 
-            actionBar.setDisplayHomeAsUpEnabled(false);
 
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_hamburger);
 
-            actionBar.setHomeButtonEnabled(true);
+        //actionBar = getSupportActionBar();
+        if(getSupportActionBar() != null){
+
+
+            if(JWTManager.getRole() == null){
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                getSupportActionBar().setDisplayShowHomeEnabled(true);
+                //getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+                //binding.toolbar.setVisibility(View.GONE);
+                binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            }else{
+                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
+                getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_hamburger);
+
+                getSupportActionBar().setHomeButtonEnabled(true);
+                            actionBarDrawerToggle = new ActionBarDrawerToggle(
+                    this, drawer, toolbar,  R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+
+                drawer.addDrawerListener(actionBarDrawerToggle);
+
+                actionBarDrawerToggle.syncState();
+            }
+
+
         }
 
-        actionBarDrawerToggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar,  R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 
-        drawer.addDrawerListener(actionBarDrawerToggle);
 
-        actionBarDrawerToggle.syncState();
+
+
 
 
         navController = Navigation.findNavController(this, R.id.fragment_nav_content_main);
@@ -94,7 +111,9 @@ public class HomeActivity extends AppCompatActivity {
 //
 //        });
         System.out.println("ROLA ZA OVU GRESKU STO HOCU DA ULOVIM JE: " + JWTManager.getRole());
-        populateNavigationToolbarMenu(Role.valueOf(JWTManager.getRole()));
+
+        if(JWTManager.getRole() != null) populateNavigationToolbarMenu(JWTManager.getRole());
+        else populateNavigationToolbarMenu(null);
         //addMenu();
 //        mAppBarConfiguration = new AppBarConfiguration
 //                .Builder(R.id.nav_home_guest, R.id.nav_account)
@@ -107,18 +126,32 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
-    private void populateNavigationToolbarMenu(Role userRole) {
+    private void populateNavigationToolbarMenu(String strRole) {
         navigationView.getMenu().clear();
 
         MenuInflater inflater = getMenuInflater();
-        if(userRole.equals(Role.GUEST)){
+        if(strRole == null){
+
             inflater.inflate(R.menu.guest_nav_menu, navigationView.getMenu());
             navController.setGraph(R.navigation.guest_navigation);
+
+        }else{
+
+            Role userRole = Role.valueOf(strRole);
+            if(userRole.equals(Role.GUEST)){
+                inflater.inflate(R.menu.guest_nav_menu, navigationView.getMenu());
+                navController.setGraph(R.navigation.guest_navigation);
+            }else if(userRole.equals(Role.OWNER)){
+                inflater.inflate(R.menu.host_nav_menu, navigationView.getMenu());
+                navController.setGraph(R.navigation.owner_navigation);
+            }
         }
-        if(userRole.equals(Role.OWNER)){
-            inflater.inflate(R.menu.host_nav_menu, navigationView.getMenu());
-            navController.setGraph(R.navigation.owner_navigation);
-        }
+
+
+
+
+
+
 
     }
 
@@ -154,4 +187,21 @@ public class HomeActivity extends AppCompatActivity {
 
         addMenuProvider(menuProvider, HomeActivity.this, Lifecycle.State.RESUMED);
     }
+
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            // Handle the back button press here
+            if(JWTManager.getRole() == null){
+                Intent intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
+                finish(); // Optional: if you want to close the current activity
+                return true;
+            }
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
+
