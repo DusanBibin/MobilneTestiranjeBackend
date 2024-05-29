@@ -28,9 +28,9 @@ public class AccommodationDTOResponse {
 
     private List<AvailabilityDTOResponse> availabilityList;
 
-    private List<String> imagePaths;
+    private List<Long> imageIds;
 
-    public AccommodationDTOResponse(String name, String description, String address, Double lat, Double lon, List<Amenity> amenities, Long minGuests, Long maxGuests, AccommodationType accommodationType, Boolean autoAcceptEnabled, List<AvailabilityDTOResponse> availabilityList, List<String> imagePaths) {
+    public AccommodationDTOResponse(String name, String description, String address, Double lat, Double lon, List<Amenity> amenities, Long minGuests, Long maxGuests, AccommodationType accommodationType, Boolean autoAcceptEnabled, List<AvailabilityDTOResponse> availabilityList, List<Long> imagePaths) {
         this.name = name;
         this.description = description;
         this.address = address;
@@ -42,7 +42,7 @@ public class AccommodationDTOResponse {
         this.accommodationType = accommodationType;
         this.autoAcceptEnabled = autoAcceptEnabled;
         this.availabilityList = availabilityList;
-        this.imagePaths = imagePaths;
+        this.imageIds = imagePaths;
     }
 
     public String getName() {
@@ -133,12 +133,12 @@ public class AccommodationDTOResponse {
         this.availabilityList = availabilityList;
     }
 
-    public List<String> getImagePaths() {
-        return imagePaths;
+    public List<Long> getImageIds() {
+        return imageIds;
     }
 
-    public void setImagePaths(List<String> imagePaths) {
-        this.imagePaths = imagePaths;
+    public void setImageIds(List<Long> imageIds) {
+        this.imageIds = imageIds;
     }
 
     @Override
@@ -155,7 +155,7 @@ public class AccommodationDTOResponse {
                 ", accommodationType=" + accommodationType +
                 ", autoAcceptEnabled=" + autoAcceptEnabled +
                 ", availabilityList=" + availabilityList +
-                ", imagePaths=" + imagePaths +
+                ", imagePaths=" + imageIds +
                 '}';
     }
 }

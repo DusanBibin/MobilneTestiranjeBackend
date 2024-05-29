@@ -90,17 +90,7 @@
                     android:layout_height="wrap_content"
                     android:text="Type" />
 
-                <TextView
-                    android:id="@+id/txtIsPerPerson"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Is per person"/>
 
-                <TextView
-                    android:id="@+id/txtOneNightPerson"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="amenities" />
 
                 <androidx.viewpager2.widget.ViewPager2
                     android:id="@+id/viewPager"

@@ -1,6 +1,7 @@
 package com.example.projekatmobilne.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,37 +12,46 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.projekatmobilne.R;
 
-public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
+import java.util.List;
 
-    private Context context;
-    private int imageResId;
+public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
 
-    public ImageAdapter(Context context, int imageResId) {
-        this.context = context;
-        this.imageResId = imageResId;
+    private List<Bitmap> imageList;
+    private LayoutInflater inflater;
+
+    public ImageAdapter(Context context, List<Bitmap> imageList) {
+        this.imageList = imageList;
+        this.inflater = LayoutInflater.from(context);
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.accommodation_image, parent, false);
-        return new ViewHolder(view);
+    public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = inflater.inflate(R.layout.accommodation_image, parent, false);
+        return new ImageViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.imageView.setImageResource(imageResId);
+    public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
+        Bitmap bitmap = imageList.get(position);
+        holder.imageView.setImageBitmap(bitmap);
     }
 
     @Override
     public int getItemCount() {
-        return 10; // Display the same image 10 times
+        return imageList.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public void updateImages(List<Bitmap> newImages) {
+        this.imageList.clear();
+        this.imageList.addAll(newImages);
+        notifyDataSetChanged();
+    }
+
+    class ImageViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
 
-        public ViewHolder(@NonNull View itemView) {
+        public ImageViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.imageView);
         }

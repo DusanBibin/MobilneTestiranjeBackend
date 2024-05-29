@@ -1,30 +1,26 @@
 package com.example.projekatmobilne.activities;
 
 import android.content.Intent;
-import android.media.Image;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.projekatmobilne.R;
-import com.example.projekatmobilne.adapters.AccommodationCard;
 import com.example.projekatmobilne.adapters.ImageAdapter;
 import com.example.projekatmobilne.clients.ClientUtils;
 import com.example.projekatmobilne.databinding.ActivityAccommodationDetailsBinding;
-import com.example.projekatmobilne.databinding.ActivityRegisterBinding;
 import com.example.projekatmobilne.model.responseDTO.AccommodationDTOResponse;
-import com.example.projekatmobilne.tools.JWTManager;
 import com.example.projekatmobilne.tools.ResponseParser;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import okhttp3.ResponseBody;
@@ -60,8 +56,13 @@ public class AccommodationDetailsActivity extends AppCompatActivity {
         }
 
 
-        ImageAdapter adapter = new ImageAdapter(this, imageResId);
+
+        List<Bitmap> imageList = new ArrayList<>();
+        ImageAdapter adapter = new ImageAdapter(this, imageList);
         binding.viewPager.setAdapter(adapter);
+
+
+
 
         Call<ResponseBody> call = ClientUtils.apiService.getAccommodation(accommodationId);
         call.enqueue(new Callback<ResponseBody>() {
@@ -77,12 +78,62 @@ public class AccommodationDetailsActivity extends AppCompatActivity {
                 }
 
                 if(response.code() == 200){
-                    AccommodationDTOResponse responseMessage =
-                            ResponseParser.parseResponse(response, AccommodationDTOResponse.class, false);
+                    accommodationDTO = ResponseParser.parseResponse(response, AccommodationDTOResponse.class, false);
+
+                    for(Long imageId: accommodationDTO.getImageIds()){
+                        Call<ResponseBody> imageResponse = ClientUtils.apiService.getAccommodationImage(accommodationId, imageId);
+                        imageResponse.enqueue(new Callback<ResponseBody>() {
+                            @Override
+                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                if(response.code() == 200){
+                                    byte[] imageBytes;
+                                    try {
+                                        imageBytes = response.body().bytes();
+                                        Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                                        imageList.add(bitmap);
+                                        adapter.notifyDataSetChanged();
+//                                        a.setImageBitmap(bitmap);
+//                                        ac.setImageBitmap(bitmap);
+//                                        System.out.println("TEK SE SAD UPALILO AJAOOO");
+//                                        adapter.setSearchList(dataList);
+                                    }catch (IOException e){
+                                        e.printStackTrace();
+                                        Toast.makeText(AccommodationDetailsActivity.this, "Failed to load image", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                Toast.makeText(AccommodationDetailsActivity.this, "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                                t.printStackTrace();
+                            }
+                        });
+                    }
 
 
-                    System.out.println("kurcinaaa");
-                    System.out.println(responseMessage);
+
+
+                    binding.txtName.setText(accommodationDTO.getName());
+                    binding.txtAdress.setText(accommodationDTO.getAddress());
+                    binding.txtDescription.setText(accommodationDTO.getDescription());
+
+                    StringBuilder amenities = new StringBuilder("Amenities: ");
+                    if(accommodationDTO.getAmenities().isEmpty()) amenities.append(" None");
+                    for(int i = 0; i < accommodationDTO.getAmenities().size(); i++){
+                        if(i != accommodationDTO.getAmenities().size() - 1) amenities.append(accommodationDTO.getAmenities().get(i)).append(", ");
+                        else amenities.append(accommodationDTO.getAmenities().get(i));
+                    }
+                    binding.txtAmenities.setText(amenities);
+
+                    String guests = "Possible guests: " + accommodationDTO.getMinGuests() + "-" +  accommodationDTO.getMaxGuests();
+                    String type = "Type: " + accommodationDTO.getAccommodationType().toString();
+
+                    binding.txtGuests.setText(guests);
+                    binding.txtType.setText(type);
+
+
+
                 }
 
 
@@ -91,7 +142,6 @@ public class AccommodationDetailsActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Toast.makeText(AccommodationDetailsActivity.this, "There was a problem, try again later", Toast.LENGTH_SHORT).show();
-                // You can also log the stack trace for more detailed information
                 t.printStackTrace();
             }
         });
