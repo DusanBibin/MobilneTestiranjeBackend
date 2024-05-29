@@ -4,7 +4,6 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
@@ -18,11 +17,13 @@
         android:theme="@style/Theme.ProjekatMobilne"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-
+        <activity
+            android:name=".activities.AccommodationDetailsActivity"
+            android:exported="false" />
         <activity
             android:name=".activities.RegisterActivity"
             android:exported="false"
-            android:parentActivityName=".activities.LoginActivity"/>
+            android:parentActivityName=".activities.LoginActivity" />
         <activity
             android:name=".activities.HomeActivity"
             android:exported="false" />
@@ -34,18 +35,22 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <service android:name=".services.ConnectionCheckService" android:exported="false"/>
-        <receiver android:name=".receivers.ConnectionStatusReceiver"
+        <service
+            android:name=".services.ConnectionCheckService"
+            android:exported="false" />
+
+        <receiver
+            android:name=".receivers.ConnectionStatusReceiver"
             android:exported="true">
             <intent-filter>
-                <action android:name="com.example.projekatmobilne.NO_INTERNET"/>
+                <action android:name="com.example.projekatmobilne.NO_INTERNET" />
             </intent-filter>
         </receiver>
-
     </application>
 
 </manifest>

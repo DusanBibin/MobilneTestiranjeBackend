@@ -1,10 +1,13 @@
 package com.example.projekatmobilne.adapters;
 
 import android.graphics.Bitmap;
+import android.os.Parcelable;
 
 import com.example.projekatmobilne.model.Enum.AccommodationType;
 
-public class AccommodationCard {
+import java.io.Serializable;
+
+public class AccommodationCard implements Serializable {
     private Bitmap imageBitmap;
     private String name;
     private String address;
@@ -15,6 +18,8 @@ public class AccommodationCard {
     private Double rating;
     private String amenities;
     private String guests;
+
+    private Long accommodationId;
 
 
     public Double getRating() {
@@ -27,7 +32,7 @@ public class AccommodationCard {
 
     public AccommodationCard(String address, String guests, String type,
                              String isPerPerson, String oneNightPrice, String totalPrice, String name,
-                             String amenities, Double rating) {
+                             String amenities, Double rating, Long accommodationId) {
         this.address = address;
         this.guests = guests;
         this.type = type;
@@ -37,6 +42,7 @@ public class AccommodationCard {
         this.name = name;
         this.amenities = amenities;
         this.rating = rating;
+        this.accommodationId = accommodationId;
     }
 
     public Bitmap getImageBitmap() {
@@ -109,6 +115,22 @@ public class AccommodationCard {
 
     public void setAmenities(String amenities) {
         this.amenities = amenities;
+    }
+
+    public String getIsPerPerson() {
+        return isPerPerson;
+    }
+
+    public void setIsPerPerson(String isPerPerson) {
+        this.isPerPerson = isPerPerson;
+    }
+
+    public Long getAccommodationId() {
+        return accommodationId;
+    }
+
+    public void setAccommodationId(Long accommodationId) {
+        this.accommodationId = accommodationId;
     }
 
     @Override

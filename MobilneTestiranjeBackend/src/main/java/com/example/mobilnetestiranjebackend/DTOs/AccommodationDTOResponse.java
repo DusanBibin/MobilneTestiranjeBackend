@@ -4,7 +4,6 @@ import com.example.mobilnetestiranjebackend.enums.AccommodationType;
 import com.example.mobilnetestiranjebackend.enums.Amenity;
 import com.example.mobilnetestiranjebackend.enums.RequestStatus;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -40,7 +39,7 @@ public class AccommodationDTOResponse {
 
     private List<@Valid AvailabilityDTO> availabilityList;
 
-    private List<String> imagePaths;
+    private List<Long> imageIds;
 
     private RequestStatus status;
     private String reason;

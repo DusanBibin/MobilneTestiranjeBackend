@@ -106,7 +106,6 @@ public class HomeFragment extends Fragment {
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
-
                 LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
                 if (!isLastPage && layoutManager != null && layoutManager.findLastCompletelyVisibleItemPosition() == adapter.getItemCount() - 1) {
                     currentPage++;
@@ -180,7 +179,7 @@ public class HomeFragment extends Fragment {
                         AccommodationCard ac = new AccommodationCard(a.getAddress(),
                                 guests,
                                 type, isPerPerson, oneNightPrice,
-                                totalPrice, a.getName(), amenities.toString(), a.getRating());
+                                totalPrice, a.getName(), amenities.toString(), a.getRating(), a.getAccommodationId());
                         dataList.add(ac);
 
 

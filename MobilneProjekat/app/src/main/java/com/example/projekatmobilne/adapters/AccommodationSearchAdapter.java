@@ -1,6 +1,9 @@
 package com.example.projekatmobilne.adapters;
 
+import static androidx.core.content.ContextCompat.startActivity;
+
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +16,9 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.projekatmobilne.R;
+import com.example.projekatmobilne.activities.AccommodationDetailsActivity;
+import com.example.projekatmobilne.activities.HomeActivity;
+import com.example.projekatmobilne.activities.LoginActivity;
 
 import java.util.List;
 
@@ -70,7 +76,12 @@ public class AccommodationSearchAdapter extends RecyclerView.Adapter<MyViewHolde
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("KLIK AAHAHAHAHAA");
+
+                AccommodationCard clickedAccommodation = dataList.get(holder.getAdapterPosition());
+
+                Intent intent = new Intent(context, AccommodationDetailsActivity.class);
+                intent.putExtra("accommodationId", clickedAccommodation.getAccommodationId());
+                context.startActivity(intent);
             }
         });
 

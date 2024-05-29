@@ -46,7 +46,19 @@ public class AccommodationController {
         if(accommodationWrapper.isEmpty()) throw new NonExistingEntityException("Accommodation with this id does not exist");
         var accommodation = accommodationWrapper.get();
 
+        List<Long> imageIds = new ArrayList<>();
+        for(String imagePath: accommodation.getImagePaths()){
+            String[] pathParts = imagePath.split("/");
+            String fileName = pathParts[3];
+
+            if(!Character.isDigit(fileName.charAt(0))) throw new InvalidInputException("Error with image id");
+
+            Long imageId = Long.parseLong(String.valueOf(fileName.charAt(0)));
+            imageIds.add(imageId);
+        }
+
         var accommodationDTO = AccommodationDTOResponse.builder()
+                .id(accommodation.getId())
                 .name(accommodation.getName())
                 .description(accommodation.getDescription())
                 .address(accommodation.getAddress())
@@ -58,7 +70,7 @@ public class AccommodationController {
                 .accommodationType(accommodation.getAccommodationType())
                 .autoAcceptEnabled(accommodation.getAutoAcceptEnabled())
                 .availabilityList(new ArrayList<>())
-                .imagePaths(accommodation.getImagePaths())
+                .imageIds(imageIds)
                 .build();
 
 
