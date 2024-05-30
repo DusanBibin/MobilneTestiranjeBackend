@@ -59,5 +59,6 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:3.12.1'
     implementation 'androidx.preference:preference:1.2.0'
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
+    implementation 'com.google.android.gms:play-services-maps:18.0.0'
 
 }

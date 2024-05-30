@@ -41,6 +41,7 @@
 
 
         <androidx.core.widget.NestedScrollView
+            android:id="@+id/main_scrollview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -97,7 +98,26 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
+                <RelativeLayout
+                    android:id="@+id/map_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp">
 
+                    <fragment
+                        android:id="@+id/mapview"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="-100dp"
+                        android:layout_marginBottom="-100dp"
+                        android:name="com.google.android.gms.maps.MapFragment"/>
+
+                    <ImageView
+                        android:id="@+id/transparent_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@color/transparent" />
+
+                </RelativeLayout>
 
             </LinearLayout>
 
