@@ -94,14 +94,16 @@
 
 
                 <androidx.viewpager2.widget.ViewPager2
+                    android:layout_marginTop="20dp"
                     android:id="@+id/viewPager"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
                 <RelativeLayout
+                    android:layout_marginTop="20dp"
                     android:id="@+id/map_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="300dp">
+                    android:layout_height="200dp">
 
                     <fragment
                         android:id="@+id/mapview"
@@ -109,7 +111,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginTop="-100dp"
                         android:layout_marginBottom="-100dp"
-                        android:name="com.google.android.gms.maps.MapFragment"/>
+                        android:name="com.google.android.gms.maps.SupportMapFragment"/>
 
                     <ImageView
                         android:id="@+id/transparent_image"
@@ -118,6 +120,15 @@
                         android:src="@color/transparent" />
 
                 </RelativeLayout>
+
+                <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+                    android:id="@+id/calendarView"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    app:mcv_showOtherDates="all"
+                    app:mcv_selectionMode="none"
+                    app:mcv_selectionColor="#00F"
+                    />
 
             </LinearLayout>
 

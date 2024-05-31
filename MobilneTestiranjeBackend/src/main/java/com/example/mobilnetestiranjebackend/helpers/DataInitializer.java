@@ -177,8 +177,8 @@ private final UserRepository userRepository;
                 .name("NewAcc")
                 .description("Accommodation description")
                 .address("Some address")
-                .lat(90.0)
-                .lon(90.0)
+                .lat(45.25)
+                .lon(19.85)
                 .amenities(List.of(Amenity.WIFI, Amenity.AC))
                 .imagePaths(List.of("/dusanbibin2@gmail.com/NewAcc/1_new_room.jpg",
                         "/dusanbibin2@gmail.com/NewAcc/2_new_room.jpg",
