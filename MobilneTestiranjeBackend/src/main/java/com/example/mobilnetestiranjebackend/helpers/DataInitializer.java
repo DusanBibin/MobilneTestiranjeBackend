@@ -239,6 +239,7 @@ private final UserRepository userRepository;
 
 
 
+        //enddate 10 startdate 8 ako je u buducnsti stavi
 
         var reservation = Reservation.builder()
                 .availability(availabilityDeleteTest)

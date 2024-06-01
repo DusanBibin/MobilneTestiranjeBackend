@@ -23,6 +23,8 @@ import com.example.projekatmobilne.adapters.ImageAdapter;
 import com.example.projekatmobilne.clients.ClientUtils;
 import com.example.projekatmobilne.databinding.ActivityAccommodationDetailsBinding;
 import com.example.projekatmobilne.model.responseDTO.AccommodationDTOResponse;
+import com.example.projekatmobilne.model.responseDTO.AvailabilityDTOResponse;
+import com.example.projekatmobilne.model.responseDTO.ReservationDTO;
 import com.example.projekatmobilne.tools.EventDecorator;
 import com.example.projekatmobilne.tools.ResponseParser;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
@@ -36,6 +38,8 @@ import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -60,13 +64,10 @@ public class AccommodationDetailsActivity extends AppCompatActivity {
 
 
 
-    final List<String> pinkDateList = Arrays.asList(
-            "2024-01-01",
-            "2024-01-03", "2024-01-04", "2024-01-05", "2024-01-06");
-    final List<String> grayDateList = Arrays.asList(
-            "2024-01-09", "2024-01-10", "2024-01-11",
-            "2024-01-24", "2024-01-25", "2024-01-26", "2024-01-27", "2024-01-28", "2024-01-29");
+    private List<String> pinkDateList;
+    List<String> grayDateList;
     final String DATE_FORMAT = "yyyy-MM-dd";
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
     int pink = 0;
     int gray = 1;
 
@@ -89,21 +90,19 @@ public class AccommodationDetailsActivity extends AppCompatActivity {
         calendarView = findViewById(R.id.calendarView);
         calendarView.setShowOtherDates(MaterialCalendarView.SHOW_ALL);
 
-        final LocalDate min = getLocalDate("2024-01-01");
-        final LocalDate max = getLocalDate("2024-12-30");
 
-        calendarView.state().edit().setMinimumDate(min).setMaximumDate(max).commit();
-
-
-        setEvent(pinkDateList, pink);
-        setEvent(grayDateList, gray);
-
-        calendarView.invalidateDecorators();
+        final LocalDate min = getLocalDate(java.time.LocalDate.now().plusDays(1).format(formatter));
+//        final LocalDate max = getLocalDate("2024-12-30");
+//
+//        calendarView.state().edit().setMinimumDate(min).setMaximumDate(max).commit();
 
 
-        ImageView transparentImageView = (ImageView) findViewById(R.id.transparent_image);
+        //setEvent(pinkDateList, pink);
+        //setEvent(grayDateList, gray);
 
-        transparentImageView.setOnTouchListener(new View.OnTouchListener() {
+        //calendarView.invalidateDecorators();
+
+        binding.transparentImage.setOnTouchListener(new View.OnTouchListener() {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -161,6 +160,27 @@ public class AccommodationDetailsActivity extends AppCompatActivity {
 
                 if(response.code() == 200){
                     accommodationDTO = ResponseParser.parseResponse(response, AccommodationDTOResponse.class, false);
+                    pinkDateList = new ArrayList<>();
+                    grayDateList = new ArrayList<>();
+
+                    for(AvailabilityDTOResponse a: accommodationDTO.getAvailabilityList()){
+                        long numDays = ChronoUnit.DAYS.between(a.getStartDate(), a.getEndDate());
+                        for(int i = 0; i <= numDays; i++){
+                            pinkDateList.add(a.getStartDate().plusDays(i).format(formatter));
+                        }
+                    }
+                    setEvent(pinkDateList, pink);
+
+
+                    for(ReservationDTO r: accommodationDTO.getFutureReservations()){
+                        long numDays = ChronoUnit.DAYS.between(r.getReservationStartDate(), r.getReservationEndDate());
+                        for(int i = 0; i <= numDays; i++){
+                            grayDateList.add(r.getReservationStartDate().plusDays(i).format(formatter));
+                        }
+                    }
+                    setEvent(grayDateList, gray);
+                    calendarView.invalidateDecorators();
+
 
                     for(Long imageId: accommodationDTO.getImageIds()){
                         Call<ResponseBody> imageResponse = ClientUtils.apiService.getAccommodationImage(accommodationId, imageId);
@@ -174,10 +194,9 @@ public class AccommodationDetailsActivity extends AppCompatActivity {
                                         Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
                                         imageList.add(bitmap);
                                         adapter.notifyDataSetChanged();
-//                                        a.setImageBitmap(bitmap);
-//                                        ac.setImageBitmap(bitmap);
-//                                        System.out.println("TEK SE SAD UPALILO AJAOOO");
-//                                        adapter.setSearchList(dataList);
+
+
+
                                     }catch (IOException e){
                                         e.printStackTrace();
                                         Toast.makeText(AccommodationDetailsActivity.this, "Failed to load image", Toast.LENGTH_SHORT).show();

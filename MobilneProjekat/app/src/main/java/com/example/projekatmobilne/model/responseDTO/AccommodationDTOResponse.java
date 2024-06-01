@@ -28,9 +28,15 @@ public class AccommodationDTOResponse {
 
     private List<AvailabilityDTOResponse> availabilityList;
 
+    private List<ReservationDTO> futureReservations;
     private List<Long> imageIds;
 
-    public AccommodationDTOResponse(String name, String description, String address, Double lat, Double lon, List<Amenity> amenities, Long minGuests, Long maxGuests, AccommodationType accommodationType, Boolean autoAcceptEnabled, List<AvailabilityDTOResponse> availabilityList, List<Long> imagePaths) {
+    public AccommodationDTOResponse(String name, String description, String address, Double lat,
+                                    Double lon, List<Amenity> amenities, Long minGuests,
+                                    Long maxGuests, AccommodationType accommodationType,
+                                    Boolean autoAcceptEnabled,
+                                    List<AvailabilityDTOResponse> availabilityList,
+                                    List<Long> imagePaths, List<ReservationDTO> futureReservations) {
         this.name = name;
         this.description = description;
         this.address = address;
@@ -43,6 +49,15 @@ public class AccommodationDTOResponse {
         this.autoAcceptEnabled = autoAcceptEnabled;
         this.availabilityList = availabilityList;
         this.imageIds = imagePaths;
+        this.futureReservations = futureReservations;
+    }
+
+    public List<ReservationDTO> getFutureReservations() {
+        return futureReservations;
+    }
+
+    public void setFutureReservations(List<ReservationDTO> futureReservations) {
+        this.futureReservations = futureReservations;
     }
 
     public String getName() {
@@ -155,7 +170,8 @@ public class AccommodationDTOResponse {
                 ", accommodationType=" + accommodationType +
                 ", autoAcceptEnabled=" + autoAcceptEnabled +
                 ", availabilityList=" + availabilityList +
-                ", imagePaths=" + imageIds +
+                ", futureReservations=" + futureReservations +
+                ", imageIds=" + imageIds +
                 '}';
     }
 }

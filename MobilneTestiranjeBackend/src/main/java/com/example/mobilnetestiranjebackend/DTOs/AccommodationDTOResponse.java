@@ -41,6 +41,8 @@ public class AccommodationDTOResponse {
 
     private List<Long> imageIds;
 
+    private List<ReservationDTO> futureReservations;
+
     private RequestStatus status;
     private String reason;
 }

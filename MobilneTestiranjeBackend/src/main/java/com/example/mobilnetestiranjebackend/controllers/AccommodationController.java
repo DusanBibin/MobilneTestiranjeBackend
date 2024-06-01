@@ -3,6 +3,7 @@ package com.example.mobilnetestiranjebackend.controllers;
 import com.example.mobilnetestiranjebackend.DTOs.AccommodationDTOResponse;
 import com.example.mobilnetestiranjebackend.DTOs.AccommodationSearchDTO;
 import com.example.mobilnetestiranjebackend.DTOs.AvailabilityDTO;
+import com.example.mobilnetestiranjebackend.DTOs.ReservationDTO;
 import com.example.mobilnetestiranjebackend.enums.AccommodationType;
 import com.example.mobilnetestiranjebackend.enums.Amenity;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidFileExtensionException;
@@ -10,6 +11,8 @@ import com.example.mobilnetestiranjebackend.exceptions.InvalidInputException;
 import com.example.mobilnetestiranjebackend.exceptions.NonExistingEntityException;
 import com.example.mobilnetestiranjebackend.model.Availability;
 import com.example.mobilnetestiranjebackend.model.Guest;
+import com.example.mobilnetestiranjebackend.model.Reservation;
+import com.example.mobilnetestiranjebackend.repositories.ReservationRepository;
 import com.example.mobilnetestiranjebackend.services.AccommodationService;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
@@ -36,7 +39,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AccommodationController {
     private final AccommodationService accommodationService;
-
+    private final ReservationRepository reservationRepository;
 
 
     @GetMapping(path = "/{accommodationId}")
@@ -70,6 +73,7 @@ public class AccommodationController {
                 .accommodationType(accommodation.getAccommodationType())
                 .autoAcceptEnabled(accommodation.getAutoAcceptEnabled())
                 .availabilityList(new ArrayList<>())
+                .futureReservations(new ArrayList<>())
                 .imageIds(imageIds)
                 .build();
 
@@ -84,6 +88,16 @@ public class AccommodationController {
                     .price(a.getPrice())
                     .build();
             accommodationDTO.getAvailabilityList().add(availabilityDTO);
+        }
+
+        var futureReservations = reservationRepository.findReservationsNotEndedByAccommodationId(accommodationId);
+        for(Reservation r : futureReservations){
+            var reservationDTO = ReservationDTO.builder()
+                    .reservationEndDate(r.getReservationEndDate())
+                    .reservationStartDate(r.getReservationStartDate())
+                    .guestNum(r.getGuestNum())
+                    .build();
+            accommodationDTO.getFutureReservations().add(reservationDTO);
         }
 
 
