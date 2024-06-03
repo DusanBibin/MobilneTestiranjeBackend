@@ -2,16 +2,22 @@ package com.example.mobilnetestiranjebackend.services;
 
 
 import com.example.mobilnetestiranjebackend.DTOs.ReviewDTO;
+import com.example.mobilnetestiranjebackend.DTOs.ReviewDTOResponse;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthorizationException;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidDateException;
 import com.example.mobilnetestiranjebackend.exceptions.NonExistingEntityException;
-import com.example.mobilnetestiranjebackend.model.AccommodationReview;
-import com.example.mobilnetestiranjebackend.model.OwnerReview;
+import com.example.mobilnetestiranjebackend.model.*;
 import com.example.mobilnetestiranjebackend.repositories.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -125,5 +131,43 @@ public class ReviewService {
         var review = reviewWrapper.get();
 
         accommodationReviewRepository.delete(review);
+    }
+
+    public Page<ReviewDTOResponse> getAccommodationReviews(Long accommodationId, int pageNo, int pageSize) {
+        var accommodationWrapper = accommodationRepository.findById(accommodationId);
+        if(accommodationWrapper.isEmpty()) throw new NonExistingEntityException("Accommodation with this id doesn't exist");
+
+        var reservations = reservationRepository.findReservationsEndedByAccommodationId(accommodationId);
+
+        List<ReviewDTOResponse> reviews = new ArrayList<>();
+        for(Reservation r: reservations){
+            System.out.println("usli smo ovde");
+            var guestId = r.getGuest().getId();
+
+            var ownerReview = ownerReviewRepository.findByAccommodationAndGuest(accommodationId, guestId);
+            var accommodationReview = accommodationReviewRepository.findByAccommodationAndGuest(accommodationId, guestId);
+
+            ReviewDTOResponse review = ReviewDTOResponse.builder()
+                    .ownerReview(new ReviewDTO(ownerReview.get().getComment(), ownerReview.get().getRating()))
+                    .accommodationReview(new ReviewDTO(accommodationReview.get().getComment(), accommodationReview.get().getRating()))
+                    .build();
+
+            reviews.add(review);
+        }
+
+        return convertListToPage(pageNo, pageSize, reviews);
+    }
+
+
+    private Page<ReviewDTOResponse> convertListToPage(int page, int size, List<ReviewDTOResponse> accommodationList){
+        Pageable pageRequest = PageRequest.of(page, size);
+
+        int start = (int) pageRequest.getOffset();
+        int end = Math.min((start + pageRequest.getPageSize()), accommodationList.size());
+
+        List<ReviewDTOResponse> pageContent;
+        if(start > end) pageContent = new ArrayList<>();
+        else pageContent = accommodationList.subList(start, end);
+        return new PageImpl<>(pageContent, pageRequest, accommodationList.size());
     }
 }

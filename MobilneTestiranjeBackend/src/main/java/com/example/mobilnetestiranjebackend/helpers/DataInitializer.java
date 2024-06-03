@@ -241,7 +241,17 @@ private final UserRepository userRepository;
 
          //enddate 10 startdate 8 ako je u buducnsti stavi plus days
 
-        var reservation = Reservation.builder()
+        var reservationOld = Reservation.builder()
+                .availability(null)
+                .guest(guestDusan1)
+                .status(ReservationStatus.ACCEPTED)
+                .accommodation(accommodation)
+                .reservationEndDate(LocalDate.now().minusDays(10))
+                .reservationStartDate(LocalDate.now().minusDays(8))
+                .guestNum(1L)
+                .build();
+
+        var reservationNew = Reservation.builder()
                 .availability(availabilityEditTest)
                 .guest(guestDusan1)
                 .status(ReservationStatus.ACCEPTED)
@@ -253,14 +263,15 @@ private final UserRepository userRepository;
 
 
 
+        reservationNew = reservationRepository.save(reservationNew);
+        reservationOld = reservationRepository.save(reservationOld);
 
-
-        reservation = reservationRepository.save(reservation);
-
-        guestDusan1.getReservations().add(reservation);
+        guestDusan1.getReservations().add(reservationOld);
+        guestDusan1.getReservations().add(reservationNew);
         guestDusan1 = guestRepository.save(guestDusan1);
 
-        accommodation.getReservations().add(reservation);
+        accommodation.getReservations().add(reservationOld);
+        accommodation.getReservations().add(reservationNew);
         accommodation = accommodationRepository.save(accommodation);
 
 
@@ -280,7 +291,7 @@ private final UserRepository userRepository;
                 .comment("accommodation review")
                 .allowed(false)
                 .guest(guestDusan1)
-                .reservation(reservation)
+                .reservation(reservationOld)
                 .accommodation(accommodation)
                 .complaint(null)
                 .build();

@@ -160,7 +160,6 @@ public class AccommodationDetailsActivity extends AppCompatActivity {
                     accommodationDTO = ResponseParser.parseResponse(response, AccommodationDTOResponse.class, false);
 
 
-                    System.out.println(accommodationDTO);
                     List<String> options = new ArrayList<>();
                     for(AvailabilityDTOResponse a: accommodationDTO.getAvailabilityList()){
                         options.add(a.getPrice().toString());
@@ -181,7 +180,9 @@ public class AccommodationDetailsActivity extends AppCompatActivity {
                             calendarView.removeDecorators();
                             String selectedOption = options.get(position);
                             for(AvailabilityDTOResponse a: accommodationDTO.getAvailabilityList()){
+
                                 if(selectedOption.equals(a.getPrice().toString())){
+
                                     long numDays = ChronoUnit.DAYS.between(a.getStartDate(), a.getEndDate());
                                     for(int i = 0; i <= numDays; i++){
                                         pinkDateList.add(a.getStartDate().plusDays(i).format(formatter));
@@ -198,10 +199,6 @@ public class AccommodationDetailsActivity extends AppCompatActivity {
                                         }
                                     }
 
-                                    System.out.println(grayDateList.size());
-
-
-
                                 }
                             }
                             setEvent(pinkDateList, pink);
@@ -210,22 +207,8 @@ public class AccommodationDetailsActivity extends AppCompatActivity {
 
                         @Override
                         public void onNothingSelected(AdapterView<?> parentView) {
-                            // Do nothing when nothing is selected
                         }
                     });
-
-
-
-
-
-//                    for(ReservationDTO r: accommodationDTO.getFutureReservations()){
-//                        long numDays = ChronoUnit.DAYS.between(r.getReservationStartDate(), r.getReservationEndDate());
-//                        for(int i = 0; i <= numDays; i++){
-//                            grayDateList.add(r.getReservationStartDate().plusDays(i).format(formatter));
-//                        }
-//                    }
-//                    setEvent(grayDateList, gray);
-//                    calendarView.invalidateDecorators();
 
 
                     for(Long imageId: accommodationDTO.getImageIds()){
@@ -240,8 +223,6 @@ public class AccommodationDetailsActivity extends AppCompatActivity {
                                         Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
                                         imageList.add(bitmap);
                                         adapter.notifyDataSetChanged();
-
-
 
                                     }catch (IOException e){
                                         e.printStackTrace();
