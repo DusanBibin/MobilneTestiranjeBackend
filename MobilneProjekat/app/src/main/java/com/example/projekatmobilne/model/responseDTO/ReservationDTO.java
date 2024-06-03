@@ -9,12 +9,23 @@ public class ReservationDTO {
 
     private LocalDate reservationStartDate;
     private LocalDate reservationEndDate;
+
+    private Long availabilityId;
     private Long guestNum;
 
-    public ReservationDTO(LocalDate reservationStartDate, LocalDate reservationEndDate, Long guestNum) {
+    public ReservationDTO(LocalDate reservationStartDate, LocalDate reservationEndDate, Long guestNum, Long availabilityId) {
         this.reservationStartDate = reservationStartDate;
         this.reservationEndDate = reservationEndDate;
         this.guestNum = guestNum;
+        this.availabilityId = availabilityId;
+    }
+
+    public Long getAvailabilityId() {
+        return availabilityId;
+    }
+
+    public void setAvailabilityId(Long availabilityId) {
+        this.availabilityId = availabilityId;
     }
 
     public LocalDate getReservationStartDate() {
@@ -39,5 +50,15 @@ public class ReservationDTO {
 
     public void setGuestNum(Long guestNum) {
         this.guestNum = guestNum;
+    }
+
+    @Override
+    public String toString() {
+        return "ReservationDTO{" +
+                "reservationStartDate=" + reservationStartDate +
+                ", reservationEndDate=" + reservationEndDate +
+                ", availabilityId=" + availabilityId +
+                ", guestNum=" + guestNum +
+                '}';
     }
 }

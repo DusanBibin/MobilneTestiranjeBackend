@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.Toast;
@@ -47,6 +49,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -94,13 +97,8 @@ public class AccommodationDetailsActivity extends AppCompatActivity {
         final LocalDate min = getLocalDate(java.time.LocalDate.now().plusDays(1).format(formatter));
 //        final LocalDate max = getLocalDate("2024-12-30");
 //
-//        calendarView.state().edit().setMinimumDate(min).setMaximumDate(max).commit();
+        calendarView.state().edit().setMinimumDate(min).commit();
 
-
-        //setEvent(pinkDateList, pink);
-        //setEvent(grayDateList, gray);
-
-        //calendarView.invalidateDecorators();
 
         binding.transparentImage.setOnTouchListener(new View.OnTouchListener() {
 
@@ -160,26 +158,74 @@ public class AccommodationDetailsActivity extends AppCompatActivity {
 
                 if(response.code() == 200){
                     accommodationDTO = ResponseParser.parseResponse(response, AccommodationDTOResponse.class, false);
-                    pinkDateList = new ArrayList<>();
-                    grayDateList = new ArrayList<>();
 
+
+                    System.out.println(accommodationDTO);
+                    List<String> options = new ArrayList<>();
                     for(AvailabilityDTOResponse a: accommodationDTO.getAvailabilityList()){
-                        long numDays = ChronoUnit.DAYS.between(a.getStartDate(), a.getEndDate());
-                        for(int i = 0; i <= numDays; i++){
-                            pinkDateList.add(a.getStartDate().plusDays(i).format(formatter));
-                        }
+                        options.add(a.getPrice().toString());
                     }
-                    setEvent(pinkDateList, pink);
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(AccommodationDetailsActivity.this, android.R.layout.simple_spinner_item, options);
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                    binding.spinner.setAdapter(adapter);
 
 
-                    for(ReservationDTO r: accommodationDTO.getFutureReservations()){
-                        long numDays = ChronoUnit.DAYS.between(r.getReservationStartDate(), r.getReservationEndDate());
-                        for(int i = 0; i <= numDays; i++){
-                            grayDateList.add(r.getReservationStartDate().plusDays(i).format(formatter));
+
+                    binding.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                            pinkDateList = new ArrayList<>();
+                            grayDateList = new ArrayList<>();
+
+                            calendarView.removeDecorators();
+                            String selectedOption = options.get(position);
+                            for(AvailabilityDTOResponse a: accommodationDTO.getAvailabilityList()){
+                                if(selectedOption.equals(a.getPrice().toString())){
+                                    long numDays = ChronoUnit.DAYS.between(a.getStartDate(), a.getEndDate());
+                                    for(int i = 0; i <= numDays; i++){
+                                        pinkDateList.add(a.getStartDate().plusDays(i).format(formatter));
+                                    }
+
+                                    for(ReservationDTO r: accommodationDTO.getFutureReservations()){
+                                        System.out.println("USLI SMO OVDE");
+                                        if(Objects.equals(r.getAvailabilityId(), a.getId())){
+                                            System.out.println("USLI SMO I OVDE TAKODJE");
+                                            long numDaysRes = ChronoUnit.DAYS.between(r.getReservationStartDate(), r.getReservationEndDate());
+                                            for(int i = 0; i <= numDaysRes; i++){
+                                                grayDateList.add(r.getReservationStartDate().plusDays(i).format(formatter));
+                                            }
+                                        }
+                                    }
+
+                                    System.out.println(grayDateList.size());
+
+
+
+                                }
+                            }
+                            setEvent(pinkDateList, pink);
+                            setEvent(grayDateList, gray);
                         }
-                    }
-                    setEvent(grayDateList, gray);
-                    calendarView.invalidateDecorators();
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parentView) {
+                            // Do nothing when nothing is selected
+                        }
+                    });
+
+
+
+
+
+//                    for(ReservationDTO r: accommodationDTO.getFutureReservations()){
+//                        long numDays = ChronoUnit.DAYS.between(r.getReservationStartDate(), r.getReservationEndDate());
+//                        for(int i = 0; i <= numDays; i++){
+//                            grayDateList.add(r.getReservationStartDate().plusDays(i).format(formatter));
+//                        }
+//                    }
+//                    setEvent(grayDateList, gray);
+//                    calendarView.invalidateDecorators();
 
 
                     for(Long imageId: accommodationDTO.getImageIds()){

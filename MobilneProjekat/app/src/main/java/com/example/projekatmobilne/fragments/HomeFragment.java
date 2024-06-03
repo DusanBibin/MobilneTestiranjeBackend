@@ -196,7 +196,6 @@ public class HomeFragment extends Fragment {
                                         Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
                                         a.setImageBitmap(bitmap);
                                         ac.setImageBitmap(bitmap);
-                                        System.out.println("TEK SE SAD UPALILO AJAOOO");
                                         adapter.setSearchList(dataList);
                                     }catch (IOException e){
                                         e.printStackTrace();

@@ -91,8 +91,11 @@ public class AccommodationController {
         }
 
         var futureReservations = reservationRepository.findReservationsNotEndedByAccommodationId(accommodationId);
+
         for(Reservation r : futureReservations){
+            System.out.println("REZERVACIJA");
             var reservationDTO = ReservationDTO.builder()
+                    .availabilityId(r.getAvailability().getId())
                     .reservationEndDate(r.getReservationEndDate())
                     .reservationStartDate(r.getReservationStartDate())
                     .guestNum(r.getGuestNum())
@@ -152,7 +155,6 @@ public class AccommodationController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(foundImgType);
         headers.setContentLength(imageBytes.length);
-        System.out.println("UZIMAMO SLIKU");
         return new ResponseEntity<>(imageBytes, headers, 200);
     }
 

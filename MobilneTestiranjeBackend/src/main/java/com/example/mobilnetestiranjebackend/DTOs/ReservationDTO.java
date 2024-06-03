@@ -18,6 +18,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class ReservationDTO {
 
+    private Long availabilityId;
+
     @FutureOrPresent(message = "Start date must be in the future")
     @NotNull(message = "Start date must be provided")
     private LocalDate reservationStartDate;

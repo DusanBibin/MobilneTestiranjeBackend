@@ -239,15 +239,15 @@ private final UserRepository userRepository;
 
 
 
-        //enddate 10 startdate 8 ako je u buducnsti stavi
+         //enddate 10 startdate 8 ako je u buducnsti stavi plus days
 
         var reservation = Reservation.builder()
-                .availability(availabilityDeleteTest)
+                .availability(availabilityEditTest)
                 .guest(guestDusan1)
                 .status(ReservationStatus.ACCEPTED)
                 .accommodation(accommodation)
-                .reservationEndDate(LocalDate.now().minusDays(2))
-                .reservationStartDate(LocalDate.now().minusDays(1))
+                .reservationEndDate(LocalDate.now().plusDays(10))
+                .reservationStartDate(LocalDate.now().plusDays(8))
                 .guestNum(1L)
                 .build();
 
@@ -320,7 +320,7 @@ private final UserRepository userRepository;
         accommodationReview = accommodationReviewRepository.save(accommodationReview);
 
 
-        thirtyMore();
+        //thirtyMore();
     }
 
     private void thirtyMore(){

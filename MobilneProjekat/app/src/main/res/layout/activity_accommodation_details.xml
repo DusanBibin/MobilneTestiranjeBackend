@@ -121,10 +121,16 @@
 
                 </RelativeLayout>
 
+
+                <Spinner
+                    android:id="@+id/spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
                 <com.prolificinteractive.materialcalendarview.MaterialCalendarView
                     android:id="@+id/calendarView"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="wrap_content"
                     app:mcv_showOtherDates="all"
                     app:mcv_selectionMode="none"
                     app:mcv_selectionColor="#00F"

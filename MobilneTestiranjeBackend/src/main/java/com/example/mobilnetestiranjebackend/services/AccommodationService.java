@@ -113,11 +113,6 @@ public class AccommodationService {
         }
 
 
-        for(Accommodation a: foundAccommodations){
-            System.out.println(a.getId());
-            System.out.println(a.getAddress());
-            System.out.println("-----------");
-        }
 
         if(foundAccommodations.isEmpty()) System.out.println("Prazna je lista");
         else System.out.println("Lista ima :" + foundAccommodations.size());

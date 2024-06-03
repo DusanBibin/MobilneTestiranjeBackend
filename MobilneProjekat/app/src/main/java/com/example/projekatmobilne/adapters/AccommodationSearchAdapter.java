@@ -60,12 +60,10 @@ public class AccommodationSearchAdapter extends RecyclerView.Adapter<MyViewHolde
 
         Double rating = dataList.get(position).getRating();
         if(rating == 0){
-            System.out.println("UPALJEN JE 0 RATING");
             holder.ratingBar.setVisibility(View.GONE);
             holder.txtNoRatings.setVisibility(View.VISIBLE);
             holder.ratingBar.setRating(0);
         }else{
-            System.out.println("UPALJEN JE OBICAN RATING");
             holder.ratingBar.setVisibility(View.VISIBLE);
             holder.txtNoRatings.setVisibility(View.GONE);
             holder.ratingBar.setRating(dataList.get(position).getRating().floatValue());
