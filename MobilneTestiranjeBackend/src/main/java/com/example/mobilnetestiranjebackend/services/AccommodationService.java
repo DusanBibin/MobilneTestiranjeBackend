@@ -105,7 +105,6 @@ public class AccommodationService {
             List<Availability> availabilities = availabilityRepository.findAllByAccommodationId(a.getId());
             for(Availability av: availabilities){
                 List<Reservation> conflictedReservations = reservationRepository.findAcceptedReservationsInConflict(startDate, endDate, a.getId(), av.getId());
-                System.out.println(conflictedReservations.isEmpty());
                 if(conflictedReservations.isEmpty()) {availabilityFree = true; map.put(a.getId(), av); break;}
             }
             if(availabilityFree) foundAccommodations.add(a);

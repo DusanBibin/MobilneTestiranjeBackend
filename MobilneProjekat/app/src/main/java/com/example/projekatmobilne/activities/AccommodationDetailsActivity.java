@@ -1,7 +1,5 @@
 package com.example.projekatmobilne.activities;
 
-import static android.provider.Settings.System.DATE_FORMAT;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,18 +9,17 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.projekatmobilne.R;
-import com.example.projekatmobilne.adapters.AccommodationSearchAdapter;
 import com.example.projekatmobilne.adapters.ImageAdapter;
 import com.example.projekatmobilne.adapters.ReviewsAdapter;
 import com.example.projekatmobilne.clients.ClientUtils;
@@ -34,13 +31,16 @@ import com.example.projekatmobilne.model.responseDTO.ReservationDTO;
 import com.example.projekatmobilne.model.responseDTO.ReviewDTOResponse;
 import com.example.projekatmobilne.tools.EventDecorator;
 import com.example.projekatmobilne.tools.ResponseParser;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
 import org.threeten.bp.LocalDate;
-
-import com.prolificinteractive.materialcalendarview.CalendarDay;
-import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -48,7 +48,6 @@ import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -61,7 +60,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AccommodationDetailsActivity extends AppCompatActivity {
+public class AccommodationDetailsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private Toolbar toolbar;
     private ActivityAccommodationDetailsBinding binding;
@@ -81,6 +80,9 @@ public class AccommodationDetailsActivity extends AppCompatActivity {
 
     private ReviewsAdapter reviewsAdapter;
     private List<ReviewDTOResponse> dataList;
+    private List<Bitmap> imageList;
+    private List<String> options;
+    private ImageAdapter imageAdapter;
 
     MaterialCalendarView calendarView;
 
@@ -100,13 +102,8 @@ public class AccommodationDetailsActivity extends AppCompatActivity {
 
         calendarView = findViewById(R.id.calendarView);
         calendarView.setShowOtherDates(MaterialCalendarView.SHOW_ALL);
-
-
         final LocalDate min = getLocalDate(java.time.LocalDate.now().plusDays(1).format(formatter));
-//        final LocalDate max = getLocalDate("2024-12-30");
-//
         calendarView.state().edit().setMinimumDate(min).commit();
-
 
         binding.transparentImage.setOnTouchListener(new View.OnTouchListener() {
 
@@ -144,11 +141,25 @@ public class AccommodationDetailsActivity extends AppCompatActivity {
 
 
 
-        List<Bitmap> imageList = new ArrayList<>();
-        ImageAdapter imageAdapter = new ImageAdapter(this, imageList);
+        imageList = new ArrayList<>();
+        imageAdapter = new ImageAdapter(this, imageList);
         binding.viewPager.setAdapter(imageAdapter);
 
 
+
+
+        binding.recyclerViewDetails.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                if (!isLastPage && layoutManager != null && layoutManager.findLastCompletelyVisibleItemPosition() == reviewsAdapter.getItemCount() - 1) {
+                    currentPage++;
+                    loadReviewPage();
+                }
+            }
+        });
 
 
         Call<ResponseBody> call = ClientUtils.apiService.getAccommodation(accommodationId);
@@ -165,137 +176,17 @@ public class AccommodationDetailsActivity extends AppCompatActivity {
                 }
 
                 if(response.code() == 200){
-
-                    Call<ResponseBody> callReviews = ClientUtils.apiService.getReviews(accommodationId, currentPage, 10);
-                    callReviews.enqueue(new Callback<ResponseBody>() {
-                        @Override
-                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                            pagedReviewsDTOResponse = ResponseParser.parseResponse(response, PagedReviewsDTOResponse.class, false);
-
-                            dataList = pagedReviewsDTOResponse.getContent();
-                            isLastPage = false;
-                            currentPage = 0;
-                            GridLayoutManager gridLayoutManager = new GridLayoutManager(AccommodationDetailsActivity.this, 1);
-                            binding.recyclerViewDetails.setLayoutManager(gridLayoutManager);
-
-
-                            reviewsAdapter = new ReviewsAdapter(AccommodationDetailsActivity.this, dataList);
-                            binding.recyclerViewDetails.setAdapter(reviewsAdapter);
-                        }
-
-                        @Override
-                        public void onFailure(Call<ResponseBody> call, Throwable t) {
-
-                        }
-                    });
+                    loadReviewPage();
                     accommodationDTO = ResponseParser.parseResponse(response, AccommodationDTOResponse.class, false);
 
-
-                    List<String> options = new ArrayList<>();
-                    for(AvailabilityDTOResponse a: accommodationDTO.getAvailabilityList()){
-                        options.add(a.getPrice().toString());
-                    }
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(AccommodationDetailsActivity.this, android.R.layout.simple_spinner_item, options);
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-                    binding.spinner.setAdapter(adapter);
-
-
-
-                    binding.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                        @Override
-                        public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                            pinkDateList = new ArrayList<>();
-                            grayDateList = new ArrayList<>();
-
-                            calendarView.removeDecorators();
-                            String selectedOption = options.get(position);
-                            for(AvailabilityDTOResponse a: accommodationDTO.getAvailabilityList()){
-
-                                if(selectedOption.equals(a.getPrice().toString())){
-
-                                    long numDays = ChronoUnit.DAYS.between(a.getStartDate(), a.getEndDate());
-                                    for(int i = 0; i <= numDays; i++){
-                                        pinkDateList.add(a.getStartDate().plusDays(i).format(formatter));
-                                    }
-
-                                    for(ReservationDTO r: accommodationDTO.getFutureReservations()){
-                                        System.out.println("USLI SMO OVDE");
-                                        if(Objects.equals(r.getAvailabilityId(), a.getId())){
-                                            System.out.println("USLI SMO I OVDE TAKODJE");
-                                            long numDaysRes = ChronoUnit.DAYS.between(r.getReservationStartDate(), r.getReservationEndDate());
-                                            for(int i = 0; i <= numDaysRes; i++){
-                                                grayDateList.add(r.getReservationStartDate().plusDays(i).format(formatter));
-                                            }
-                                        }
-                                    }
-
-                                }
-                            }
-                            setEvent(pinkDateList, pink);
-                            setEvent(grayDateList, gray);
-                        }
-
-                        @Override
-                        public void onNothingSelected(AdapterView<?> parentView) {
-                        }
-                    });
-
-
-                    for(Long imageId: accommodationDTO.getImageIds()){
-                        Call<ResponseBody> imageResponse = ClientUtils.apiService.getAccommodationImage(accommodationId, imageId);
-                        imageResponse.enqueue(new Callback<ResponseBody>() {
-                            @Override
-                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                                if(response.code() == 200){
-                                    byte[] imageBytes;
-                                    try {
-                                        imageBytes = response.body().bytes();
-                                        Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                                        imageList.add(bitmap);
-                                        imageAdapter.notifyDataSetChanged();
-
-                                    }catch (IOException e){
-                                        e.printStackTrace();
-                                        Toast.makeText(AccommodationDetailsActivity.this, "Failed to load image", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                Toast.makeText(AccommodationDetailsActivity.this, "There was a problem, try again later", Toast.LENGTH_SHORT).show();
-                                t.printStackTrace();
-                            }
-                        });
-                    }
-
-
-
-
-                    binding.txtName.setText(accommodationDTO.getName());
-                    binding.txtAddressDetails.setText(accommodationDTO.getAddress());
-                    binding.txtDescription.setText(accommodationDTO.getDescription());
-
-                    StringBuilder amenities = new StringBuilder("Amenities: ");
-                    if(accommodationDTO.getAmenities().isEmpty()) amenities.append(" None");
-                    for(int i = 0; i < accommodationDTO.getAmenities().size(); i++){
-                        if(i != accommodationDTO.getAmenities().size() - 1) amenities.append(accommodationDTO.getAmenities().get(i)).append(", ");
-                        else amenities.append(accommodationDTO.getAmenities().get(i));
-                    }
-                    binding.txtAmenities.setText(amenities);
-
-                    String guests = "Possible guests: " + accommodationDTO.getMinGuests() + "-" +  accommodationDTO.getMaxGuests();
-                    String type = "Type: " + accommodationDTO.getAccommodationType().toString();
-
-                    binding.txtGuests.setText(guests);
-                    binding.txtType.setText(type);
-
-
-
+                    SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                            .findFragmentById(R.id.mapview);
+                    mapFragment.getMapAsync(AccommodationDetailsActivity.this);
+                    setupSpinner();
+                    setupCalendar();
+                    setupImages();
+                    setupTextViews();
                 }
-
-
             }
 
             @Override
@@ -307,8 +198,129 @@ public class AccommodationDetailsActivity extends AppCompatActivity {
 
     }
 
+    private void setupSpinner() {
+        options = new ArrayList<>();
+        for(AvailabilityDTOResponse a: accommodationDTO.getAvailabilityList()){
+            options.add(a.getPrice().toString());
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(AccommodationDetailsActivity.this, android.R.layout.simple_spinner_item, options);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        binding.spinner.setAdapter(adapter);
+    }
+    private void setupCalendar() {
+        binding.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                pinkDateList = new ArrayList<>();
+                grayDateList = new ArrayList<>();
+
+                calendarView.removeDecorators();
+                String selectedOption = options.get(position);
+                for(AvailabilityDTOResponse a: accommodationDTO.getAvailabilityList()){
+
+                    if(selectedOption.equals(a.getPrice().toString())){
+
+                        long numDays = ChronoUnit.DAYS.between(a.getStartDate(), a.getEndDate());
+                        for(int i = 0; i <= numDays; i++){
+                            pinkDateList.add(a.getStartDate().plusDays(i).format(formatter));
+                        }
+
+                        for(ReservationDTO r: accommodationDTO.getFutureReservations()){
+                            System.out.println("USLI SMO OVDE");
+                            if(Objects.equals(r.getAvailabilityId(), a.getId())){
+                                System.out.println("USLI SMO I OVDE TAKODJE");
+                                long numDaysRes = ChronoUnit.DAYS.between(r.getReservationStartDate(), r.getReservationEndDate());
+                                for(int i = 0; i <= numDaysRes; i++){
+                                    grayDateList.add(r.getReservationStartDate().plusDays(i).format(formatter));
+                                }
+                            }
+                        }
+
+                    }
+                }
+                setEvent(pinkDateList, pink);
+                setEvent(grayDateList, gray);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+            }
+        });
+    }
+    private void setupImages() {
+        for(Long imageId: accommodationDTO.getImageIds()){
+            Call<ResponseBody> imageResponse = ClientUtils.apiService.getAccommodationImage(accommodationId, imageId);
+            imageResponse.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    if(response.code() == 200){
+                        byte[] imageBytes;
+                        try {
+                            imageBytes = response.body().bytes();
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                            imageList.add(bitmap);
+                            imageAdapter.notifyDataSetChanged();
+
+                        }catch (IOException e){
+                            e.printStackTrace();
+                            Toast.makeText(AccommodationDetailsActivity.this, "Failed to load image", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Toast.makeText(AccommodationDetailsActivity.this, "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                    t.printStackTrace();
+                }
+            });
+        }
+    }
+    private void setupTextViews() {
+        binding.txtName.setText(accommodationDTO.getName());
+        binding.txtAddressDetails.setText(accommodationDTO.getAddress());
+        binding.txtDescription.setText(accommodationDTO.getDescription());
+
+        StringBuilder amenities = new StringBuilder("Amenities: ");
+        if(accommodationDTO.getAmenities().isEmpty()) amenities.append(" None");
+        for(int i = 0; i < accommodationDTO.getAmenities().size(); i++){
+            if(i != accommodationDTO.getAmenities().size() - 1) amenities.append(accommodationDTO.getAmenities().get(i)).append(", ");
+            else amenities.append(accommodationDTO.getAmenities().get(i));
+        }
+        binding.txtAmenities.setText(amenities);
+
+        String guests = "Possible guests: " + accommodationDTO.getMinGuests() + "-" +  accommodationDTO.getMaxGuests();
+        String type = "Type: " + accommodationDTO.getAccommodationType().toString();
+
+        binding.txtGuests.setText(guests);
+        binding.txtType.setText(type);
+    }
+    private void loadReviewPage() {
+        Call<ResponseBody> callReviews = ClientUtils.apiService.getReviews(accommodationId, currentPage, 10);
+        callReviews.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                pagedReviewsDTOResponse = ResponseParser.parseResponse(response, PagedReviewsDTOResponse.class, false);
 
 
+                dataList = pagedReviewsDTOResponse.getContent();
+                isLastPage = pagedReviewsDTOResponse.isLast();
+                GridLayoutManager gridLayoutManager = new GridLayoutManager(AccommodationDetailsActivity.this, 1);
+                binding.recyclerViewDetails.setLayoutManager(gridLayoutManager);
+
+
+                reviewsAdapter = new ReviewsAdapter(AccommodationDetailsActivity.this, dataList);
+                binding.recyclerViewDetails.setAdapter(reviewsAdapter);
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(AccommodationDetailsActivity.this, "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                t.printStackTrace();
+            }
+        });
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -317,9 +329,6 @@ public class AccommodationDetailsActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-
-
     void setEvent(List<String> dateList, int color) {
         List<LocalDate> localDateList = new ArrayList<>();
 
@@ -376,13 +385,11 @@ public class AccommodationDetailsActivity extends AppCompatActivity {
             setDecor(datesIndependent, R.drawable.g_independent);
         }
     }
-
     void setDecor(List<CalendarDay> calendarDayList, int drawable) {
         calendarView.addDecorators(new EventDecorator(AccommodationDetailsActivity.this
                 , drawable
                 , calendarDayList));
     }
-
     LocalDate getLocalDate(String date) {
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.ENGLISH);
         try {
@@ -400,5 +407,11 @@ public class AccommodationDetailsActivity extends AppCompatActivity {
             return null;
         }
     }
-
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        LatLng accommodationLocation = new LatLng(accommodationDTO.getLat(), accommodationDTO.getLon());
+        googleMap.addMarker(new MarkerOptions()
+                .position(accommodationLocation));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(accommodationLocation, 12.5f));
+    }
 }
