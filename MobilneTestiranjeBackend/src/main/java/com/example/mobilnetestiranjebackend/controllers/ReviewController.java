@@ -72,7 +72,6 @@ public class ReviewController {
                                                      @RequestParam(defaultValue = "10") int pageSize){
 
         Page<ReviewDTOResponse> pagedReviews = reviewService.getAccommodationReviews(accommodationId, pageNo, pageSize);
-        System.out.println("UZELI SMO ODAVDE JEDNOM");
         return ResponseEntity.ok().body(pagedReviews);
     }
 
