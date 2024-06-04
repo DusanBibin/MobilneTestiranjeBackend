@@ -240,6 +240,15 @@ private final UserRepository userRepository;
 
 
          //enddate 10 startdate 8 ako je u buducnsti stavi plus days
+        var reservationOlder = Reservation.builder()
+                .availability(null)
+                .guest(guestDusan2)
+                .status(ReservationStatus.ACCEPTED)
+                .accommodation(accommodation)
+                .reservationEndDate(LocalDate.now().minusDays(20))
+                .reservationStartDate(LocalDate.now().minusDays(18))
+                .guestNum(1L)
+                .build();
 
         var reservationOld = Reservation.builder()
                 .availability(null)
@@ -262,14 +271,17 @@ private final UserRepository userRepository;
                 .build();
 
 
-
+        reservationOlder = reservationRepository.save(reservationOlder);
         reservationNew = reservationRepository.save(reservationNew);
         reservationOld = reservationRepository.save(reservationOld);
 
         guestDusan1.getReservations().add(reservationOld);
         guestDusan1.getReservations().add(reservationNew);
+        guestDusan2.getReservations().add(reservationOlder);
         guestDusan1 = guestRepository.save(guestDusan1);
+        guestDusan2 = guestRepository.save(guestDusan2);
 
+        accommodation.getReservations().add(reservationOlder);
         accommodation.getReservations().add(reservationOld);
         accommodation.getReservations().add(reservationNew);
         accommodation = accommodationRepository.save(accommodation);
@@ -298,6 +310,31 @@ private final UserRepository userRepository;
 
         accommodationReview = accommodationReviewRepository.save(accommodationReview);
 
+
+
+
+
+        var ownerReviewOlder = OwnerReview.builder()
+                .rating(5L)
+                .comment("owner Review")
+                .owner(ownerDusan)
+                .guest(guestDusan2)
+                .complaint(null)
+                .build();
+
+        ownerReviewOlder = ownerReviewRepository.save(ownerReviewOlder);
+
+        var accommodationReviewOlder = AccommodationReview.builder()
+                .rating(3L)
+                .comment("accommodation review")
+                .allowed(false)
+                .guest(guestDusan2)
+                .reservation(reservationOld)
+                .accommodation(accommodation)
+                .complaint(null)
+                .build();
+
+        accommodationReviewOlder = accommodationReviewRepository.save(accommodationReviewOlder);
 
         var ownerReviewComplaint = ReviewComplaint.builder()
                 .owner(ownerDusan)
@@ -332,7 +369,11 @@ private final UserRepository userRepository;
 
 
         //thirtyMore();
+
+        //thirtyMoreReviews(ownerDusan, guestDusan1, reservationOld, accommodation);
     }
+
+
 
     private void thirtyMore(){
 

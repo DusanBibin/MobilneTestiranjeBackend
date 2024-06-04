@@ -41,7 +41,7 @@
 
 
         <androidx.core.widget.NestedScrollView
-            android:id="@+id/main_scrollview"
+            android:id="@+id/scrollViewReviews"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"

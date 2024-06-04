@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -79,7 +80,7 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
     private Boolean isLastPage = false;
 
     private ReviewsAdapter reviewsAdapter;
-    private List<ReviewDTOResponse> dataList;
+    private List<ReviewDTOResponse> dataList = new ArrayList<>();
     private List<Bitmap> imageList;
     private List<String> options;
     private ImageAdapter imageAdapter;
@@ -113,17 +114,17 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
                 switch (action) {
                     case MotionEvent.ACTION_DOWN:
                         // Disallow ScrollView to intercept touch events.
-                        binding.mainScrollview.requestDisallowInterceptTouchEvent(true);
+                        binding.scrollViewReviews.requestDisallowInterceptTouchEvent(true);
                         // Disable touch on transparent view
                         return false;
 
                     case MotionEvent.ACTION_UP:
                         // Allow ScrollView to intercept touch events.
-                        binding.mainScrollview.requestDisallowInterceptTouchEvent(false);
+                        binding.scrollViewReviews.requestDisallowInterceptTouchEvent(false);
                         return true;
 
                     case MotionEvent.ACTION_MOVE:
-                        binding.mainScrollview.requestDisallowInterceptTouchEvent(true);
+                        binding.scrollViewReviews.requestDisallowInterceptTouchEvent(true);
                         return false;
 
                     default:
@@ -148,15 +149,28 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
 
 
 
-        binding.recyclerViewDetails.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
+//        binding.recyclerViewDetails.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+//                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+//                boolean iksde2 = layoutManager != null;
+//                boolean iksde = layoutManager.findLastCompletelyVisibleItemPosition() == reviewsAdapter.getItemCount() - 1;
+//                if (!isLastPage && layoutManager != null && layoutManager.findLastCompletelyVisibleItemPosition() == reviewsAdapter.getItemCount() - 1) {
+//                    currentPage++;
+//                    loadReviewPage();
+//                }
+//            }
+//        });
 
-                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                if (!isLastPage && layoutManager != null && layoutManager.findLastCompletelyVisibleItemPosition() == reviewsAdapter.getItemCount() - 1) {
-                    currentPage++;
-                    loadReviewPage();
+        binding.scrollViewReviews.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if(v.getChildAt(v.getChildCount() - 1) != null){
+                    if (!isLastPage && scrollY >= (v.getChildAt(v.getChildCount() - 1).getMeasuredHeight() - v.getMeasuredHeight())){
+                        currentPage++;
+                        loadReviewPage();
+                    }
                 }
             }
         });
@@ -297,14 +311,14 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
         binding.txtType.setText(type);
     }
     private void loadReviewPage() {
-        Call<ResponseBody> callReviews = ClientUtils.apiService.getReviews(accommodationId, currentPage, 10);
+        Call<ResponseBody> callReviews = ClientUtils.apiService.getReviews(accommodationId, currentPage, 1);
         callReviews.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 pagedReviewsDTOResponse = ResponseParser.parseResponse(response, PagedReviewsDTOResponse.class, false);
 
 
-                dataList = pagedReviewsDTOResponse.getContent();
+                dataList.addAll(pagedReviewsDTOResponse.getContent());
                 isLastPage = pagedReviewsDTOResponse.isLast();
                 GridLayoutManager gridLayoutManager = new GridLayoutManager(AccommodationDetailsActivity.this, 1);
                 binding.recyclerViewDetails.setLayoutManager(gridLayoutManager);
