@@ -126,4 +126,13 @@ public interface ApiService {
     @GET("accommodations/{accommodationId}")
     Call<ResponseBody> getAccommodation(@Path("accommodationId") Long accommodationId);
 
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @GET("reviews/accommodations/{accommodationId}")
+    Call<ResponseBody> getReviews(@Path("accommodationId") Long accommodationId,
+                                  @Query("pageNo") int pageNo,
+                                  @Query("pageSize") int pageSize);
 }

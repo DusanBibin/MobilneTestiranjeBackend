@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReviewDTOResponse {
-
+    private String guestName;
     private ReviewDTO ownerReview;
     private ReviewDTO accommodationReview;
 }

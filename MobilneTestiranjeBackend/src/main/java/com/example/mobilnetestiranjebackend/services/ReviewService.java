@@ -141,13 +141,13 @@ public class ReviewService {
 
         List<ReviewDTOResponse> reviews = new ArrayList<>();
         for(Reservation r: reservations){
-            System.out.println("usli smo ovde");
             var guestId = r.getGuest().getId();
 
             var ownerReview = ownerReviewRepository.findByAccommodationAndGuest(accommodationId, guestId);
             var accommodationReview = accommodationReviewRepository.findByAccommodationAndGuest(accommodationId, guestId);
 
             ReviewDTOResponse review = ReviewDTOResponse.builder()
+                    .guestName(r.getGuest().getFirstName() + " " + r.getGuest().getLastname())
                     .ownerReview(new ReviewDTO(ownerReview.get().getComment(), ownerReview.get().getRating()))
                     .accommodationReview(new ReviewDTO(accommodationReview.get().getComment(), accommodationReview.get().getRating()))
                     .build();

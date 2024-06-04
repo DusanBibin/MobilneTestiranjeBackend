@@ -1,7 +1,5 @@
 package com.example.projekatmobilne.adapters;
 
-import static androidx.core.content.ContextCompat.startActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -17,12 +15,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.projekatmobilne.R;
 import com.example.projekatmobilne.activities.AccommodationDetailsActivity;
-import com.example.projekatmobilne.activities.HomeActivity;
-import com.example.projekatmobilne.activities.LoginActivity;
 
 import java.util.List;
 
-public class AccommodationSearchAdapter extends RecyclerView.Adapter<MyViewHolder> {
+public class AccommodationSearchAdapter extends RecyclerView.Adapter<AccommodationSearchViewHolder> {
 
     private Context context;
     private List<AccommodationCard> dataList;
@@ -40,13 +36,13 @@ public class AccommodationSearchAdapter extends RecyclerView.Adapter<MyViewHolde
 
     @NonNull
     @Override
-    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public AccommodationSearchViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.accommodation_item, parent, false);
-        return new MyViewHolder(view);
+        return new AccommodationSearchViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull AccommodationSearchViewHolder holder, int position) {
 
         holder.imageView.setImageBitmap(dataList.get(position).getImageBitmap());
         holder.txtAddress.setText(dataList.get(position).getAddress());
@@ -91,7 +87,7 @@ public class AccommodationSearchAdapter extends RecyclerView.Adapter<MyViewHolde
     }
 }
 
-class MyViewHolder extends RecyclerView.ViewHolder{
+class AccommodationSearchViewHolder extends RecyclerView.ViewHolder{
 
     ImageView imageView;
     TextView txtName, txtAddress, txtGuests, txtType, txtIsPerPerson, txtOneNightPrice, txtTotalPrice, txtNoRatings, txtAmenities;
@@ -99,7 +95,7 @@ class MyViewHolder extends RecyclerView.ViewHolder{
 
     CardView cardView;
 
-    public MyViewHolder(@NonNull View itemView) {
+    public AccommodationSearchViewHolder(@NonNull View itemView) {
         super(itemView);
 
 

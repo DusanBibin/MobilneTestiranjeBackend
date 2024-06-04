@@ -111,11 +111,7 @@ public class AccommodationService {
             if(availabilityFree) foundAccommodations.add(a);
 
         }
-
-
-
-        if(foundAccommodations.isEmpty()) System.out.println("Prazna je lista");
-        else System.out.println("Lista ima :" + foundAccommodations.size());
+        
 
         Page<Accommodation> pagedAccoms = convertListToPage(pageNo, pageSize, foundAccommodations);
         Page<AccommodationSearchDTO> dtoPage = pagedAccoms.map(new Function<Accommodation, AccommodationSearchDTO>() {

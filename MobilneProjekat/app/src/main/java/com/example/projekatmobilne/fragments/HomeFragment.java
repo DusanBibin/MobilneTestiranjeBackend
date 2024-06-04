@@ -1,5 +1,7 @@
 package com.example.projekatmobilne.fragments;
 
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -29,13 +31,17 @@ import com.example.projekatmobilne.model.Enum.AccommodationType;
 import com.example.projekatmobilne.model.Enum.Amenity;
 import com.example.projekatmobilne.model.paging.PagingDTOs.AccommodationSearchDTO;
 import com.example.projekatmobilne.model.paging.PagingDTOs.PagedSearchDTOResponse;
+import com.example.projekatmobilne.model.paging.PagingDTOs.PagedSearchDTOResponse;
 import com.example.projekatmobilne.tools.ResponseParser;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -157,12 +163,13 @@ public class HomeFragment extends Fragment {
 
                 if(response.code() == 200){
                     PagedSearchDTOResponse responseDTO = ResponseParser.parseResponse(response, PagedSearchDTOResponse.class, false);
-
+                    System.out.println("Pocetna kurcina" + responseDTO);
                     if(responseDTO.getContent().isEmpty()){
                         Toast.makeText(getActivity(), "There are no accommodations that are available within this period", Toast.LENGTH_SHORT).show();
                     }
 
                     isLastPage = responseDTO.isLast();
+
                     for(AccommodationSearchDTO a: responseDTO.getContent()){
 
                         StringBuilder amenities = new StringBuilder("Amenities: ");

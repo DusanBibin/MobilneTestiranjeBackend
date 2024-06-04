@@ -18,15 +18,20 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.widget.NestedScrollView;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.projekatmobilne.R;
+import com.example.projekatmobilne.adapters.AccommodationSearchAdapter;
 import com.example.projekatmobilne.adapters.ImageAdapter;
+import com.example.projekatmobilne.adapters.ReviewsAdapter;
 import com.example.projekatmobilne.clients.ClientUtils;
 import com.example.projekatmobilne.databinding.ActivityAccommodationDetailsBinding;
+import com.example.projekatmobilne.model.paging.PagingDTOs.PagedReviewsDTOResponse;
 import com.example.projekatmobilne.model.responseDTO.AccommodationDTOResponse;
 import com.example.projekatmobilne.model.responseDTO.AvailabilityDTOResponse;
 import com.example.projekatmobilne.model.responseDTO.ReservationDTO;
+import com.example.projekatmobilne.model.responseDTO.ReviewDTOResponse;
 import com.example.projekatmobilne.tools.EventDecorator;
 import com.example.projekatmobilne.tools.ResponseParser;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
@@ -64,15 +69,18 @@ public class AccommodationDetailsActivity extends AppCompatActivity {
     private ViewPager2 viewPager;
     private Long accommodationId;
     private AccommodationDTOResponse accommodationDTO;
-
-
-
+    private PagedReviewsDTOResponse pagedReviewsDTOResponse;
     private List<String> pinkDateList;
     List<String> grayDateList;
     final String DATE_FORMAT = "yyyy-MM-dd";
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
     int pink = 0;
     int gray = 1;
+    private Integer currentPage = 0;
+    private Boolean isLastPage = false;
+
+    private ReviewsAdapter reviewsAdapter;
+    private List<ReviewDTOResponse> dataList;
 
     MaterialCalendarView calendarView;
 
@@ -137,8 +145,8 @@ public class AccommodationDetailsActivity extends AppCompatActivity {
 
 
         List<Bitmap> imageList = new ArrayList<>();
-        ImageAdapter adapter = new ImageAdapter(this, imageList);
-        binding.viewPager.setAdapter(adapter);
+        ImageAdapter imageAdapter = new ImageAdapter(this, imageList);
+        binding.viewPager.setAdapter(imageAdapter);
 
 
 
@@ -157,6 +165,29 @@ public class AccommodationDetailsActivity extends AppCompatActivity {
                 }
 
                 if(response.code() == 200){
+
+                    Call<ResponseBody> callReviews = ClientUtils.apiService.getReviews(accommodationId, currentPage, 10);
+                    callReviews.enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                            pagedReviewsDTOResponse = ResponseParser.parseResponse(response, PagedReviewsDTOResponse.class, false);
+
+                            dataList = pagedReviewsDTOResponse.getContent();
+                            isLastPage = false;
+                            currentPage = 0;
+                            GridLayoutManager gridLayoutManager = new GridLayoutManager(AccommodationDetailsActivity.this, 1);
+                            binding.recyclerViewDetails.setLayoutManager(gridLayoutManager);
+
+
+                            reviewsAdapter = new ReviewsAdapter(AccommodationDetailsActivity.this, dataList);
+                            binding.recyclerViewDetails.setAdapter(reviewsAdapter);
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                        }
+                    });
                     accommodationDTO = ResponseParser.parseResponse(response, AccommodationDTOResponse.class, false);
 
 
@@ -222,7 +253,7 @@ public class AccommodationDetailsActivity extends AppCompatActivity {
                                         imageBytes = response.body().bytes();
                                         Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
                                         imageList.add(bitmap);
-                                        adapter.notifyDataSetChanged();
+                                        imageAdapter.notifyDataSetChanged();
 
                                     }catch (IOException e){
                                         e.printStackTrace();
@@ -243,7 +274,7 @@ public class AccommodationDetailsActivity extends AppCompatActivity {
 
 
                     binding.txtName.setText(accommodationDTO.getName());
-                    binding.txtAdress.setText(accommodationDTO.getAddress());
+                    binding.txtAddressDetails.setText(accommodationDTO.getAddress());
                     binding.txtDescription.setText(accommodationDTO.getDescription());
 
                     StringBuilder amenities = new StringBuilder("Amenities: ");

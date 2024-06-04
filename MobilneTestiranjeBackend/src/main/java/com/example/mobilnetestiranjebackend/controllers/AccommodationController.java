@@ -93,7 +93,6 @@ public class AccommodationController {
         var futureReservations = reservationRepository.findReservationsNotEndedByAccommodationId(accommodationId);
 
         for(Reservation r : futureReservations){
-            System.out.println("REZERVACIJA");
             var reservationDTO = ReservationDTO.builder()
                     .availabilityId(r.getAvailability().getId())
                     .reservationEndDate(r.getReservationEndDate())

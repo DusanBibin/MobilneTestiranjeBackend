@@ -1,5 +1,6 @@
 package com.example.projekatmobilne.tools;
 
+import com.example.projekatmobilne.model.paging.PagingDTOs.PagedSearchDTOResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -34,7 +35,6 @@ public class ResponseParser {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
 
         if (classOfT == String.class) return (T) responseBody;
         else return gsonCustom.fromJson(responseBody, classOfT);
