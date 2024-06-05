@@ -235,8 +235,8 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
 
                     if(selectedOption.equals(a.getPrice().toString())){
 
-                        long numDays = ChronoUnit.DAYS.between(a.getStartDate(), a.getEndDate());
-                        for(int i = 0; i <= numDays; i++){
+                        long numDays = ChronoUnit.DAYS.between(a.getStartDate(), a.getEndDate()) + 1;
+                        for(int i = 0; i < numDays; i++){
                             pinkDateList.add(a.getStartDate().plusDays(i).format(formatter));
                         }
 
@@ -244,8 +244,8 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
                             System.out.println("USLI SMO OVDE");
                             if(Objects.equals(r.getAvailabilityId(), a.getId())){
                                 System.out.println("USLI SMO I OVDE TAKODJE");
-                                long numDaysRes = ChronoUnit.DAYS.between(r.getReservationStartDate(), r.getReservationEndDate());
-                                for(int i = 0; i <= numDaysRes; i++){
+                                long numDaysRes = ChronoUnit.DAYS.between(r.getReservationStartDate(), r.getReservationEndDate()) + 1;
+                                for(int i = 0; i < numDaysRes; i++){
                                     grayDateList.add(r.getReservationStartDate().plusDays(i).format(formatter));
                                 }
                             }

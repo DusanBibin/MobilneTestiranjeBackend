@@ -210,7 +210,7 @@ private final UserRepository userRepository;
 
 
         var availabilityDeleteTest = Availability.builder()
-                .startDate(LocalDate.now().plusDays(15))
+                .startDate(LocalDate.now().plusDays(16))
                 .endDate(LocalDate.now().plusDays(20))
                 .cancelDeadline(LocalDate.now().plusDays(8))
                 .price(250L)
@@ -219,7 +219,7 @@ private final UserRepository userRepository;
                 .build();
 
         var availabilityNew = Availability.builder()
-                .startDate(LocalDate.now().plusDays(20))
+                .startDate(LocalDate.now().plusDays(21))
                 .endDate(LocalDate.now().plusDays(30))
                 .cancelDeadline(LocalDate.now().plusDays(12))
                 .price(2500L)

@@ -30,8 +30,8 @@ public interface AccommodationRepository extends JpaRepository<Accommodation, Lo
             " (:startDate between av.startDate and av.endDate) and" +
             " (:endDate between av.startDate and av.endDate) and" +
             " (:accommodationType is null or a.accommodationType = :accommodationType) and" +
-            " (:minPrice is null or av.price >= :minPrice) and" +
-            " (:maxPrice is null or av.price <= :maxPrice)")
+            " (:minPrice is null or (case when av.pricePerGuest = true then :daysBetween * av.price * :guestNum else :daysBetween * av.price end) >= :minPrice) and" +
+            " (:maxPrice is null or (case when av.pricePerGuest = true then :daysBetween * av.price * :guestNum else :daysBetween * av.price end) <= :maxPrice)")
     List<Accommodation> searchAccommodations(Long guestNum, String address, LocalDate startDate, LocalDate endDate,
-                                             AccommodationType accommodationType, Long minPrice, Long maxPrice);
+                                             AccommodationType accommodationType, Long minPrice, Long maxPrice, Long daysBetween);
 }

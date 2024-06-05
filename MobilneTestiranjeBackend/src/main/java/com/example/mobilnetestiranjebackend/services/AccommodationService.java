@@ -78,10 +78,10 @@ public class AccommodationService {
     public Page<AccommodationSearchDTO> searchAccommodations(Long guestNum, String address, LocalDate startDate, LocalDate endDate,
                                      List<Amenity> amenities, AccommodationType accommodationType, Long minPrice,
                                      Long maxPrice, int pageNo, int pageSize) {
-
+        Long daysBetween = ChronoUnit.DAYS.between(startDate, endDate) + 1;
         //RADIMO QUERY ZA ULAZNE PARAMETRE
         List<Accommodation> temp1 = accommodationRepository.searchAccommodations(guestNum, address,
-                startDate, endDate, accommodationType, minPrice, maxPrice);
+                startDate, endDate, accommodationType, minPrice, maxPrice, daysBetween);
 
         List<Accommodation> temp2 = new ArrayList<>();
 
@@ -104,12 +104,15 @@ public class AccommodationService {
             boolean availabilityFree = false;
             List<Availability> availabilities = availabilityRepository.findAllByAccommodationId(a.getId());
             for(Availability av: availabilities){
-                List<Reservation> conflictedReservations = reservationRepository.findAcceptedReservationsInConflict(startDate, endDate, a.getId(), av.getId());
-                if(conflictedReservations.isEmpty()) {availabilityFree = true; map.put(a.getId(), av); break;}
+                if(startDate.compareTo(av.getStartDate()) >= 0 && startDate.compareTo(av.getEndDate()) <= 0 && endDate.compareTo(av.getStartDate()) >=0 && endDate.compareTo(av.getEndDate()) <= 0){
+                    List<Reservation> conflictedReservations = reservationRepository.findAcceptedReservationsInConflict(startDate, endDate, a.getId(), av.getId());
+                    if(conflictedReservations.isEmpty()) {availabilityFree = true; map.put(a.getId(), av); break;}
+                }
             }
             if(availabilityFree) foundAccommodations.add(a);
-
         }
+
+
         
 
         Page<Accommodation> pagedAccoms = convertListToPage(pageNo, pageSize, foundAccommodations);
@@ -118,7 +121,7 @@ public class AccommodationService {
             public AccommodationSearchDTO apply(Accommodation a) {
 
                 Availability av = map.get(a.getId());
-                Long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
+
                 Long totalPrice = 0L;
 
                 if(av.getPricePerGuest()) totalPrice = daysBetween * av.getPrice() * guestNum;
