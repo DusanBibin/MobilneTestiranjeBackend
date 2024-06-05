@@ -146,13 +146,16 @@ public class ReviewService {
             var ownerReview = ownerReviewRepository.findByAccommodationAndGuest(accommodationId, guestId);
             var accommodationReview = accommodationReviewRepository.findByAccommodationAndGuest(accommodationId, guestId);
 
-            ReviewDTOResponse review = ReviewDTOResponse.builder()
-                    .guestName(r.getGuest().getFirstName() + " " + r.getGuest().getLastname())
-                    .ownerReview(new ReviewDTO(ownerReview.get().getComment(), ownerReview.get().getRating()))
-                    .accommodationReview(new ReviewDTO(accommodationReview.get().getComment(), accommodationReview.get().getRating()))
-                    .build();
 
-            reviews.add(review);
+            if(ownerReview.isPresent() && accommodationReview.isPresent()){
+                ReviewDTOResponse review = ReviewDTOResponse.builder()
+                        .guestName(r.getGuest().getFirstName() + " " + r.getGuest().getLastname())
+                        .ownerReview(new ReviewDTO(ownerReview.get().getComment(), ownerReview.get().getRating()))
+                        .accommodationReview(new ReviewDTO(accommodationReview.get().getComment(), accommodationReview.get().getRating()))
+                        .build();
+
+                reviews.add(review);
+            }
         }
 
         return convertListToPage(pageNo, pageSize, reviews);
