@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -77,7 +78,8 @@ public class AccommodationService {
 
     public Page<AccommodationSearchDTO> searchAccommodations(Long guestNum, String address, LocalDate startDate, LocalDate endDate,
                                      List<Amenity> amenities, AccommodationType accommodationType, Long minPrice,
-                                     Long maxPrice, int pageNo, int pageSize) {
+                                     Long maxPrice, int pageNo, int pageSize, Boolean isAscending, String sortType) {
+
         Long daysBetween = ChronoUnit.DAYS.between(startDate, endDate) + 1;
         //RADIMO QUERY ZA ULAZNE PARAMETRE
         List<Accommodation> temp1 = accommodationRepository.searchAccommodations(guestNum, address,
@@ -112,56 +114,99 @@ public class AccommodationService {
             if(availabilityFree) foundAccommodations.add(a);
         }
 
+        List<AccommodationSearchDTO> convertedList = new ArrayList<>(foundAccommodations.stream().map(a -> {
+            Availability av = map.get(a.getId());
 
-        
+            Long totalPrice = 0L;
 
-        Page<Accommodation> pagedAccoms = convertListToPage(pageNo, pageSize, foundAccommodations);
-        Page<AccommodationSearchDTO> dtoPage = pagedAccoms.map(new Function<Accommodation, AccommodationSearchDTO>() {
-            @Override
-            public AccommodationSearchDTO apply(Accommodation a) {
+            if (av.getPricePerGuest()) totalPrice = daysBetween * av.getPrice() * guestNum;
+            else totalPrice = daysBetween * av.getPrice();
 
-                Availability av = map.get(a.getId());
+            List<AccommodationReview> accommodationsRatings = accommodationReviewRepository.findByAccommodationId(a.getId());
 
-                Long totalPrice = 0L;
-
-                if(av.getPricePerGuest()) totalPrice = daysBetween * av.getPrice() * guestNum;
-                else totalPrice = daysBetween * av.getPrice();
-
-                List<AccommodationReview> accommodationsRatings = accommodationReviewRepository.findByAccommodationId(a.getId());
-
-                double ratingSum = 0;
-                for(AccommodationReview ar: accommodationsRatings){
-                    ratingSum += ar.getRating();
-                }
-                double ratingAvg = ratingSum / accommodationsRatings.size();
-
-                AccommodationSearchDTO dto = new AccommodationSearchDTO();
-                dto.setAccommodationId(a.getId());
-                dto.setName(a.getName());
-                dto.setAddress(a.getAddress());
-                dto.setAmenities(a.getAmenities());
-                dto.setTotalPrice(totalPrice);
-                dto.setOneNightPrice(av.getPrice());
-                dto.setIsPerPerson(av.getPricePerGuest());
-                dto.setMinGuests(a.getMinGuests());
-                dto.setMaxGuests(a.getMaxGuests());
-                dto.setAccommodationType(a.getAccommodationType());
-                dto.setRating(ratingAvg);
-
-                return dto;
+            double ratingSum = 0;
+            for (AccommodationReview ar : accommodationsRatings) {
+                ratingSum += ar.getRating();
             }
-        });
+            double ratingAvg = ratingSum / accommodationsRatings.size();
+
+            AccommodationSearchDTO dto = new AccommodationSearchDTO();
+            dto.setAccommodationId(a.getId());
+            dto.setName(a.getName());
+            dto.setAddress(a.getAddress());
+            dto.setAmenities(a.getAmenities());
+            dto.setTotalPrice(totalPrice);
+            dto.setOneNightPrice(av.getPrice());
+            dto.setIsPerPerson(av.getPricePerGuest());
+            dto.setMinGuests(a.getMinGuests());
+            dto.setMaxGuests(a.getMaxGuests());
+            dto.setAccommodationType(a.getAccommodationType());
+            dto.setRating(ratingAvg);
+
+            return dto;
+        }).toList());
+        //sortiranje
+
+        if(sortType.toLowerCase().equals("price")){
+            if(isAscending) convertedList.sort(Comparator.comparingLong(AccommodationSearchDTO::getTotalPrice));
+            else convertedList.sort(Comparator.comparingLong(AccommodationSearchDTO::getTotalPrice).reversed());
+        }else{
+            if(isAscending) convertedList.sort(Comparator.comparing(AccommodationSearchDTO::getName));
+            else convertedList.sort(Comparator.comparing(AccommodationSearchDTO::getName).reversed());
+        }
+
+
+
+
+        Page<AccommodationSearchDTO> dtoPage = convertListToPage(pageNo, pageSize, convertedList);
+
+//        Page<Accommodation> pagedAccoms = convertListToPage(pageNo, pageSize, foundAccommodations);
+//        Page<AccommodationSearchDTO> dtoPage = pagedAccoms.map(new Function<Accommodation, AccommodationSearchDTO>() {
+//            @Override
+//            public AccommodationSearchDTO apply(Accommodation a) {
+//
+//                Availability av = map.get(a.getId());
+//
+//                Long totalPrice = 0L;
+//
+//                if(av.getPricePerGuest()) totalPrice = daysBetween * av.getPrice() * guestNum;
+//                else totalPrice = daysBetween * av.getPrice();
+//
+//                List<AccommodationReview> accommodationsRatings = accommodationReviewRepository.findByAccommodationId(a.getId());
+//
+//                double ratingSum = 0;
+//                for(AccommodationReview ar: accommodationsRatings){
+//                    ratingSum += ar.getRating();
+//                }
+//                double ratingAvg = ratingSum / accommodationsRatings.size();
+//
+//                AccommodationSearchDTO dto = new AccommodationSearchDTO();
+//                dto.setAccommodationId(a.getId());
+//                dto.setName(a.getName());
+//                dto.setAddress(a.getAddress());
+//                dto.setAmenities(a.getAmenities());
+//                dto.setTotalPrice(totalPrice);
+//                dto.setOneNightPrice(av.getPrice());
+//                dto.setIsPerPerson(av.getPricePerGuest());
+//                dto.setMinGuests(a.getMinGuests());
+//                dto.setMaxGuests(a.getMaxGuests());
+//                dto.setAccommodationType(a.getAccommodationType());
+//                dto.setRating(ratingAvg);
+//
+//                return dto;
+//            }
+//        });
 
         return dtoPage;
     }
 
-    private Page<Accommodation> convertListToPage(int page, int size, List<Accommodation> accommodationList){
+    private Page<AccommodationSearchDTO> convertListToPage(int page, int size, List<AccommodationSearchDTO> accommodationList){
         Pageable pageRequest = PageRequest.of(page, size);
 
         int start = (int) pageRequest.getOffset();
         int end = Math.min((start + pageRequest.getPageSize()), accommodationList.size());
 
-        List<Accommodation> pageContent;
+        List<AccommodationSearchDTO> pageContent;
         if(start > end) pageContent = new ArrayList<>();
         else pageContent = accommodationList.subList(start, end);
         return new PageImpl<>(pageContent, pageRequest, accommodationList.size());

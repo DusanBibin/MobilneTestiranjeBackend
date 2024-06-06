@@ -25,13 +25,15 @@ public interface AccommodationRepository extends JpaRepository<Accommodation, Lo
     @Query("select a from Guest g join g.favorites a where g.id = :guestId and a.id = :accommodationId ")
     Optional<Accommodation> findFavoritesByAccommodationIdAndGuestId(Long accommodationId, Long guestId);
 
-    @Query("select distinct a from Accommodation a join Availability av join a.amenities am where (:guestNum between a.minGuests and a.maxGuests) and" +
+    @Query("select distinct a from Accommodation a join Availability av join a.amenities am where ((:guestNum between a.minGuests and a.maxGuests) and" +
             " (lower(a.address) like LOWER(CONCAT('%', :address, '%'))) and" +
             " (:startDate between av.startDate and av.endDate) and" +
             " (:endDate between av.startDate and av.endDate) and" +
             " (:accommodationType is null or a.accommodationType = :accommodationType) and" +
-            " (:minPrice is null or (case when av.pricePerGuest = true then :daysBetween * av.price * :guestNum else :daysBetween * av.price end) >= :minPrice) and" +
-            " (:maxPrice is null or (case when av.pricePerGuest = true then :daysBetween * av.price * :guestNum else :daysBetween * av.price end) <= :maxPrice)")
+            " (:minPrice is null or " +
+            "     (case when av.pricePerGuest = true then :daysBetween * av.price * :guestNum else :daysBetween * av.price end) >= :minPrice) and" +
+            " (:maxPrice is null or " +
+            "     (case when av.pricePerGuest = true then :daysBetween * av.price * :guestNum else :daysBetween * av.price end) <= :maxPrice))")
     List<Accommodation> searchAccommodations(Long guestNum, String address, LocalDate startDate, LocalDate endDate,
                                              AccommodationType accommodationType, Long minPrice, Long maxPrice, Long daysBetween);
 }

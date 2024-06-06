@@ -368,7 +368,7 @@ private final UserRepository userRepository;
         accommodationReview = accommodationReviewRepository.save(accommodationReview);
 
 
-        //thirtyMore();
+        thirtyMore();
 
         //thirtyMoreReviews(ownerDusan, guestDusan1, reservationOld, accommodation);
     }
@@ -402,7 +402,7 @@ private final UserRepository userRepository;
 
 
             var accommodation = Accommodation.builder()
-                    .name("NewAcc")
+                    .name("AewAcc")
                     .description("Accommodation description")
                     .address("Some address")
                     .lat(90.0)
@@ -411,7 +411,7 @@ private final UserRepository userRepository;
                     .imagePaths(List.of("/dusanbibin2@gmail.com/NewAcc/1_new_room.jpg",
                             "/dusanbibin2@gmail.com/NewAcc/2_new_room.jpg"))
                     .minGuests(1L)
-                    .maxGuests(4L)
+                    .maxGuests(10L)
                     .accommodationType(AccommodationType.valueOf("STUDIO"))
                     .autoAcceptEnabled(false)
                     .owner(ownerSomeoneElse)
@@ -428,26 +428,26 @@ private final UserRepository userRepository;
                     .startDate(LocalDate.now().plusDays(5))
                     .endDate(LocalDate.now().plusDays(15))
                     .cancelDeadline(LocalDate.now().plusDays(4))
-                    .price(200L)
+                    .price(400L)
                     .pricePerGuest(true)
                     .accommodation(accommodation)
                     .build();
 
 
             var availabilityDeleteTest = Availability.builder()
-                    .startDate(LocalDate.now().plusDays(15))
+                    .startDate(LocalDate.now().plusDays(16))
                     .endDate(LocalDate.now().plusDays(20))
                     .cancelDeadline(LocalDate.now().plusDays(8))
-                    .price(250L)
+                    .price(450L)
                     .pricePerGuest(true)
                     .accommodation(accommodation)
                     .build();
 
             var availabilityNew = Availability.builder()
-                    .startDate(LocalDate.now().plusDays(20))
+                    .startDate(LocalDate.now().plusDays(21))
                     .endDate(LocalDate.now().plusDays(30))
                     .cancelDeadline(LocalDate.now().plusDays(12))
-                    .price(2500L)
+                    .price(4500L)
                     .pricePerGuest(true)
                     .accommodation(accommodation)
                     .build();

@@ -149,20 +149,6 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
 
 
 
-//        binding.recyclerViewDetails.addOnScrollListener(new RecyclerView.OnScrollListener() {
-//            @Override
-//            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-//                super.onScrolled(recyclerView, dx, dy);
-//                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-//                boolean iksde2 = layoutManager != null;
-//                boolean iksde = layoutManager.findLastCompletelyVisibleItemPosition() == reviewsAdapter.getItemCount() - 1;
-//                if (!isLastPage && layoutManager != null && layoutManager.findLastCompletelyVisibleItemPosition() == reviewsAdapter.getItemCount() - 1) {
-//                    currentPage++;
-//                    loadReviewPage();
-//                }
-//            }
-//        });
-
         binding.scrollViewReviews.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
@@ -263,6 +249,7 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
         });
     }
     private void setupImages() {
+
         for(Long imageId: accommodationDTO.getImageIds()){
             Call<ResponseBody> imageResponse = ClientUtils.apiService.getAccommodationImage(accommodationId, imageId);
             imageResponse.enqueue(new Callback<ResponseBody>() {

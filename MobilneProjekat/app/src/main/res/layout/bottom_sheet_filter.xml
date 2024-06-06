@@ -28,6 +28,65 @@
         android:background="@color/black"
         android:layout_margin="2dp"
         />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sorting"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <RadioGroup
+                android:id="@+id/radioGroupSort"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+                <RadioButton
+                    android:id="@+id/radioButtonAsc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="Ascending" />
+                <RadioButton
+                    android:id="@+id/radioButtonDesc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Descending"/>
+            </RadioGroup>
+
+
+            <RadioGroup
+                android:id="@+id/radioGroupSortType"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+                <RadioButton
+                    android:id="@+id/radioButtonPrice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="Accommodation Price" />
+                <RadioButton
+                    android:id="@+id/radioButtonName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Accommodatino name"/>
+            </RadioGroup>
+        </LinearLayout>
+
+
+
+
+
+
+    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

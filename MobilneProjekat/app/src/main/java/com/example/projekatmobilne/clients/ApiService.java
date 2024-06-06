@@ -107,6 +107,8 @@ public interface ApiService {
             @Query("accommodationType") AccommodationType accommodationType,
             @Query("minPrice") Long minPrice,
             @Query("maxPrice") Long maxPrice,
+            @Query("sortType") String sortType,
+            @Query("isAscending") boolean isAscending,
             @Query("pageNo") int pageNo,
             @Query("pageSize") int pageSize
     );

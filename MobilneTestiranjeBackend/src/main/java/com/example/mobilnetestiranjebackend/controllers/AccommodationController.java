@@ -166,6 +166,8 @@ public class AccommodationController {
                                                      @RequestParam(required = false) AccommodationType accommodationType,
                                                      @RequestParam(required = false) Long minPrice,
                                                      @RequestParam(required = false) Long maxPrice,
+                                                     @RequestParam(defaultValue = "price") String sortType,
+                                                     @RequestParam(defaultValue = "true") boolean isAscending,
                                                      @RequestParam(defaultValue = "0") int pageNo,
                                                      @RequestParam(defaultValue = "10") int pageSize){
 
@@ -175,7 +177,7 @@ public class AccommodationController {
         if(startDate.isAfter(endDate) || startDate.isEqual(endDate)) throw new InvalidInputException("Start date must be before end date");
 
         Page<AccommodationSearchDTO> pagedAccommodations = accommodationService.searchAccommodations(guestNum, address, startDate, endDate, amenities, accommodationType,
-                minPrice, maxPrice, pageNo, pageSize);
+                minPrice, maxPrice, pageNo, pageSize, isAscending, sortType);
 
 
         return ResponseEntity.ok().body(pagedAccommodations);

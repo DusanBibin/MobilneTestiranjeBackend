@@ -72,6 +72,8 @@ public class HomeFragment extends Fragment {
    private AccommodationType type;
    private View dialogView;
 
+   private String  sortType = "Price";
+   private boolean isAscending = true;
    private CheckBox checkBoxWifi, checkBoxAC, checkBoxPool, checkBoxParking;
 
     private Integer currentPage = 0;
@@ -155,7 +157,7 @@ public class HomeFragment extends Fragment {
 
         Call<ResponseBody> call = ClientUtils.apiService.getAccommodationsSearch(guestNum,
                 search, dateStart, dateEnd, getCheckBoxAmenities(), type, minValue,
-                maxValue, currentPage, 10);
+                maxValue, sortType, isAscending, currentPage, 10);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -253,6 +255,27 @@ public class HomeFragment extends Fragment {
         editTextMaxValue = dialogView.findViewById(R.id.inputEditTextMaxPrice);
         editTextMinValue = dialogView.findViewById(R.id.inputEditTextMinPrice);
         RadioGroup radioGroup = dialogView.findViewById(R.id.radioGroupType);
+        RadioGroup radioGroupSortType = dialogView.findViewById(R.id.radioGroupSortType);
+        RadioGroup radioGroupSort = dialogView.findViewById(R.id.radioGroupSort);
+        radioGroupSort.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton selectedRadioButton = dialogView.findViewById(checkedId);
+                String selectedText = selectedRadioButton.getText().toString();
+                isAscending = selectedText.equals("Ascending");
+            }
+        });
+
+
+        radioGroupSortType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener(){
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton selectedRadioButton = dialogView.findViewById(checkedId);
+                sortType = selectedRadioButton.getText().toString();
+            }
+        });
+
+
         type = null;
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
