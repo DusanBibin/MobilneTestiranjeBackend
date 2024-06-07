@@ -261,7 +261,7 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
                             imageBytes = response.body().bytes();
                             Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
                             imageList.add(bitmap);
-                            imageAdapter.notifyDataSetChanged();
+                            imageAdapter.notifyItemInserted(imageList.size() - 1);
 
                         }catch (IOException e){
                             e.printStackTrace();
