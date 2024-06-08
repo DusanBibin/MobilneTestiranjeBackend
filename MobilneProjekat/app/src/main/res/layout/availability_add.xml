@@ -17,34 +17,60 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_margin="5dp">
 
-            <TextView
-                android:id="@+id/txtAvailabilityDateRange"
+
+            <GridLayout
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="Date range"
-                android:textSize="11sp"
-                android:layout_marginStart="5dp"/>
+                android:columnCount="2"
+                android:rowCount="2">
 
-            <TextView
-                android:id="@+id/txtAvailabilityUnitPrice"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:text="Unit price"
-                android:textSize="11sp"
-                android:layout_marginStart="5dp"/>
+                <TextView
+                    android:id="@+id/txtAvailabilityDateRange"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:text="Date range: "
+                    android:textSize="11sp"
+                    android:layout_marginStart="5dp"/>
+                <TextView
+                    android:id="@+id/txtAvailabilityCancel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:text="Cancel deadline: "
+                    android:textSize="11sp"
+                    android:layout_marginStart="5dp"/>
+
+                <TextView
+                    android:id="@+id/txtAvailabilityUnitPrice"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:text="Unit price: "
+                    android:textSize="11sp"
+                    android:layout_marginStart="5dp"/>
+                <TextView
+                    android:id="@+id/txtIsPricePerGuest"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:text="Is per guest price: "
+                    android:textSize="11sp"
+                    android:layout_marginStart="5dp"/>
+            </GridLayout>
+
 
             <Button
-                android:id="@+id/btnRemoveImage"
+                android:id="@+id/btnRemoveAvailability"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="remove"
                 android:layout_marginEnd="5dp"/>
-
-
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>

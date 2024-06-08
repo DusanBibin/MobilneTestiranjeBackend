@@ -23,6 +23,7 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.example.projekatmobilne.R;
+import com.example.projekatmobilne.activities.CreateAccommodationActivity;
 import com.example.projekatmobilne.adapters.AccommodationCard;
 import com.example.projekatmobilne.adapters.AccommodationSearchAdapter;
 import com.example.projekatmobilne.clients.ClientUtils;
@@ -325,12 +326,17 @@ public class HomeFragment extends Fragment {
                     String start = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date(selection.first));
                     String end = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date(selection.second));
                     String display = start + "  " + end;
-                    binding.dateRangeInputEditText.setText(display);
+
 
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
                     dateStart = LocalDate.parse(start, formatter);
+                    if(dateStart.equals(LocalDate.now()) || dateStart.isBefore(LocalDate.now())){
+                        Toast.makeText(getActivity(), "Start date needs to be in the future", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     dateEnd = LocalDate.parse(end,formatter);
+                    binding.dateRangeInputEditText.setText(display);
 
                 }
             });
