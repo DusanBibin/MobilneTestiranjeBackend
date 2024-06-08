@@ -1,7 +1,9 @@
 package com.example.projekatmobilne.activities;
 
+import static androidx.core.content.ContentProviderCompat.requireContext;
 import static com.example.projekatmobilne.databinding.ActivityCreateAccommodationBinding.inflate;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -10,6 +12,9 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +23,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -29,6 +35,7 @@ import com.example.projekatmobilne.adapters.ImagesAddAdapter;
 import com.example.projekatmobilne.adapters.ReviewsAdapter;
 import com.example.projekatmobilne.databinding.ActivityCreateAccommodationBinding;
 import com.example.projekatmobilne.tools.ImageUtils;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -47,6 +54,10 @@ public class CreateAccommodationActivity extends AppCompatActivity {
     private ActivityResultLauncher<Intent> pickImageLauncher;
     private Uri selectedImage;
     private ImagesAddAdapter imagesAddAdapter;
+    private Dialog addAvailabilityDialog;
+    private TextInputLayout dateRangeInput, cancelDeadlineInput, priceInput;
+    private EditText dateRangeEdit, cancelDeadlineEdit, priceEdit;
+    private CheckBox checkBoxIsPerGuest;
     List<MultipartBody.Part> images = new ArrayList<>();
 
     @Override
@@ -61,7 +72,7 @@ public class CreateAccommodationActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        LayoutInflater inflater = LayoutInflater.from(CreateAccommodationActivity.this);
+        //LayoutInflater inflater = LayoutInflater.from(CreateAccommodationActivity.this);
 
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(CreateAccommodationActivity.this);
@@ -71,17 +82,11 @@ public class CreateAccommodationActivity extends AppCompatActivity {
         binding.recyclerViewImages.setAdapter(imagesAddAdapter);
 
 
-
+        setupAddAvailabilityDialog();
         pickImageLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-//                        selectedImage = result.getData().getData();
-//                        View view = inflater.inflate(R.layout.image_add, binding.linearLayout, false);
-//
-//                        TextView imageName = view.findViewById(R.id.imageName);
-//                        imageName.setText(getImageName(selectedImage));
-//                        binding.linearLayout.addView(view);
 
                         Uri imageUri = result.getData().getData();
                         String filePath = ImageUtils.getFileNameFromPart(imageUri, getContentResolver());
@@ -89,14 +94,9 @@ public class CreateAccommodationActivity extends AppCompatActivity {
                         RequestBody requestFile = RequestBody.create(MediaType.parse(getContentResolver().getType(imageUri)), file);
                         MultipartBody.Part body = MultipartBody.Part.createFormData("image", file.getName(), requestFile);
 
-
                         images.add(body);
                         imagesAddAdapter.notifyItemInserted(images.size() - 1);
-//                        View view = inflater.inflate(R.layout.image_add, binding.linearLayout, false);
-//                        TextView imageName = view.findViewById(R.id.imageName);
-//                        imageName.setText(getImageName(imageUri));
-//                        binding.linearLayout.addView(view);
-                        System.out.println(images.size());
+                        
                     }
                 });
 
@@ -112,8 +112,61 @@ public class CreateAccommodationActivity extends AppCompatActivity {
                 }
             }
         });
+
+        binding.btnAddAvailability.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addAvailabilityDialog.show();
+            }
+        });
     }
 
+
+
+    private void setupAddAvailabilityDialog(){
+        addAvailabilityDialog = new Dialog(this);
+        addAvailabilityDialog.setContentView(R.layout.custom_dialog_availability);
+        addAvailabilityDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        addAvailabilityDialog.getWindow().setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.custom_dialog_bg));
+        
+        dateRangeEdit = addAvailabilityDialog.findViewById(R.id.inputEditTextDateRange);
+        cancelDeadlineEdit = addAvailabilityDialog.findViewById(R.id.inputEditTextDateCancel);
+        priceEdit = addAvailabilityDialog.findViewById(R.id.inputEditTextPricePerGuest);
+        dateRangeInput = addAvailabilityDialog.findViewById(R.id.inputLayoutDateRange);
+        cancelDeadlineInput = addAvailabilityDialog.findViewById(R.id.inputLayoutDateCancel);
+        priceInput = addAvailabilityDialog.findViewById(R.id.inputLayoutPricePerGuest);
+
+        checkBoxIsPerGuest = addAvailabilityDialog.findViewById(R.id.checkBoxIsPerGuest);
+
+
+        addAvailabilityDialog.findViewById(R.id.btnCancelInfo).setOnClickListener(v -> {
+            addAvailabilityDialog.dismiss();
+        });
+
+        addAvailabilityDialog.findViewById(R.id.btnConfirmInfo).setOnClickListener(v -> {
+
+            dateRangeInput.setError(null);
+            cancelDeadlineInput.setError(null);
+            priceInput.setError(null);
+
+            boolean isValid = true;
+            if (dateRangeEdit.getText().toString().isEmpty()) {
+                dateRangeInput.setError("This field cannot be empty");
+                isValid = false;
+            }
+            if (priceEdit.getText().toString().isEmpty()) {
+                priceInput.setError("This field cannot be empty");
+                isValid = false;
+            }
+            if (cancelDeadlineEdit.getText().toString().isEmpty()) {
+                cancelDeadlineInput.setError("This field cannot be empty");
+                isValid = false;
+            }
+
+
+            if (!isValid) return;
+        });
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {

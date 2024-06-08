@@ -59,7 +59,20 @@
                 android:nestedScrollingEnabled="false">
             </androidx.recyclerview.widget.RecyclerView>
 
+            <Button
+                android:id="@+id/btnAddAvailability"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="add availability"/>
 
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/recyclerViewAvailabilities"
+                android:scrollbars="vertical"
+                android:nestedScrollingEnabled="false">
+            </androidx.recyclerview.widget.RecyclerView>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

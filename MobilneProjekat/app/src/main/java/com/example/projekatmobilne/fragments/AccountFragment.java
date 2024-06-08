@@ -63,10 +63,7 @@ public class AccountFragment extends Fragment {
     private TextInputLayout newEmailInput;
 
     private FragmentAccountBinding binding;
-    private Dialog changeDetailsDialog;
-    private Dialog changePasswordDialog;
-    private Dialog deleteAccountDialog;
-    private Dialog confirmCodeDialog;
+    private Dialog changeDetailsDialog, changePasswordDialog, deleteAccountDialog, confirmCodeDialog;
     private UserDTOResponse data;
     public AccountFragment() {
 
