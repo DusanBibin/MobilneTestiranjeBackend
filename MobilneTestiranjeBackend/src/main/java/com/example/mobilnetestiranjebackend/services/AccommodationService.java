@@ -85,6 +85,8 @@ public class AccommodationService {
         List<Accommodation> temp1 = accommodationRepository.searchAccommodations(guestNum, address,
                 startDate, endDate, accommodationType, minPrice, maxPrice, daysBetween);
 
+
+        System.out.println("VELICINA OVE LISTE JE: " + temp1.size());
         List<Accommodation> temp2 = new ArrayList<>();
 
         //PROVERA AMENITIES DA LI SU SVI TU
@@ -99,28 +101,92 @@ public class AccommodationService {
 
         List<Accommodation> foundAccommodations = new ArrayList<>();
 
+
         Map<Long, Availability> map = new HashMap<Long, Availability>();
+        Map<Long, LocalDate> mapStartDates = new HashMap<>();
+        Map<Long, LocalDate> mapEndDates = new HashMap<>();
         //PROVERA REZERVACIJA DA LI SE NEKE POKLAPAJU
         for(Accommodation a: temp2){
 
-            boolean availabilityFree = false;
+
             List<Availability> availabilities = availabilityRepository.findAllByAccommodationId(a.getId());
+            System.out.println("IMAMO OVOLIKO AVAILABILITIJEA: " + availabilities.size());
             for(Availability av: availabilities){
-                if(startDate.compareTo(av.getStartDate()) >= 0 && startDate.compareTo(av.getEndDate()) <= 0 && endDate.compareTo(av.getStartDate()) >=0 && endDate.compareTo(av.getEndDate()) <= 0){
-                    List<Reservation> conflictedReservations = reservationRepository.findAcceptedReservationsInConflict(startDate, endDate, a.getId(), av.getId());
-                    if(conflictedReservations.isEmpty()) {availabilityFree = true; map.put(a.getId(), av); break;}
+                boolean available = true;
+                System.out.println("AV START: " + av.getStartDate());
+                System.out.println("AV END: " + av.getEndDate());
+                LocalDate pomStartDate = startDate;
+                LocalDate pomEndDate = endDate;
+
+                if(startDate.compareTo(av.getStartDate()) >=0 && startDate.compareTo(av.getEndDate()) <=0 && endDate.compareTo(av.getEndDate()) > 0){
+                    pomEndDate = av.getEndDate();
+                    System.out.println("USLI SMO OVDEE 1");
+                }else if(endDate.compareTo(av.getStartDate()) >=0 && endDate.compareTo(av.getEndDate()) <=0 && startDate.compareTo(av.getStartDate()) < 0){
+                    pomStartDate = av.getStartDate();
+                    System.out.println("USLI SMO OVDEE 2");
+                }else if(startDate.compareTo(av.getStartDate()) < 0 && endDate.compareTo(av.getEndDate()) > 0){
+                    pomStartDate = av.getStartDate();
+                    pomEndDate = av.getEndDate();
+                    System.out.println("USLI SMO OVDEE 3");
+                }else if(startDate.compareTo(av.getStartDate()) >= 0 && endDate.compareTo(av.getEndDate()) <=0){
+                    System.out.println("USLI SMO OVDEE 4");
+                }else continue;
+
+                List<Reservation> conflictedReservations = reservationRepository.findAcceptedReservationsInConflict(pomStartDate, pomEndDate, a.getId(), av.getId());
+                for(Reservation r: conflictedReservations){
+                    if(pomStartDate.compareTo(r.getReservationStartDate()) >=0 && pomStartDate.compareTo(r.getReservationEndDate()) <=0 && pomEndDate.compareTo(r.getReservationEndDate()) > 0){
+                        pomStartDate = r.getReservationEndDate().plusDays(1);
+                        System.out.println("USLI SMO OVDEE 12");
+                    }else if(pomEndDate.compareTo(r.getReservationStartDate()) >=0 && pomEndDate.compareTo(r.getReservationEndDate()) <=0 && pomStartDate.compareTo(r.getReservationStartDate()) < 0){
+                        pomEndDate = r.getReservationStartDate().minusDays(1);
+                        System.out.println("USLI SMO OVDEE 22");
+                    }else if(pomStartDate.compareTo(r.getReservationStartDate()) < 0 && pomEndDate.compareTo(r.getReservationEndDate()) > 0){
+                        pomEndDate = r.getReservationStartDate().minusDays(1);
+                        System.out.println("USLI SMO OVDEE 32");
+                    }else{
+                        available = false;
+                        break;
+                    }
                 }
+
+                if(available){
+                    mapStartDates.put(a.getId(), pomStartDate);
+                    mapEndDates.put(a.getId(), pomEndDate);
+                    map.put(a.getId(), av);
+                    foundAccommodations.add(a);
+                    break;
+                }
+
+//                if( !(pomStartDate.isEqual(av.getEndDate()) || pomEndDate.isEqual(av.getStartDate())) ){
+//                    mapStartDates.put(a.getId(), pomStartDate);
+//                    mapEndDates.put(a.getId(), pomEndDate);
+//                    map.put(a.getId(), av);
+//                    availabilityFree = true;
+//                    break;
+//                }
             }
-            if(availabilityFree) foundAccommodations.add(a);
         }
 
         List<AccommodationSearchDTO> convertedList = new ArrayList<>(foundAccommodations.stream().map(a -> {
             Availability av = map.get(a.getId());
-
+            LocalDate startCorrected = mapStartDates.get(a.getId());
+            LocalDate endCorrected = mapEndDates.get(a.getId());
+            System.out.println(startCorrected);
+            System.out.println(endCorrected);
             Long totalPrice = 0L;
 
-            if (av.getPricePerGuest()) totalPrice = daysBetween * av.getPrice() * guestNum;
-            else totalPrice = daysBetween * av.getPrice();
+
+
+            Long days = ChronoUnit.DAYS.between(startCorrected, endCorrected) + 1;
+
+            System.out.println("BROJ DANA JE : " + days);
+//            Long days = daysBetween;
+//            Long daysBetweenAvailability = ChronoUnit.DAYS.between(av.getStartDate(), av.getEndDate()) + 1;
+//            if(daysBetween > daysBetweenAvailability) days = daysBetweenAvailability;
+
+
+            if (av.getPricePerGuest()) totalPrice = days * av.getPrice() * guestNum;
+            else totalPrice = days * av.getPrice();
 
             List<AccommodationReview> accommodationsRatings = accommodationReviewRepository.findByAccommodationId(a.getId());
 
@@ -142,6 +208,8 @@ public class AccommodationService {
             dto.setMaxGuests(a.getMaxGuests());
             dto.setAccommodationType(a.getAccommodationType());
             dto.setRating(ratingAvg);
+            dto.setDateStart(startCorrected);
+            dto.setDateEnd(endCorrected);
 
             return dto;
         }).toList());

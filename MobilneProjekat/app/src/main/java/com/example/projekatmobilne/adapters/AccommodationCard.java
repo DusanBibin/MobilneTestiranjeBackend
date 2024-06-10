@@ -18,7 +18,7 @@ public class AccommodationCard implements Serializable {
     private Double rating;
     private String amenities;
     private String guests;
-
+    private String dateRange;
     private Long accommodationId;
 
 
@@ -32,7 +32,7 @@ public class AccommodationCard implements Serializable {
 
     public AccommodationCard(String address, String guests, String type,
                              String isPerPerson, String oneNightPrice, String totalPrice, String name,
-                             String amenities, Double rating, Long accommodationId) {
+                             String amenities, Double rating, Long accommodationId, String dateRange) {
         this.address = address;
         this.guests = guests;
         this.type = type;
@@ -43,6 +43,15 @@ public class AccommodationCard implements Serializable {
         this.amenities = amenities;
         this.rating = rating;
         this.accommodationId = accommodationId;
+        this.dateRange = dateRange;
+    }
+
+    public String getDateRange() {
+        return dateRange;
+    }
+
+    public void setDateRange(String dateRange) {
+        this.dateRange = dateRange;
     }
 
     public Bitmap getImageBitmap() {

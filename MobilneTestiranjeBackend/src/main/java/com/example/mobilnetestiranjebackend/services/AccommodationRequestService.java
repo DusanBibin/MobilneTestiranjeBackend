@@ -67,7 +67,7 @@ public class AccommodationRequestService {
 
                 if(!(startDate1.isBefore(startDate2) && endDate1.isBefore(startDate2) ||
                         startDate1.isAfter(endDate2) && endDate1.isAfter(endDate2))){
-                    throw new InvalidDateException("Availability with start date " + startDate1 + " and end date " + endDate1 + " interlaps with availability" +
+                    throw new InvalidDateException("Availability with start date " + startDate1 + " and end date " + endDate1 + " interlaces with availability" +
                             " with start date " + startDate2 + " and end date " + endDate2);
                 }
             }

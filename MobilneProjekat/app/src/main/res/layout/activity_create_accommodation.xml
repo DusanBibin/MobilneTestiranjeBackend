@@ -40,39 +40,321 @@
 
 
         <LinearLayout
-            android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <Button
-                android:id="@+id/btnAddImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="add image"/>
 
-
-            <androidx.recyclerview.widget.RecyclerView
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/recyclerViewImages"
-                android:scrollbars="vertical"
-                android:nestedScrollingEnabled="false">
-            </androidx.recyclerview.widget.RecyclerView>
-
-            <Button
-                android:id="@+id/btnAddAvailability"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="add availability"/>
+                app:cardElevation="8dp"
+                app:cardCornerRadius="16dp"
+                app:cardUseCompatPadding="true">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="10dp">
+                    <TextView
+                        android:textSize="20sp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:text="Accommodation Details"/>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:id="@+id/inputLayoutAccommodationName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Name of accommodation"
+                        app:errorEnabled="true"
+                        app:endIconMode="clear_text">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/inputEditTextAccommodationName"
+                            android:inputType="text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:id="@+id/inputLayoutDetails"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Details"
+                        app:errorEnabled="true"
+                        app:endIconMode="clear_text">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/inputEditTextDetails"
+                            android:inputType="textMultiLine"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:lines="4"
+                            />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:id="@+id/inputLayoutMinGuests"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="5dp"
+                            android:hint="Minimum guests"
+                            app:errorEnabled="true"
+                            app:endIconMode="clear_text">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/inputEditTextMinGuests"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="number" />
+                        </com.google.android.material.textfield.TextInputLayout>
 
 
-            <androidx.recyclerview.widget.RecyclerView
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:id="@+id/inputLayoutMaxGuests"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="5dp"
+                            android:hint="Maximum guests"
+                            app:errorEnabled="true"
+                            app:endIconMode="clear_text">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/inputEditTextMaxGuests"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="number" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/recyclerViewAvailabilities"
-                android:scrollbars="vertical"
-                android:nestedScrollingEnabled="false">
-            </androidx.recyclerview.widget.RecyclerView>
+                android:layout_height="wrap_content"
+                app:cardElevation="8dp"
+                app:cardCornerRadius="16dp"
+                app:cardUseCompatPadding="true">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="10dp">
+                    <RadioGroup
+                        android:id="@+id/radioGroupType"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:textSize="20sp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            android:text="Accommodation Type"/>
+                        <RadioButton
+                            android:id="@+id/radioButtonStudio"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Studio"/>
+                        <RadioButton
+                            android:id="@+id/radioButtonRoom"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Room"/>
+                        <RadioButton
+                            android:id="@+id/radioButtonApartment"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Apartment"/>
+                    </RadioGroup>
+
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="8dp"
+            app:cardCornerRadius="16dp"
+            app:cardUseCompatPadding="true">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp">
+                <TextView
+                    android:textSize="20sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:text="Accommodation Amenities"/>
+                <CheckBox
+                    android:id="@+id/checkBoxWifi"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="WIFI"/>
+                <CheckBox
+                    android:id="@+id/checkBoxPool"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Pool"/>
+                <CheckBox
+                    android:id="@+id/checkBoxAC"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="AC"/>
+                <CheckBox
+                    android:id="@+id/checkBoxParking"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Parking"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardElevation="8dp"
+                app:cardCornerRadius="16dp"
+                app:cardUseCompatPadding="true">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="10dp">
+                    <TextView
+                        android:textSize="20sp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Accommodation location"
+                        android:layout_marginBottom="10dp"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="10dp">
+
+                        <androidx.appcompat.widget.SearchView
+                            android:id="@+id/searchAccommodations"
+                            app:queryHint="Search"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="10dp"
+                            android:background="@drawable/border_background"
+                            android:hint="Search accommodations"
+                            app:iconifiedByDefault="false"
+                            />
+
+                        <Button
+                            android:id="@+id/btnSearch"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Search"/>
+                    </LinearLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/map_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp">
+                        <fragment
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="-100dp"
+                            android:layout_marginBottom="-100dp"
+                            android:name="com.google.android.gms.maps.SupportMapFragment"/>
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@color/transparent" />
+                    </RelativeLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="8dp"
+            app:cardCornerRadius="16dp"
+            app:cardUseCompatPadding="true">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp">
+                <TextView
+                    android:textSize="20sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Accommodation Images"
+                    android:layout_marginBottom="10dp"/>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/recyclerViewImages"
+                    android:scrollbars="vertical"
+                    android:nestedScrollingEnabled="false">
+                </androidx.recyclerview.widget.RecyclerView>
+
+                <Button
+                    android:id="@+id/btnAddImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="add image"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+
+
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="8dp"
+            app:cardCornerRadius="16dp"
+            app:cardUseCompatPadding="true">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp">
+                <TextView
+                    android:textSize="20sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Accommodation Availabilities"
+                    android:layout_marginBottom="10dp">
+                </TextView>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/recyclerViewAvailabilities"
+                    android:scrollbars="vertical"
+                    android:nestedScrollingEnabled="false">
+                </androidx.recyclerview.widget.RecyclerView>
+
+                <Button
+                    android:id="@+id/btnAddAvailability"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="add availability"/>
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

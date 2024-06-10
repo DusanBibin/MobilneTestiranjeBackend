@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -26,4 +27,6 @@ public class AccommodationSearchDTO {
     private Long maxGuests;
     private AccommodationType accommodationType;
     private Double rating;
+    private LocalDate dateStart;
+    private LocalDate dateEnd;
 }

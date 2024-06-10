@@ -53,6 +53,7 @@ public class AccommodationSearchAdapter extends RecyclerView.Adapter<Accommodati
         holder.txtTotalPrice.setText(dataList.get(position).getTotalPrice().toString());
         holder.txtIsPerPerson.setText(dataList.get(position).getPerPerson().toString());
         holder.txtAmenities.setText(dataList.get(position).getAmenities());
+        holder.txtDateRange.setText(dataList.get(position).getDateRange());
 
         Double rating = dataList.get(position).getRating();
         if(rating == 0){
@@ -90,7 +91,7 @@ public class AccommodationSearchAdapter extends RecyclerView.Adapter<Accommodati
 class AccommodationSearchViewHolder extends RecyclerView.ViewHolder{
 
     ImageView imageView;
-    TextView txtName, txtAddress, txtGuests, txtType, txtIsPerPerson, txtOneNightPrice, txtTotalPrice, txtNoRatings, txtAmenities;
+    TextView txtName, txtAddress, txtGuests, txtType, txtIsPerPerson, txtOneNightPrice, txtTotalPrice, txtNoRatings, txtAmenities, txtDateRange;
     RatingBar ratingBar;
 
     CardView cardView;
@@ -109,6 +110,7 @@ class AccommodationSearchViewHolder extends RecyclerView.ViewHolder{
         txtTotalPrice = itemView.findViewById(R.id.txtTotalPrice);
         ratingBar = itemView.findViewById(R.id.ratingBar);
         cardView = itemView.findViewById(R.id.recCard);
+        txtDateRange = itemView.findViewById(R.id.txtDateRange);
         txtNoRatings = itemView.findViewById(R.id.txtNoRatings);
         txtAmenities = itemView.findViewById(R.id.txtAmenities);
 

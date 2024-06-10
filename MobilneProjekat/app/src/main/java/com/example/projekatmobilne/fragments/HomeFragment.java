@@ -35,6 +35,8 @@ import com.example.projekatmobilne.model.paging.PagingDTOs.PagedSearchDTORespons
 import com.example.projekatmobilne.model.paging.PagingDTOs.PagedSearchDTOResponse;
 import com.example.projekatmobilne.tools.ResponseParser;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.datepicker.CalendarConstraints;
+import com.google.android.material.datepicker.DateValidatorPointForward;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.textfield.TextInputEditText;
@@ -47,6 +49,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -61,16 +64,16 @@ import retrofit2.Response;
 public class HomeFragment extends Fragment {
 
    private FragmentHomeBinding binding;
-   private LocalDate dateStart, dateEnd;
+   private LocalDate dateStart = LocalDate.now().plusDays(1), dateEnd = LocalDate.now().plusYears(1);
 
-   private List<AccommodationCard> dataList;
+   private List<AccommodationCard> dataList = new ArrayList<>();
 
    private AccommodationSearchAdapter adapter;
 
    private AccommodationCard androidData;
 
    private TextInputEditText editTextMaxValue, editTextMinValue;
-   private AccommodationType type;
+   private AccommodationType type = null;
    private View dialogView;
 
    private String  sortType = "Price";
@@ -144,11 +147,22 @@ public class HomeFragment extends Fragment {
             bottomSheetDialog.show();
         });
 
+        //initial search
 
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 1);
+        binding.recyclerView.setLayoutManager(gridLayoutManager);
+
+        adapter = new AccommodationSearchAdapter(getActivity(), dataList);
+        binding.recyclerView.setAdapter(adapter);
+        loadPage();
     }
 
     private void loadPage() {
-        Long guestNum = Long.valueOf(binding.guestNumberInputEditText.getText().toString());
+        Long guestNum;
+
+        if(binding.guestNumberInputEditText.getText().toString().equals("")) guestNum = 1L;
+        else guestNum = Long.valueOf(binding.guestNumberInputEditText.getText().toString());
+
         String search = binding.searchAccommodations.getQuery().toString();
 
         Long maxValue = null;
@@ -181,15 +195,19 @@ public class HomeFragment extends Fragment {
                             if(i != a.getAmenities().size() - 1) amenities.append(a.getAmenities().get(i)).append(", ");
                             else amenities.append(a.getAmenities().get(i));
                         }
+
+                        System.out.println(a.getDateStart());
+                        System.out.println(a.getDateEnd());
                         String guests = "Possible guests: " + a.getMinGuests() + "-" +  a.getMaxGuests();
                         String type = "Type: " + a.getAccommodationType().toString();
                         String isPerPerson = "Is price per person:" + a.getPerPerson();
                         String oneNightPrice = "One night price: " + a.getOneNightPrice();
                         String totalPrice = "Total price: " + a.getTotalPrice();
+                        String dateRange = "Date range:" + a.getDateStart() + " " + a.getDateEnd();
                         AccommodationCard ac = new AccommodationCard(a.getAddress(),
                                 guests,
                                 type, isPerPerson, oneNightPrice,
-                                totalPrice, a.getName(), amenities.toString(), a.getRating(), a.getAccommodationId());
+                                totalPrice, a.getName(), amenities.toString(), a.getRating(), a.getAccommodationId(), dateRange);
                         dataList.add(ac);
 
 
@@ -315,10 +333,17 @@ public class HomeFragment extends Fragment {
         binding.guestNumberInputEditText.setError(null);
         binding.dateRangeInputLayout.setError(null);
         binding.dateRangeInputEditText.setOnClickListener(v -> {
+
+            final Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+
+            CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder().setValidator(DateValidatorPointForward.from(calendar.getTimeInMillis()));
+            CalendarConstraints constraints = constraintsBuilder.build();
+
             MaterialDatePicker<Pair<Long, Long>> materialDatePicker = MaterialDatePicker.Builder.dateRangePicker().setSelection(new Pair<>(
-                    MaterialDatePicker.thisMonthInUtcMilliseconds(),
-                    MaterialDatePicker.todayInUtcMilliseconds()
-            )).build();
+                    null,
+                    null
+            )).setCalendarConstraints(constraints).build();
 
             materialDatePicker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>>() {
                 @Override

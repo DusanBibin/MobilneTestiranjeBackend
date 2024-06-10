@@ -76,6 +76,11 @@
                     android:layout_height="wrap_content"
                     android:text="One night price:"/>
 
+                <TextView
+                    android:id="@+id/txtDateRange"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Date range:"/>
 
                 <TextView
                     android:id="@+id/txtTotalPrice"

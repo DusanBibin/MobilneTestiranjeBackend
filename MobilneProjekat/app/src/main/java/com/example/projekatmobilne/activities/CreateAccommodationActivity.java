@@ -31,6 +31,9 @@ import com.example.projekatmobilne.adapters.ImagesAddAdapter;
 import com.example.projekatmobilne.databinding.ActivityCreateAccommodationBinding;
 import com.example.projekatmobilne.model.requestDTO.AvailabilityDTO;
 import com.example.projekatmobilne.tools.ImageUtils;
+import com.google.android.material.datepicker.CalendarConstraints;
+import com.google.android.material.datepicker.DateValidatorPointBackward;
+import com.google.android.material.datepicker.DateValidatorPointForward;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.textfield.TextInputLayout;
@@ -38,8 +41,10 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -118,7 +123,7 @@ public class CreateAccommodationActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if(imagesList.size() == 10) Toast.makeText(CreateAccommodationActivity.this, "You can only upload 10 images", Toast.LENGTH_SHORT).show();
+                if(imagesList.size() == 5) Toast.makeText(CreateAccommodationActivity.this, "You can only upload 5 images", Toast.LENGTH_SHORT).show();
                 else {
                     Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                     pickImageLauncher.launch(intent);
@@ -146,10 +151,18 @@ public class CreateAccommodationActivity extends AppCompatActivity {
 
     private void setupDateRangePicker() {
         dateRangeEdit.setOnClickListener(v -> {
+
+            final Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+
+            CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder().setValidator(DateValidatorPointForward.from(calendar.getTimeInMillis()));
+            CalendarConstraints constraints = constraintsBuilder.build();
+
             MaterialDatePicker<Pair<Long, Long>> materialDatePicker = MaterialDatePicker.Builder.dateRangePicker().setSelection(new Pair<>(
-                    MaterialDatePicker.thisMonthInUtcMilliseconds(),
-                    MaterialDatePicker.todayInUtcMilliseconds()
-            )).build();
+                    null,
+                    null
+            )).setCalendarConstraints(constraints).build();
+
 
             materialDatePicker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>>() {
                 @Override
@@ -213,8 +226,28 @@ public class CreateAccommodationActivity extends AppCompatActivity {
                 cancelDeadlineInput.setError("This field cannot be empty");
                 isValid = false;
             }
+            for(AvailabilityDTO a: availabilitiesList){
+                if((dateStart.isAfter(a.getStartDate()) && dateStart.isBefore(a.getEndDate()))
+                        || dateStart.isEqual(a.getStartDate()) || dateStart.isEqual(a.getEndDate())){
+                    isValid = false;
+                    Toast.makeText(CreateAccommodationActivity.this, "Date range interferes with existing availability", Toast.LENGTH_SHORT).show();
+                }
+                if((dateEnd.isAfter(a.getStartDate()) && dateEnd.isBefore(a.getEndDate()))
+                        || dateEnd.isEqual(a.getStartDate()) || dateEnd.isEqual(a.getEndDate())){
+                    isValid = false;
+                    Toast.makeText(CreateAccommodationActivity.this, "Date range interferes with existing availability", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            if(!dateCancel.isBefore(dateStart)){
+                isValid = false;
+                Toast.makeText(CreateAccommodationActivity.this, "Cancellation date must be before start date", Toast.LENGTH_SHORT).show();
+            }
 
             if (!isValid) return;
+
+
+
 
             AvailabilityDTO availabilityDTO = new AvailabilityDTO();
             availabilityDTO.setPrice(Long.parseLong(priceEdit.getText().toString()));
@@ -233,11 +266,15 @@ public class CreateAccommodationActivity extends AppCompatActivity {
             DatePickerDialog dialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
                 @Override
                 public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                    String date = dayOfMonth + "-" + month + " " + year;
-                    dateCancel = LocalDate.of(year, month, dayOfMonth);
+                    String date = dayOfMonth + "-" + (month+1) + "-" + year;
+                    dateCancel = LocalDate.of(year, month+1, dayOfMonth);
                     cancelDeadlineEdit.setText(date);
                 }
-            }, LocalDate.now().getYear(), LocalDate.now().getMonthValue(), LocalDate.now().getDayOfMonth());
+            }, LocalDate.now().getYear(), LocalDate.now().getMonthValue() - 1, LocalDate.now().getDayOfMonth());
+
+            final Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+            dialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
             dialog.show();
         });
     }

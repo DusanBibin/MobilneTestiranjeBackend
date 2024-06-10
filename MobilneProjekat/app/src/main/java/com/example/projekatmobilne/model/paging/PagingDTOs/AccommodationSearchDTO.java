@@ -5,13 +5,15 @@ import android.graphics.Bitmap;
 import com.example.projekatmobilne.model.Enum.AccommodationType;
 import com.example.projekatmobilne.model.Enum.Amenity;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class AccommodationSearchDTO {
     public AccommodationSearchDTO(Long accommodationId, String name, String address,
                                   List<Amenity> amenities, Long totalPrice, Long oneNightPrice,
                                   Boolean isPerPerson, Long minGuests, Long maxGuests,
-                                  AccommodationType accommodationType, Double rating) {
+                                  AccommodationType accommodationType, Double rating,
+                                  LocalDate dateEnd, LocalDate dateStart) {
         this.accommodationId = accommodationId;
         this.name = name;
         this.address = address;
@@ -23,6 +25,24 @@ public class AccommodationSearchDTO {
         this.maxGuests = maxGuests;
         this.accommodationType = accommodationType;
         this.rating = rating;
+        this.dateEnd = dateEnd;
+        this.dateStart = dateStart;
+    }
+
+    public LocalDate getDateStart() {
+        return dateStart;
+    }
+
+    public void setDateStart(LocalDate dateStart) {
+        this.dateStart = dateStart;
+    }
+
+    public LocalDate getDateEnd() {
+        return dateEnd;
+    }
+
+    public void setDateEnd(LocalDate dateEnd) {
+        this.dateEnd = dateEnd;
     }
 
     public AccommodationSearchDTO(){}
@@ -30,19 +50,23 @@ public class AccommodationSearchDTO {
     @Override
     public String toString() {
         return "AccommodationSearchDTO{" +
-                "accommodationId=" + accommodationId +
+                "imageBitmap=" + imageBitmap +
                 ", name='" + name + '\'' +
                 ", address='" + address + '\'' +
-                ", amenities=" + amenities +
-                ", totalPrice=" + totalPrice +
-                ", oneNightPrice=" + oneNightPrice +
+                ", accommodationType=" + accommodationType +
                 ", isPerPerson=" + isPerPerson +
+                ", oneNightPrice=" + oneNightPrice +
+                ", totalPrice=" + totalPrice +
+                ", rating=" + rating +
+                ", dateStart=" + dateStart +
+                ", dateEnd=" + dateEnd +
+                ", amenities=" + amenities +
                 ", minGuests=" + minGuests +
                 ", maxGuests=" + maxGuests +
-                ", accommodationType='" + accommodationType + '\'' +
-                ", rating=" + rating +
+                ", accommodationId=" + accommodationId +
                 '}';
     }
+
     private Bitmap imageBitmap;
     private String name;
     private String address;
@@ -51,12 +75,11 @@ public class AccommodationSearchDTO {
     private Long oneNightPrice;
     private Long totalPrice;
     private Double rating;
+    private LocalDate dateStart;
+    private LocalDate dateEnd;
     private List<Amenity> amenities;
     private Long minGuests;
     private Long maxGuests;
-
-
-
     private Long accommodationId;
 
 

@@ -27,8 +27,8 @@ public interface AccommodationRepository extends JpaRepository<Accommodation, Lo
 
     @Query("select distinct a from Accommodation a join Availability av join a.amenities am where ((:guestNum between a.minGuests and a.maxGuests) and" +
             " (lower(a.address) like LOWER(CONCAT('%', :address, '%'))) and" +
-            " (:startDate between av.startDate and av.endDate) and" +
-            " (:endDate between av.startDate and av.endDate) and" +
+            " ((:startDate between av.startDate and av.endDate) or (:endDate between av.startDate and av.endDate)" +
+            "  or (:startDate < av.startDate and :endDate > av.endDate)) and" +
             " (:accommodationType is null or a.accommodationType = :accommodationType) and" +
             " (:minPrice is null or " +
             "     (case when av.pricePerGuest = true then :daysBetween * av.price * :guestNum else :daysBetween * av.price end) >= :minPrice) and" +

@@ -368,7 +368,7 @@ private final UserRepository userRepository;
         accommodationReview = accommodationReviewRepository.save(accommodationReview);
 
 
-        thirtyMore();
+        //thirtyMore();
 
         //thirtyMoreReviews(ownerDusan, guestDusan1, reservationOld, accommodation);
     }
@@ -409,7 +409,8 @@ private final UserRepository userRepository;
                     .lon(90.0)
                     .amenities(List.of(Amenity.WIFI, Amenity.AC))
                     .imagePaths(List.of("/dusanbibin2@gmail.com/NewAcc/1_new_room.jpg",
-                            "/dusanbibin2@gmail.com/NewAcc/2_new_room.jpg"))
+                            "/dusanbibin2@gmail.com/NewAcc/2_new_room.jpg", "/dusanbibin2@gmail.com/NewAcc/3_new_room.jpg",
+                            "/dusanbibin2@gmail.com/NewAcc/4_new_room.jpg", "/dusanbibin2@gmail.com/NewAcc/5_new_room.jpg"))
                     .minGuests(1L)
                     .maxGuests(10L)
                     .accommodationType(AccommodationType.valueOf("STUDIO"))
