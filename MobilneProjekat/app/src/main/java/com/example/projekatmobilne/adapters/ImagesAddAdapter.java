@@ -15,6 +15,7 @@ import com.example.projekatmobilne.R;
 import com.example.projekatmobilne.model.responseDTO.ReviewDTOResponse;
 import com.example.projekatmobilne.tools.ImageUtils;
 
+import java.io.File;
 import java.util.List;
 
 import okhttp3.MultipartBody;
@@ -22,14 +23,14 @@ import okhttp3.MultipartBody;
 public class ImagesAddAdapter extends RecyclerView.Adapter<ImageAddHolder> {
 
     private Context context;
-    private List<MultipartBody.Part> dataList;
+    private List<File> dataList;
 
-    public void setSearchList(List<MultipartBody.Part> dataSearchList){
+    public void setSearchList(List<File> dataSearchList){
         this.dataList = dataSearchList;
         notifyDataSetChanged();
     }
 
-    public ImagesAddAdapter(Context context, List<MultipartBody.Part> dataList){
+    public ImagesAddAdapter(Context context, List<File> dataList){
         this.context = context;
         this.dataList = dataList;
     }
@@ -43,7 +44,7 @@ public class ImagesAddAdapter extends RecyclerView.Adapter<ImageAddHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ImageAddHolder holder, int position) {
-        holder.txtImageName.setText(ImageUtils.getFileNameFromPart(dataList.get(position)));
+        holder.txtImageName.setText(dataList.get(position).getName());
 
         holder.btnRemove.setOnClickListener(new View.OnClickListener() {
             @Override

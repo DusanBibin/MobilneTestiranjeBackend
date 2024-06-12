@@ -1,6 +1,7 @@
 package com.example.projekatmobilne.clients;
 
 
+import com.example.projekatmobilne.model.requestDTO.AccommodationDTO;
 import com.example.projekatmobilne.model.requestDTO.AuthenticationRequestDTO;
 import com.example.projekatmobilne.model.requestDTO.ChangePasswordDTO;
 import com.example.projekatmobilne.model.Enum.AccommodationType;
@@ -11,14 +12,17 @@ import com.example.projekatmobilne.model.requestDTO.UserDTO;
 import java.time.LocalDate;
 import java.util.List;
 
+import okhttp3.MultipartBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -137,4 +141,11 @@ public interface ApiService {
     Call<ResponseBody> getReviews(@Path("accommodationId") Long accommodationId,
                                   @Query("pageNo") int pageNo,
                                   @Query("pageSize") int pageSize);
+
+    @Multipart
+    @POST("accommodation-requests")
+    Call<ResponseBody> createNewAccommodationRequest(@Part("accommodationDTO") AccommodationDTO accommodationDTO,
+                                                     @Part List<MultipartBody.Part> images);
+
+
 }

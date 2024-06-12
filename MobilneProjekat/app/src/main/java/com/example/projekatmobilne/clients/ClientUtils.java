@@ -2,6 +2,9 @@ package com.example.projekatmobilne.clients;
 
 import com.example.projekatmobilne.BuildConfig;
 import com.example.projekatmobilne.tools.CustomInterceptor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.util.concurrent.TimeUnit;
 
@@ -9,6 +12,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.jackson.JacksonConverterFactory;
 
 public class ClientUtils {
 
@@ -36,12 +40,18 @@ public class ClientUtils {
         return client;
     }
 
+    private static ObjectMapper getObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        return mapper;
+    }
     /*
      * Prvo je potrebno da definisemo retrofit instancu preko koje ce komunikacija ici
      * */
     public static Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(SERVICE_API_PATH)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(JacksonConverterFactory.create(getObjectMapper()))
             .client(test())
             .build();
 

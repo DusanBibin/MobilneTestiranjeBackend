@@ -17,6 +17,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -29,11 +30,12 @@ public class AccommodationRequestController {
     @PreAuthorize("hasAuthority('OWNER')")
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> createAccommodationRequest(@Valid @RequestPart("accommodationDTO") AccommodationDTO accommodationDTO,
-                                                        @RequestPart("photos") List<MultipartFile> images,
+                                                        @RequestPart("images") List<MultipartFile> images,
                                                         @AuthenticationPrincipal Owner owner) {
         accommodationRequestService.createAccommodationRequest(owner, images, accommodationDTO);
         return ResponseEntity.ok().body("Successfully created new accommodation request");
     }
+
 
     @PreAuthorize("hasAuthority('OWNER')")
     @PostMapping(path = "/accommodations/{accommodationId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})

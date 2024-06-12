@@ -73,6 +73,7 @@ public class AccommodationRequestService {
             }
         }
     }
+
     public void createAccommodationRequest(Owner owner, List<MultipartFile> images, AccommodationDTO accommodationDTO){
 
         var accommodationWrapper = accommodationRepository.findAccommodationsByOwnerAndName(owner, accommodationDTO.getName());

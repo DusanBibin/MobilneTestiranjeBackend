@@ -65,7 +65,9 @@ public class HomeActivity extends AppCompatActivity {
         //actionBar = getSupportActionBar();
         if(getSupportActionBar() != null){
 
-
+            System.out.println("JEBO SAM TI MAMU VISE 2 PUTA KONTAS JBT");
+            System.out.println(JWTManager.getRole());
+            System.out.println("JEBO SAM TI MAMU VISE 2 PUTA KONTAS JBT");
             if(JWTManager.getRole() == null){
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 getSupportActionBar().setDisplayShowHomeEnabled(true);

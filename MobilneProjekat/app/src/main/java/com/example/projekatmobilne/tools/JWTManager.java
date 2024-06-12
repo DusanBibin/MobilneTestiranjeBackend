@@ -17,7 +17,8 @@ public class JWTManager {
     private static SharedPreferences sharedPreferences;
 
     public static void setup(Context context) {
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        //sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        sharedPreferences = context.getSharedPreferences("Iksde", Context.MODE_PRIVATE);
     }
 
     private static JSONObject decodeJWT(String jwtToken) {
@@ -78,6 +79,8 @@ public class JWTManager {
     }
 
     public static String getRole() {
+        System.out.println("DA LI SMO USLI OVDE MAMU TI JEBEM VISE");
+        System.out.println(sharedPreferences);
         return sharedPreferences.getString("role", null);
     }
 

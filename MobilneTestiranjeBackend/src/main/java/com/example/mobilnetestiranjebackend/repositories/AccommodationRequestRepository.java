@@ -9,6 +9,7 @@ import java.util.Optional;
 public interface AccommodationRequestRepository extends JpaRepository<AccommodationRequest, Long> {
     Optional<AccommodationRequest> findById(Long requestId);
 
-
+    @Query("select ar from AccommodationRequest ar where ar.address = :address")
+    Optional<AccommodationRequest> findByAccommodationRequestAddress(String address);
 
 }

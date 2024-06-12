@@ -167,6 +167,7 @@
                             android:id="@+id/radioButtonStudio"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:checked="true"
                             android:text="Studio"/>
                         <RadioButton
                             android:id="@+id/radioButtonRoom"
@@ -222,6 +223,7 @@
                     android:text="Parking"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
+
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -237,7 +239,36 @@
                         android:textSize="20sp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Accommodation location"
+                        android:layout_marginBottom="10dp"
+                        android:text="Accommodation Auto Accept?"/>
+                    <CheckBox
+                        android:id="@+id/checkBoxAutoAccept"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Auto accept reservation enabled?"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardElevation="8dp"
+                app:cardCornerRadius="16dp"
+                app:cardUseCompatPadding="true">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="10dp">
+                    <TextView
+                        android:textSize="20sp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Accommodation location"/>
+                    <TextView
+                        android:id="@+id/txtAddress"
+                        android:textSize="12sp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginBottom="10dp"/>
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -246,7 +277,7 @@
                         android:layout_marginBottom="10dp">
 
                         <androidx.appcompat.widget.SearchView
-                            android:id="@+id/searchAccommodations"
+                            android:id="@+id/searchView"
                             app:queryHint="Search"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
@@ -269,12 +300,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="200dp">
                         <fragment
+                            android:id="@+id/mapView"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_marginTop="-100dp"
                             android:layout_marginBottom="-100dp"
                             android:name="com.google.android.gms.maps.SupportMapFragment"/>
                         <ImageView
+                            android:id="@+id/transparent_image"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:src="@color/transparent" />
@@ -355,7 +388,14 @@
         </androidx.cardview.widget.CardView>
 
 
-
+            <Button
+                android:id="@+id/btnConfirm"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Create accomodation request"/>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

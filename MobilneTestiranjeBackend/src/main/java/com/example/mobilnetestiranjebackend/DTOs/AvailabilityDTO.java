@@ -2,6 +2,7 @@ package com.example.mobilnetestiranjebackend.DTOs;
 
 import com.example.mobilnetestiranjebackend.enums.RequestStatus;
 import com.example.mobilnetestiranjebackend.enums.RequestType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class AvailabilityDTO {
     private Long id;
+
     @FutureOrPresent(message = "Start date must be in the future")
     @NotNull(message = "Start date must be provided")
     private LocalDate startDate;
