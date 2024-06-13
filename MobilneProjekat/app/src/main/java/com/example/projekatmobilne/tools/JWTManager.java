@@ -79,8 +79,6 @@ public class JWTManager {
     }
 
     public static String getRole() {
-        System.out.println("DA LI SMO USLI OVDE MAMU TI JEBEM VISE");
-        System.out.println(sharedPreferences);
         return sharedPreferences.getString("role", null);
     }
 

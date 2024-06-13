@@ -147,7 +147,7 @@ public class AccommodationRequestService {
             amenities.add(amenityStr);
         }
 
-
+//      ISKOMENTARISANO JE ZATO STO JE OVO PREBACENO U AVAILABILITY REQUEST CONTROLLER
 //        for(AvailabilityDTO avail :accommodationDTO.getAvailabilityList()){
 //            if(availabilityService.availabilityRangeTaken(accommodationId, avail.getStartDate(), avail.getEndDate(), avail.getId()))
 //                throw new InvalidDateException("There is already availability period that interferes with this period");
@@ -409,16 +409,7 @@ public class AccommodationRequestService {
 //                    availabilityRepository.save(availability);
 //
 //                }
-//
-//
-//
-//
 //            }
-
-
-
-
-
         }
 
     }

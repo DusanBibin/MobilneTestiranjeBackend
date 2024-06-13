@@ -180,7 +180,6 @@ public class HomeFragment extends Fragment {
 
                 if(response.code() == 200){
                     PagedSearchDTOResponse responseDTO = ResponseParser.parseResponse(response, PagedSearchDTOResponse.class, false);
-                    System.out.println("Pocetna kurcina" + responseDTO);
                     if(responseDTO.getContent().isEmpty()){
                         Toast.makeText(getActivity(), "There are no accommodations that are available within this period", Toast.LENGTH_SHORT).show();
                     }
@@ -196,8 +195,7 @@ public class HomeFragment extends Fragment {
                             else amenities.append(a.getAmenities().get(i));
                         }
 
-                        System.out.println(a.getDateStart());
-                        System.out.println(a.getDateEnd());
+
                         String guests = "Possible guests: " + a.getMinGuests() + "-" +  a.getMaxGuests();
                         String type = "Type: " + a.getAccommodationType().toString();
                         String isPerPerson = "Is price per person:" + a.getPerPerson();

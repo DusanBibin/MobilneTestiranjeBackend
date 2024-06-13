@@ -26,7 +26,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:columnCount="2"
+                android:columnCount="3"
                 android:rowCount="2">
 
                 <TextView
@@ -45,6 +45,12 @@
                     android:text="Cancel deadline: "
                     android:textSize="11sp"
                     android:layout_marginStart="5dp"/>
+                <Button
+                    android:id="@+id/btnChangeAvailability"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Change"
+                    android:layout_marginStart="5dp"/>
 
                 <TextView
                     android:id="@+id/txtAvailabilityUnitPrice"
@@ -62,15 +68,33 @@
                     android:text="Is per guest price: "
                     android:textSize="11sp"
                     android:layout_marginStart="5dp"/>
+
+
+                <Button
+                    android:id="@+id/btnRemoveAvailability"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="remove"
+                    android:layout_marginStart="5dp"/>
             </GridLayout>
 
-
-            <Button
-                android:id="@+id/btnRemoveAvailability"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="remove"
-                android:layout_marginEnd="5dp"/>
+<!--            <LinearLayout-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:orientation="vertical">-->
+<!--                <Button-->
+<!--                    android:id="@+id/btnChangeAvailability"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Change"-->
+<!--                    android:layout_marginEnd="5dp"/>-->
+<!--                <Button-->
+<!--                    android:id="@+id/btnRemoveAvailability"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="remove"-->
+<!--                    android:layout_marginEnd="5dp"/>-->
+<!--            </LinearLayout>-->
 
         </LinearLayout>
 <!--    </androidx.cardview.widget.CardView>-->

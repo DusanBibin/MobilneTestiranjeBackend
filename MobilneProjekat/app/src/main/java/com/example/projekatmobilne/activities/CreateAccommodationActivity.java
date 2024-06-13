@@ -131,7 +131,7 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
         imagesAddAdapter = new ImagesAddAdapter(CreateAccommodationActivity.this, imagesList);
         binding.recyclerViewImages.setAdapter(imagesAddAdapter);
 
-        availabilitiesAdapter = new AvailabilitiesAdapter(CreateAccommodationActivity.this, availabilitiesList);
+        availabilitiesAdapter = new AvailabilitiesAdapter(CreateAccommodationActivity.this, availabilitiesList, getSupportFragmentManager());
         binding.recyclerViewAvailabilities.setAdapter(availabilitiesAdapter);
 
 
@@ -296,7 +296,8 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton selectedRadioButton = group.findViewById(checkedId);
                 String accommodationTypeStr = selectedRadioButton.getText().toString();
-                accommodationType = AccommodationType.valueOf(accommodationTypeStr);
+                System.out.println(accommodationTypeStr);
+                accommodationType = AccommodationType.valueOf(accommodationTypeStr.toUpperCase());
             }
         });
 
@@ -434,6 +435,7 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
                 cancelDeadlineInput.setError("This field cannot be empty");
                 isValid = false;
             }
+            if(!isValid) return;
             for(AvailabilityDTO a: availabilitiesList){
                 if((dateStart.isAfter(a.getStartDate()) && dateStart.isBefore(a.getEndDate()))
                         || dateStart.isEqual(a.getStartDate()) || dateStart.isEqual(a.getEndDate())){

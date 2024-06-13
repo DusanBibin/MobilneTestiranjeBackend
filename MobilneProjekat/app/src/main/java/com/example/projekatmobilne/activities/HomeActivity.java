@@ -65,9 +65,6 @@ public class HomeActivity extends AppCompatActivity {
         //actionBar = getSupportActionBar();
         if(getSupportActionBar() != null){
 
-            System.out.println("JEBO SAM TI MAMU VISE 2 PUTA KONTAS JBT");
-            System.out.println(JWTManager.getRole());
-            System.out.println("JEBO SAM TI MAMU VISE 2 PUTA KONTAS JBT");
             if(JWTManager.getRole() == null){
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -162,7 +159,6 @@ public class HomeActivity extends AppCompatActivity {
     {
 
         Role role = Role.valueOf(JWTManager.getRole());
-        System.out.println(role);
         MenuProvider menuProvider = new MenuProvider()
         {
             @Override
@@ -171,7 +167,6 @@ public class HomeActivity extends AppCompatActivity {
 
                 if(role.equals(Role.GUEST)) menuInflater.inflate(R.menu.guest_nav_menu, menu);
                 if(role.equals(Role.OWNER)){
-                    System.out.println("OVDE SMO USLI");
                     menuInflater.inflate(R.menu.host_nav_menu, menu);
                 }
                 //TODO dodati za admina isto

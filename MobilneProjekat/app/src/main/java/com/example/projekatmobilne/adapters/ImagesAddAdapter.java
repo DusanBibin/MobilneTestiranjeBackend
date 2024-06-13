@@ -52,7 +52,6 @@ public class ImagesAddAdapter extends RecyclerView.Adapter<ImageAddHolder> {
                 dataList.remove(holder.getAdapterPosition());
                 notifyDataSetChanged();
                 notifyItemRemoved(holder.getAdapterPosition());
-                System.out.println(dataList.size());
             }
         });
     }
