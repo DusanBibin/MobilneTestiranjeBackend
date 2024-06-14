@@ -78,7 +78,6 @@ public class AvailabilitiesAdapter extends  RecyclerView.Adapter<AvailabilitiesV
         holder.btnRemoveAvailability.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println(holder.getAdapterPosition());
                 dataList.remove(holder.getAdapterPosition());
                 notifyDataSetChanged();
                 notifyItemRemoved(holder.getAdapterPosition());
@@ -88,7 +87,6 @@ public class AvailabilitiesAdapter extends  RecyclerView.Adapter<AvailabilitiesV
         holder.btnChangeAvailability.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println(holder.getAdapterPosition());
                 editingPosition = holder.getAdapterPosition();
                 setupAddAvailabilityDialog();
                 dateRangeInput.setError(null);
@@ -115,7 +113,6 @@ public class AvailabilitiesAdapter extends  RecyclerView.Adapter<AvailabilitiesV
     }
 
     private void setupAddAvailabilityDialog(){
-        System.out.println("USLI SMO U SETUP ADD AVAILABILIVTY DIALOG");
         addAvailabilityDialog = new Dialog(context);
         addAvailabilityDialog.setContentView(R.layout.custom_dialog_availability);
         addAvailabilityDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -138,7 +135,6 @@ public class AvailabilitiesAdapter extends  RecyclerView.Adapter<AvailabilitiesV
         addAvailabilityDialog.findViewById(R.id.btnConfirmInfo).setOnClickListener(v -> {
 
 
-            System.out.println("OVDE JE : " + editingPosition);
             dateRangeInput.setError(null);
             cancelDeadlineInput.setError(null);
             priceInput.setError(null);
@@ -158,8 +154,6 @@ public class AvailabilitiesAdapter extends  RecyclerView.Adapter<AvailabilitiesV
             }
             if(!isValid) return;
 
-            System.out.println(dataList.size());
-            System.out.println(dateStart);
 
             for(AvailabilityDTO a: dataList){
                 if(!a.equals(dataList.get(editingPosition))){
@@ -201,7 +195,6 @@ public class AvailabilitiesAdapter extends  RecyclerView.Adapter<AvailabilitiesV
         cancelDeadlineEdit.setOnClickListener(v -> {
 
 
-            System.out.println("usli smo u cancel edit");
             DatePickerDialog dialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
                 @Override
                 public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
@@ -220,15 +213,10 @@ public class AvailabilitiesAdapter extends  RecyclerView.Adapter<AvailabilitiesV
 
     private void setupDateRangePicker() {
 
-
-        System.out.println("USLI SMO U SETUP DATE RANGE PICKER");
-
-
         dateRangeEdit.setOnClickListener(v -> {
 
             final Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.DAY_OF_MONTH, 1);
-            System.out.println("usli smo u date range edit");
 
             CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder().setValidator(DateValidatorPointForward.from(calendar.getTimeInMillis()));
             CalendarConstraints constraints = constraintsBuilder.build();
@@ -257,14 +245,6 @@ public class AvailabilitiesAdapter extends  RecyclerView.Adapter<AvailabilitiesV
                     dateEnd = LocalDate.parse(end,formatter);
                     dateRangeEdit.setText(display);
 
-                    System.out.println("USLI SMO U DATE PICKER " + start);
-                    System.out.println("USLI SMO U DATE PICKER " + end);
-
-
-                    System.out.println("USLI SMO U DATE PICKER " + dateStart);
-                    System.out.println("USLI SMO U DATE PICKER " + dateEnd);
-
-                    System.out.println("USLI SMO U DATE PICKER " + display);
                 }
             });
 

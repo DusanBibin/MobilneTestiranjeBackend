@@ -1,12 +1,16 @@
 package com.example.projekatmobilne.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -54,6 +58,16 @@ public class ImagesAddAdapter extends RecyclerView.Adapter<ImageAddHolder> {
                 notifyItemRemoved(holder.getAdapterPosition());
             }
         });
+
+        holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Intent intent = new Intent(context, );
+//                context.startActivity(intent);
+
+            }
+        });
+
     }
 
     @Override
@@ -66,8 +80,10 @@ class ImageAddHolder extends RecyclerView.ViewHolder{
 
     Button btnRemove;
     TextView txtImageName;
+    RelativeLayout relativeLayout;
     public ImageAddHolder(@NonNull View itemView) {
         super(itemView);
+        relativeLayout = itemView.findViewById(R.id.relativeLayoutImageAdd);
         txtImageName = itemView.findViewById(R.id.txtImageName);
         btnRemove = itemView.findViewById(R.id.btnRemoveImage);
 

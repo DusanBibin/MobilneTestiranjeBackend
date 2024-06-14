@@ -3,6 +3,7 @@ package com.example.projekatmobilne.clients;
 
 import com.example.projekatmobilne.model.requestDTO.AccommodationDTO;
 import com.example.projekatmobilne.model.requestDTO.AuthenticationRequestDTO;
+import com.example.projekatmobilne.model.requestDTO.AvailabilityDTO;
 import com.example.projekatmobilne.model.requestDTO.ChangePasswordDTO;
 import com.example.projekatmobilne.model.Enum.AccommodationType;
 import com.example.projekatmobilne.model.Enum.Amenity;
@@ -147,5 +148,10 @@ public interface ApiService {
     Call<ResponseBody> createNewAccommodationRequest(@Part("accommodationDTO") AccommodationDTO accommodationDTO,
                                                      @Part List<MultipartBody.Part> images);
 
-
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @POST("create-new-request")
+    Call<ResponseBody> createNewAvailabilityRequest(@Body AvailabilityDTO availabilityDTO);
 }

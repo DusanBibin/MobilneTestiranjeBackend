@@ -115,7 +115,7 @@ public class AccommodationRequestService {
                 .status(RequestStatus.PENDING)
                 .build();
 
-        accommodationRequestRepository.save(accommodationRequest);
+        accommodationRequest = accommodationRequestRepository.save(accommodationRequest);
 
         for(AvailabilityDTO availDTO: accommodationDTO.getAvailabilityList()){
             var availabilityRequest = AvailabilityRequest.builder()

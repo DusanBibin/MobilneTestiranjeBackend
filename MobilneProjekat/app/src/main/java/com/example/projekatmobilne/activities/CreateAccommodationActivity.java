@@ -275,6 +275,7 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
                             Toast.makeText(CreateAccommodationActivity.this, responseMessage, Toast.LENGTH_SHORT).show();
                             getOnBackPressedDispatcher().onBackPressed();
                             finish();
+
                         }
                         if(response.code() == 400){
                             Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
@@ -296,7 +297,6 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton selectedRadioButton = group.findViewById(checkedId);
                 String accommodationTypeStr = selectedRadioButton.getText().toString();
-                System.out.println(accommodationTypeStr);
                 accommodationType = AccommodationType.valueOf(accommodationTypeStr.toUpperCase());
             }
         });

@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_margin="5dp">
+            android:paddingBottom="20dp">
 
 
             <GridLayout
@@ -35,8 +35,7 @@
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
                     android:text="Date range: "
-                    android:textSize="11sp"
-                    android:layout_marginStart="5dp"/>
+                    android:textSize="11sp"/>
                 <TextView
                     android:id="@+id/txtAvailabilityCancel"
                     android:layout_width="0dp"
@@ -58,8 +57,7 @@
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
                     android:text="Unit price: "
-                    android:textSize="11sp"
-                    android:layout_marginStart="5dp"/>
+                    android:textSize="11sp"/>
                 <TextView
                     android:id="@+id/txtIsPricePerGuest"
                     android:layout_width="0dp"
