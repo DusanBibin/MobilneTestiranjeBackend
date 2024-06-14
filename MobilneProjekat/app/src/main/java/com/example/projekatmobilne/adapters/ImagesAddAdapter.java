@@ -2,6 +2,8 @@ package com.example.projekatmobilne.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +18,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.projekatmobilne.R;
+import com.example.projekatmobilne.activities.FullScreenImageActivity;
 import com.example.projekatmobilne.model.responseDTO.ReviewDTOResponse;
 import com.example.projekatmobilne.tools.ImageUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.List;
 
@@ -62,8 +66,11 @@ public class ImagesAddAdapter extends RecyclerView.Adapter<ImageAddHolder> {
         holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent intent = new Intent(context, );
-//                context.startActivity(intent);
+
+                String path = dataList.get(holder.getAdapterPosition()).getAbsolutePath();
+                Intent intent = new Intent(context, FullScreenImageActivity.class);
+                intent.putExtra("picture", path);
+                context.startActivity(intent);
 
             }
         });
