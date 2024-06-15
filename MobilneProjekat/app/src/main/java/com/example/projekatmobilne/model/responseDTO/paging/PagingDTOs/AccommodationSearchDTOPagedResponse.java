@@ -1,13 +1,14 @@
-package com.example.projekatmobilne.model.paging.PagingDTOs;
+package com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs;
 
 
-import com.example.projekatmobilne.model.paging.Pageable;
-import com.example.projekatmobilne.model.paging.Sort;
+import com.example.projekatmobilne.model.responseDTO.paging.Pageable;
+import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.PageTypes.AccommodationSearchDTOPageItem;
+import com.example.projekatmobilne.model.responseDTO.paging.Sort;
 
 import java.util.List;
 
-public class PagedSearchDTOResponse {
-    private List<AccommodationSearchDTO> content;
+public class AccommodationSearchDTOPagedResponse {
+    private List<AccommodationSearchDTOPageItem> content;
     private Pageable pageable;
     private boolean last;
     private int totalPages;
@@ -19,7 +20,7 @@ public class PagedSearchDTOResponse {
     private boolean first;
     private boolean empty;
 
-    public PagedSearchDTOResponse(List<AccommodationSearchDTO> content, Pageable pageable, boolean last, int totalPages, int totalElements, int size, int number, Sort sort, int numberOfElements, boolean first, boolean empty) {
+    public AccommodationSearchDTOPagedResponse(List<AccommodationSearchDTOPageItem> content, Pageable pageable, boolean last, int totalPages, int totalElements, int size, int number, Sort sort, int numberOfElements, boolean first, boolean empty) {
         this.content = content;
         this.pageable = pageable;
         this.last = last;
@@ -33,11 +34,11 @@ public class PagedSearchDTOResponse {
         this.empty = empty;
     }
 
-    public List<AccommodationSearchDTO> getContent() {
+    public List<AccommodationSearchDTOPageItem> getContent() {
         return content;
     }
 
-    public void setContent(List<AccommodationSearchDTO> content) {
+    public void setContent(List<AccommodationSearchDTOPageItem> content) {
         this.content = content;
     }
 

@@ -1,9 +1,9 @@
-package com.example.projekatmobilne.model.responseDTO;
+package com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.PageTypes.innerDTOPage;
 
-public class ReviewDTO {
+public class ReviewDTOPageItemInner {
     private String comment;
     private Long rating;
-    public ReviewDTO(String comment, Long rating) {
+    public ReviewDTOPageItemInner(String comment, Long rating) {
         this.comment = comment;
         this.rating = rating;
     }

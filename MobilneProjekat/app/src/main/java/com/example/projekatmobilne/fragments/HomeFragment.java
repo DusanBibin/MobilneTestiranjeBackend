@@ -1,7 +1,5 @@
 package com.example.projekatmobilne.fragments;
 
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -23,16 +21,14 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.example.projekatmobilne.R;
-import com.example.projekatmobilne.activities.CreateAccommodationActivity;
-import com.example.projekatmobilne.adapters.AccommodationCard;
+import com.example.projekatmobilne.adapters.AdapterItems.AccommodationSearchItem;
 import com.example.projekatmobilne.adapters.AccommodationSearchAdapter;
 import com.example.projekatmobilne.clients.ClientUtils;
 import com.example.projekatmobilne.databinding.FragmentHomeBinding;
 import com.example.projekatmobilne.model.Enum.AccommodationType;
 import com.example.projekatmobilne.model.Enum.Amenity;
-import com.example.projekatmobilne.model.paging.PagingDTOs.AccommodationSearchDTO;
-import com.example.projekatmobilne.model.paging.PagingDTOs.PagedSearchDTOResponse;
-import com.example.projekatmobilne.model.paging.PagingDTOs.PagedSearchDTOResponse;
+import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.PageTypes.AccommodationSearchDTOPageItem;
+import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.AccommodationSearchDTOPagedResponse;
 import com.example.projekatmobilne.tools.ResponseParser;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.datepicker.CalendarConstraints;
@@ -40,11 +36,8 @@ import com.google.android.material.datepicker.DateValidatorPointForward;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -66,11 +59,11 @@ public class HomeFragment extends Fragment {
    private FragmentHomeBinding binding;
    private LocalDate dateStart = LocalDate.now().plusDays(1), dateEnd = LocalDate.now().plusYears(1);
 
-   private List<AccommodationCard> dataList = new ArrayList<>();
+   private List<AccommodationSearchItem> dataList = new ArrayList<>();
 
    private AccommodationSearchAdapter adapter;
 
-   private AccommodationCard androidData;
+   private AccommodationSearchItem androidData;
 
    private TextInputEditText editTextMaxValue, editTextMinValue;
    private AccommodationType type = null;
@@ -90,8 +83,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
     }
 
     @Override
@@ -112,7 +103,7 @@ public class HomeFragment extends Fragment {
 
         setupRadioGroup();
         setupDateRangePicker();
-
+        dataList = new ArrayList<>();
         binding.recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -179,14 +170,14 @@ public class HomeFragment extends Fragment {
 
 
                 if(response.code() == 200){
-                    PagedSearchDTOResponse responseDTO = ResponseParser.parseResponse(response, PagedSearchDTOResponse.class, false);
+                    AccommodationSearchDTOPagedResponse responseDTO = ResponseParser.parseResponse(response, AccommodationSearchDTOPagedResponse.class, false);
                     if(responseDTO.getContent().isEmpty()){
                         Toast.makeText(getActivity(), "There are no accommodations that are available within this period", Toast.LENGTH_SHORT).show();
                     }
 
                     isLastPage = responseDTO.isLast();
 
-                    for(AccommodationSearchDTO a: responseDTO.getContent()){
+                    for(AccommodationSearchDTOPageItem a: responseDTO.getContent()){
 
                         StringBuilder amenities = new StringBuilder("Amenities: ");
                         if(a.getAmenities().isEmpty()) amenities.append(" None");
@@ -202,7 +193,7 @@ public class HomeFragment extends Fragment {
                         String oneNightPrice = "One night price: " + a.getOneNightPrice();
                         String totalPrice = "Total price: " + a.getTotalPrice();
                         String dateRange = "Date range:" + a.getDateStart() + " " + a.getDateEnd();
-                        AccommodationCard ac = new AccommodationCard(a.getAddress(),
+                        AccommodationSearchItem ac = new AccommodationSearchItem(a.getAddress(),
                                 guests,
                                 type, isPerPerson, oneNightPrice,
                                 totalPrice, a.getName(), amenities.toString(), a.getRating(), a.getAccommodationId(), dateRange);

@@ -154,4 +154,12 @@ public interface ApiService {
     })
     @POST("create-new-request")
     Call<ResponseBody> createNewAvailabilityRequest(@Body AvailabilityDTO availabilityDTO);
+
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @GET("accommodations/owner-list")
+    Call<ResponseBody> getOwnerAccommodations(@Query("pageNo") int pageNo, @Query("pageSize") int pageSize);
 }

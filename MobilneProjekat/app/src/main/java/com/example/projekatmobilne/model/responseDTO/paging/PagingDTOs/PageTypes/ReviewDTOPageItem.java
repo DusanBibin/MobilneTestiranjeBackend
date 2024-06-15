@@ -1,15 +1,17 @@
-package com.example.projekatmobilne.model.responseDTO;
+package com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.PageTypes;
 
-public class ReviewDTOResponse {
+import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.PageTypes.innerDTOPage.ReviewDTOPageItemInner;
+
+public class ReviewDTOPageItem {
 
     private String guestName;
-    private ReviewDTO ownerReview;
+    private ReviewDTOPageItemInner ownerReview;
 
-    private ReviewDTO accommodationReview;
+    private ReviewDTOPageItemInner accommodationReview;
 
 
 
-    public ReviewDTOResponse(ReviewDTO ownerReview, ReviewDTO accommodationReview, String guestName) {
+    public ReviewDTOPageItem(ReviewDTOPageItemInner ownerReview, ReviewDTOPageItemInner accommodationReview, String guestName) {
         this.ownerReview = ownerReview;
         this.accommodationReview = accommodationReview;
         this.guestName = guestName;
@@ -23,19 +25,19 @@ public class ReviewDTOResponse {
         this.guestName = guestName;
     }
 
-    public ReviewDTO getOwnerReview() {
+    public ReviewDTOPageItemInner getOwnerReview() {
         return ownerReview;
     }
 
-    public void setOwnerReview(ReviewDTO ownerReview) {
+    public void setOwnerReview(ReviewDTOPageItemInner ownerReview) {
         this.ownerReview = ownerReview;
     }
 
-    public ReviewDTO getAccommodationReview() {
+    public ReviewDTOPageItemInner getAccommodationReview() {
         return accommodationReview;
     }
 
-    public void setAccommodationReview(ReviewDTO accommodationReview) {
+    public void setAccommodationReview(ReviewDTOPageItemInner accommodationReview) {
         this.accommodationReview = accommodationReview;
     }
 

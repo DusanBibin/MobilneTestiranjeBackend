@@ -4,30 +4,28 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.projekatmobilne.R;
-import com.example.projekatmobilne.model.responseDTO.ReviewDTOResponse;
+import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.PageTypes.ReviewDTOPageItem;
 
 import java.util.List;
 
 public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsViewHolder> {
 
     private Context context;
-    private List<ReviewDTOResponse> dataList;
+    private List<ReviewDTOPageItem> dataList;
 
-    public void setSearchList(List<ReviewDTOResponse> dataSearchList){
+    public void setSearchList(List<ReviewDTOPageItem> dataSearchList){
         this.dataList = dataSearchList;
         notifyDataSetChanged();
     }
 
-    public ReviewsAdapter(Context context, List<ReviewDTOResponse> dataList){
+    public ReviewsAdapter(Context context, List<ReviewDTOPageItem> dataList){
         this.context = context;
         this.dataList = dataList;
     }

@@ -10,12 +10,16 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="20dp">
-        <TextView
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewAccommodationsHost"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="fragment accommodations host" />
+            android:scrollbars="vertical">
+
+
+        </androidx.recyclerview.widget.RecyclerView>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/floating_action_button"
@@ -28,7 +32,9 @@
             android:clickable="true"
             android:contentDescription="Add accommodation"
             android:tooltipText="Add accommodation"
-            tools:ignore="ImageContrastCheck" />
+            tools:ignore="ImageContrastCheck"
+            android:layout_marginBottom="20dp"
+            android:layout_marginEnd="20dp"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

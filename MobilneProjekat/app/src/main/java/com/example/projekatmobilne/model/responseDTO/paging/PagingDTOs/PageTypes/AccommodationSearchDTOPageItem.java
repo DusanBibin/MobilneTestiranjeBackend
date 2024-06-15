@@ -1,4 +1,4 @@
-package com.example.projekatmobilne.model.paging.PagingDTOs;
+package com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.PageTypes;
 
 import android.graphics.Bitmap;
 
@@ -8,12 +8,12 @@ import com.example.projekatmobilne.model.Enum.Amenity;
 import java.time.LocalDate;
 import java.util.List;
 
-public class AccommodationSearchDTO {
-    public AccommodationSearchDTO(Long accommodationId, String name, String address,
-                                  List<Amenity> amenities, Long totalPrice, Long oneNightPrice,
-                                  Boolean isPerPerson, Long minGuests, Long maxGuests,
-                                  AccommodationType accommodationType, Double rating,
-                                  LocalDate dateEnd, LocalDate dateStart) {
+public class AccommodationSearchDTOPageItem {
+    public AccommodationSearchDTOPageItem(Long accommodationId, String name, String address,
+                                          List<Amenity> amenities, Long totalPrice, Long oneNightPrice,
+                                          Boolean isPerPerson, Long minGuests, Long maxGuests,
+                                          AccommodationType accommodationType, Double rating,
+                                          LocalDate dateEnd, LocalDate dateStart) {
         this.accommodationId = accommodationId;
         this.name = name;
         this.address = address;
@@ -45,7 +45,7 @@ public class AccommodationSearchDTO {
         this.dateEnd = dateEnd;
     }
 
-    public AccommodationSearchDTO(){}
+    public AccommodationSearchDTOPageItem(){}
 
     @Override
     public String toString() {

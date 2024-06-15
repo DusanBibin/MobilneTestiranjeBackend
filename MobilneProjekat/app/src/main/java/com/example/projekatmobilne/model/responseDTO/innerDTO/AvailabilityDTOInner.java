@@ -1,8 +1,8 @@
-package com.example.projekatmobilne.model.responseDTO;
+package com.example.projekatmobilne.model.responseDTO.innerDTO;
 
 import java.time.LocalDate;
 
-public class AvailabilityDTOResponse {
+public class AvailabilityDTOInner {
     private Long id;
     private LocalDate startDate;
 
@@ -62,7 +62,7 @@ public class AvailabilityDTOResponse {
         this.price = price;
     }
 
-    public AvailabilityDTOResponse(Long id, LocalDate startDate, LocalDate endDate, LocalDate cancellationDeadline, Boolean pricePerGuest, Long price) {
+    public AvailabilityDTOInner(Long id, LocalDate startDate, LocalDate endDate, LocalDate cancellationDeadline, Boolean pricePerGuest, Long price) {
         this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;

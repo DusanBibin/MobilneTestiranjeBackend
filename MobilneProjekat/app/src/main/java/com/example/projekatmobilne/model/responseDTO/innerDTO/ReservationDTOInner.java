@@ -1,11 +1,11 @@
-package com.example.projekatmobilne.model.responseDTO;
+package com.example.projekatmobilne.model.responseDTO.innerDTO;
 
 
 import java.time.LocalDate;
 
 
 
-public class ReservationDTO {
+public class ReservationDTOInner {
 
     private LocalDate reservationStartDate;
     private LocalDate reservationEndDate;
@@ -13,7 +13,7 @@ public class ReservationDTO {
     private Long availabilityId;
     private Long guestNum;
 
-    public ReservationDTO(LocalDate reservationStartDate, LocalDate reservationEndDate, Long guestNum, Long availabilityId) {
+    public ReservationDTOInner(LocalDate reservationStartDate, LocalDate reservationEndDate, Long guestNum, Long availabilityId) {
         this.reservationStartDate = reservationStartDate;
         this.reservationEndDate = reservationEndDate;
         this.guestNum = guestNum;

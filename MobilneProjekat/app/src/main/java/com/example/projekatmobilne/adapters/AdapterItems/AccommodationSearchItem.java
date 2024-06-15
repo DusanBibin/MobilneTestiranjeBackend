@@ -1,13 +1,10 @@
-package com.example.projekatmobilne.adapters;
+package com.example.projekatmobilne.adapters.AdapterItems;
 
 import android.graphics.Bitmap;
-import android.os.Parcelable;
-
-import com.example.projekatmobilne.model.Enum.AccommodationType;
 
 import java.io.Serializable;
 
-public class AccommodationCard implements Serializable {
+public class AccommodationSearchItem implements Serializable {
     private Bitmap imageBitmap;
     private String name;
     private String address;
@@ -30,9 +27,9 @@ public class AccommodationCard implements Serializable {
         this.rating = rating;
     }
 
-    public AccommodationCard(String address, String guests, String type,
-                             String isPerPerson, String oneNightPrice, String totalPrice, String name,
-                             String amenities, Double rating, Long accommodationId, String dateRange) {
+    public AccommodationSearchItem(String address, String guests, String type,
+                                   String isPerPerson, String oneNightPrice, String totalPrice, String name,
+                                   String amenities, Double rating, Long accommodationId, String dateRange) {
         this.address = address;
         this.guests = guests;
         this.type = type;

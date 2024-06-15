@@ -16,8 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.projekatmobilne.R;
@@ -25,11 +23,11 @@ import com.example.projekatmobilne.adapters.ImageAdapter;
 import com.example.projekatmobilne.adapters.ReviewsAdapter;
 import com.example.projekatmobilne.clients.ClientUtils;
 import com.example.projekatmobilne.databinding.ActivityAccommodationDetailsBinding;
-import com.example.projekatmobilne.model.paging.PagingDTOs.PagedReviewsDTOResponse;
+import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.ReviewsDTOPagedResponse;
 import com.example.projekatmobilne.model.responseDTO.AccommodationDTOResponse;
-import com.example.projekatmobilne.model.responseDTO.AvailabilityDTOResponse;
-import com.example.projekatmobilne.model.responseDTO.ReservationDTO;
-import com.example.projekatmobilne.model.responseDTO.ReviewDTOResponse;
+import com.example.projekatmobilne.model.responseDTO.innerDTO.AvailabilityDTOInner;
+import com.example.projekatmobilne.model.responseDTO.innerDTO.ReservationDTOInner;
+import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.PageTypes.ReviewDTOPageItem;
 import com.example.projekatmobilne.tools.EventDecorator;
 import com.example.projekatmobilne.tools.ResponseParser;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -69,7 +67,7 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
     private ViewPager2 viewPager;
     private Long accommodationId;
     private AccommodationDTOResponse accommodationDTO;
-    private PagedReviewsDTOResponse pagedReviewsDTOResponse;
+    private ReviewsDTOPagedResponse reviewsDTOPagedResponse;
     private List<String> pinkDateList;
     List<String> grayDateList;
     final String DATE_FORMAT = "yyyy-MM-dd";
@@ -80,7 +78,7 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
     private Boolean isLastPage = false;
 
     private ReviewsAdapter reviewsAdapter;
-    private List<ReviewDTOResponse> dataList = new ArrayList<>();
+    private List<ReviewDTOPageItem> dataList = new ArrayList<>();
     private List<Bitmap> imageList;
     private List<String> options;
     private ImageAdapter imageAdapter;
@@ -200,7 +198,7 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
 
     private void setupSpinner() {
         options = new ArrayList<>();
-        for(AvailabilityDTOResponse a: accommodationDTO.getAvailabilityList()){
+        for(AvailabilityDTOInner a: accommodationDTO.getAvailabilityList()){
             options.add(a.getPrice().toString());
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(AccommodationDetailsActivity.this, android.R.layout.simple_spinner_item, options);
@@ -217,7 +215,7 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
 
                 calendarView.removeDecorators();
                 String selectedOption = options.get(position);
-                for(AvailabilityDTOResponse a: accommodationDTO.getAvailabilityList()){
+                for(AvailabilityDTOInner a: accommodationDTO.getAvailabilityList()){
 
                     if(selectedOption.equals(a.getPrice().toString())){
 
@@ -226,7 +224,7 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
                             pinkDateList.add(a.getStartDate().plusDays(i).format(formatter));
                         }
 
-                        for(ReservationDTO r: accommodationDTO.getFutureReservations()){
+                        for(ReservationDTOInner r: accommodationDTO.getFutureReservations()){
                             if(Objects.equals(r.getAvailabilityId(), a.getId())){
                                 long numDaysRes = ChronoUnit.DAYS.between(r.getReservationStartDate(), r.getReservationEndDate()) + 1;
                                 for(int i = 0; i < numDaysRes; i++){
@@ -300,11 +298,11 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
         callReviews.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                pagedReviewsDTOResponse = ResponseParser.parseResponse(response, PagedReviewsDTOResponse.class, false);
+                reviewsDTOPagedResponse = ResponseParser.parseResponse(response, ReviewsDTOPagedResponse.class, false);
 
 
-                dataList.addAll(pagedReviewsDTOResponse.getContent());
-                isLastPage = pagedReviewsDTOResponse.isLast();
+                dataList.addAll(reviewsDTOPagedResponse.getContent());
+                isLastPage = reviewsDTOPagedResponse.isLast();
                 GridLayoutManager gridLayoutManager = new GridLayoutManager(AccommodationDetailsActivity.this, 1);
                 binding.recyclerViewDetails.setLayoutManager(gridLayoutManager);
 

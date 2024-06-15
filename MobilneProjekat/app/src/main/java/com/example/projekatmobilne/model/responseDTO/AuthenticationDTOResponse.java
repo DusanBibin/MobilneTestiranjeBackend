@@ -1,9 +1,9 @@
 package com.example.projekatmobilne.model.responseDTO;
 
-public class AuthenticationResponseDTO {
+public class AuthenticationDTOResponse {
     private String token;
 
-    public AuthenticationResponseDTO(String token) {
+    public AuthenticationDTOResponse(String token) {
 
         this.token = token;
     }

@@ -1,6 +1,5 @@
 package com.example.projekatmobilne.tools;
 
-import com.example.projekatmobilne.model.paging.PagingDTOs.PagedSearchDTOResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -11,7 +10,6 @@ import com.google.gson.JsonParseException;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
-import java.util.Map;
 
 import okhttp3.ResponseBody;
 import retrofit2.Response;

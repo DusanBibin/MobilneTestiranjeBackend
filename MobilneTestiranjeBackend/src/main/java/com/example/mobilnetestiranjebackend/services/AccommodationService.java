@@ -2,24 +2,21 @@ package com.example.mobilnetestiranjebackend.services;
 
 
 import com.example.mobilnetestiranjebackend.DTOs.AccommodationSearchDTO;
+import com.example.mobilnetestiranjebackend.DTOs.AccommodationViewDTO;
 import com.example.mobilnetestiranjebackend.enums.AccommodationType;
 import com.example.mobilnetestiranjebackend.enums.Amenity;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthorizationException;
 import com.example.mobilnetestiranjebackend.exceptions.NonExistingEntityException;
+import com.example.mobilnetestiranjebackend.helpers.PageConverter;
 import com.example.mobilnetestiranjebackend.model.*;
 import com.example.mobilnetestiranjebackend.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -153,13 +150,6 @@ public class AccommodationService {
                     break;
                 }
 
-//                if( !(pomStartDate.isEqual(av.getEndDate()) || pomEndDate.isEqual(av.getStartDate())) ){
-//                    mapStartDates.put(a.getId(), pomStartDate);
-//                    mapEndDates.put(a.getId(), pomEndDate);
-//                    map.put(a.getId(), av);
-//                    availabilityFree = true;
-//                    break;
-//                }
             }
         }
 
@@ -171,12 +161,7 @@ public class AccommodationService {
             Long totalPrice = 0L;
 
 
-
             Long days = ChronoUnit.DAYS.between(startCorrected, endCorrected) + 1;
-
-//            Long days = daysBetween;
-//            Long daysBetweenAvailability = ChronoUnit.DAYS.between(av.getStartDate(), av.getEndDate()) + 1;
-//            if(daysBetween > daysBetweenAvailability) days = daysBetweenAvailability;
 
 
             if (av.getPricePerGuest()) totalPrice = days * av.getPrice() * guestNum;
@@ -217,61 +202,23 @@ public class AccommodationService {
             else convertedList.sort(Comparator.comparing(AccommodationSearchDTO::getName).reversed());
         }
 
-
-
-
-        Page<AccommodationSearchDTO> dtoPage = convertListToPage(pageNo, pageSize, convertedList);
-
-//        Page<Accommodation> pagedAccoms = convertListToPage(pageNo, pageSize, foundAccommodations);
-//        Page<AccommodationSearchDTO> dtoPage = pagedAccoms.map(new Function<Accommodation, AccommodationSearchDTO>() {
-//            @Override
-//            public AccommodationSearchDTO apply(Accommodation a) {
-//
-//                Availability av = map.get(a.getId());
-//
-//                Long totalPrice = 0L;
-//
-//                if(av.getPricePerGuest()) totalPrice = daysBetween * av.getPrice() * guestNum;
-//                else totalPrice = daysBetween * av.getPrice();
-//
-//                List<AccommodationReview> accommodationsRatings = accommodationReviewRepository.findByAccommodationId(a.getId());
-//
-//                double ratingSum = 0;
-//                for(AccommodationReview ar: accommodationsRatings){
-//                    ratingSum += ar.getRating();
-//                }
-//                double ratingAvg = ratingSum / accommodationsRatings.size();
-//
-//                AccommodationSearchDTO dto = new AccommodationSearchDTO();
-//                dto.setAccommodationId(a.getId());
-//                dto.setName(a.getName());
-//                dto.setAddress(a.getAddress());
-//                dto.setAmenities(a.getAmenities());
-//                dto.setTotalPrice(totalPrice);
-//                dto.setOneNightPrice(av.getPrice());
-//                dto.setIsPerPerson(av.getPricePerGuest());
-//                dto.setMinGuests(a.getMinGuests());
-//                dto.setMaxGuests(a.getMaxGuests());
-//                dto.setAccommodationType(a.getAccommodationType());
-//                dto.setRating(ratingAvg);
-//
-//                return dto;
-//            }
-//        });
-
+        //Page<AccommodationSearchDTO> dtoPage = convertListToPage(pageNo, pageSize, convertedList);
+        Page<AccommodationSearchDTO> dtoPage = PageConverter.convertListToPage(pageNo, pageSize, convertedList);
         return dtoPage;
     }
 
-    private Page<AccommodationSearchDTO> convertListToPage(int page, int size, List<AccommodationSearchDTO> accommodationList){
-        Pageable pageRequest = PageRequest.of(page, size);
+    public Page<AccommodationViewDTO> getOwnerAccommodations(Owner owner, int pageNo, int pageSize) {
 
-        int start = (int) pageRequest.getOffset();
-        int end = Math.min((start + pageRequest.getPageSize()), accommodationList.size());
+        List<Accommodation> accommodations = accommodationRepository.findByOwnerId(owner.getId());
+        List<AccommodationViewDTO> convertedList = new ArrayList<>(accommodations.stream().map(a -> {
+            AccommodationViewDTO accommodation = new AccommodationViewDTO();
+            accommodation.setId(a.getId());
+            accommodation.setName(a.getName());
+            accommodation.setAddress(a.getAddress());
+            return accommodation;
+        }).toList());
 
-        List<AccommodationSearchDTO> pageContent;
-        if(start > end) pageContent = new ArrayList<>();
-        else pageContent = accommodationList.subList(start, end);
-        return new PageImpl<>(pageContent, pageRequest, accommodationList.size());
+        return PageConverter.convertListToPage(pageNo, pageSize, convertedList);
     }
 }
 

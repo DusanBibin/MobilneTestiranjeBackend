@@ -15,21 +15,22 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.projekatmobilne.R;
 import com.example.projekatmobilne.activities.AccommodationDetailsActivity;
+import com.example.projekatmobilne.adapters.AdapterItems.AccommodationSearchItem;
 
 import java.util.List;
 
 public class AccommodationSearchAdapter extends RecyclerView.Adapter<AccommodationSearchViewHolder> {
 
     private Context context;
-    private List<AccommodationCard> dataList;
+    private List<AccommodationSearchItem> dataList;
 
-    public void setSearchList(List<AccommodationCard> dataSearchList){
+    public void setSearchList(List<AccommodationSearchItem> dataSearchList){
         this.dataList = dataSearchList;
         notifyDataSetChanged();
     }
 
 
-    public AccommodationSearchAdapter(Context context, List<AccommodationCard> dataList){
+    public AccommodationSearchAdapter(Context context, List<AccommodationSearchItem> dataList){
         this.context = context;
         this.dataList = dataList;
     }
@@ -37,7 +38,7 @@ public class AccommodationSearchAdapter extends RecyclerView.Adapter<Accommodati
     @NonNull
     @Override
     public AccommodationSearchViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.accommodation_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.accommodation_search_item, parent, false);
         return new AccommodationSearchViewHolder(view);
     }
 
@@ -72,7 +73,7 @@ public class AccommodationSearchAdapter extends RecyclerView.Adapter<Accommodati
             @Override
             public void onClick(View v) {
 
-                AccommodationCard clickedAccommodation = dataList.get(holder.getAdapterPosition());
+                AccommodationSearchItem clickedAccommodation = dataList.get(holder.getAdapterPosition());
 
                 Intent intent = new Intent(context, AccommodationDetailsActivity.class);
                 intent.putExtra("accommodationId", clickedAccommodation.getAccommodationId());

@@ -1,4 +1,4 @@
-package com.example.projekatmobilne.model.paging;
+package com.example.projekatmobilne.model.responseDTO.paging;
 
 public class Pageable {
     private Sort sort;

@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.projekatmobilne.clients.ClientUtils;
 import com.example.projekatmobilne.databinding.ActivityLoginBinding;
 import com.example.projekatmobilne.model.requestDTO.AuthenticationRequestDTO;
-import com.example.projekatmobilne.model.responseDTO.AuthenticationResponseDTO;
+import com.example.projekatmobilne.model.responseDTO.AuthenticationDTOResponse;
 import com.example.projekatmobilne.services.ConnectionCheckService;
 import com.example.projekatmobilne.tools.JWTManager;
 import com.example.projekatmobilne.tools.ResponseParser;
@@ -89,8 +89,8 @@ public class LoginActivity extends AppCompatActivity {
 
                     }
                     if(response.code() == 200) {
-                        AuthenticationResponseDTO responseDTO =
-                                ResponseParser.parseResponse(response, AuthenticationResponseDTO.class, false);
+                        AuthenticationDTOResponse responseDTO =
+                                ResponseParser.parseResponse(response, AuthenticationDTOResponse.class, false);
 
                           JWTManager.saveJWT(responseDTO.getToken());
                         Intent intent = new Intent(LoginActivity.this, HomeActivity.class);

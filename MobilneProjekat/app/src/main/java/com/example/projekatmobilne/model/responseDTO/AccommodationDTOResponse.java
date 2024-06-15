@@ -2,6 +2,8 @@ package com.example.projekatmobilne.model.responseDTO;
 
 import com.example.projekatmobilne.model.Enum.AccommodationType;
 import com.example.projekatmobilne.model.Enum.Amenity;
+import com.example.projekatmobilne.model.responseDTO.innerDTO.AvailabilityDTOInner;
+import com.example.projekatmobilne.model.responseDTO.innerDTO.ReservationDTOInner;
 
 import java.util.List;
 
@@ -26,17 +28,17 @@ public class AccommodationDTOResponse {
 
     private Boolean autoAcceptEnabled;
 
-    private List<AvailabilityDTOResponse> availabilityList;
+    private List<AvailabilityDTOInner> availabilityList;
 
-    private List<ReservationDTO> futureReservations;
+    private List<ReservationDTOInner> futureReservations;
     private List<Long> imageIds;
 
     public AccommodationDTOResponse(String name, String description, String address, Double lat,
                                     Double lon, List<Amenity> amenities, Long minGuests,
                                     Long maxGuests, AccommodationType accommodationType,
                                     Boolean autoAcceptEnabled,
-                                    List<AvailabilityDTOResponse> availabilityList,
-                                    List<Long> imagePaths, List<ReservationDTO> futureReservations) {
+                                    List<AvailabilityDTOInner> availabilityList,
+                                    List<Long> imagePaths, List<ReservationDTOInner> futureReservations) {
         this.name = name;
         this.description = description;
         this.address = address;
@@ -52,11 +54,11 @@ public class AccommodationDTOResponse {
         this.futureReservations = futureReservations;
     }
 
-    public List<ReservationDTO> getFutureReservations() {
+    public List<ReservationDTOInner> getFutureReservations() {
         return futureReservations;
     }
 
-    public void setFutureReservations(List<ReservationDTO> futureReservations) {
+    public void setFutureReservations(List<ReservationDTOInner> futureReservations) {
         this.futureReservations = futureReservations;
     }
 
@@ -140,11 +142,11 @@ public class AccommodationDTOResponse {
         this.autoAcceptEnabled = autoAcceptEnabled;
     }
 
-    public List<AvailabilityDTOResponse> getAvailabilityList() {
+    public List<AvailabilityDTOInner> getAvailabilityList() {
         return availabilityList;
     }
 
-    public void setAvailabilityList(List<AvailabilityDTOResponse> availabilityList) {
+    public void setAvailabilityList(List<AvailabilityDTOInner> availabilityList) {
         this.availabilityList = availabilityList;
     }
 

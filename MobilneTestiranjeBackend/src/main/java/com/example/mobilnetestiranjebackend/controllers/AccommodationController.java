@@ -1,9 +1,6 @@
 package com.example.mobilnetestiranjebackend.controllers;
 
-import com.example.mobilnetestiranjebackend.DTOs.AccommodationDTOResponse;
-import com.example.mobilnetestiranjebackend.DTOs.AccommodationSearchDTO;
-import com.example.mobilnetestiranjebackend.DTOs.AvailabilityDTO;
-import com.example.mobilnetestiranjebackend.DTOs.ReservationDTO;
+import com.example.mobilnetestiranjebackend.DTOs.*;
 import com.example.mobilnetestiranjebackend.enums.AccommodationType;
 import com.example.mobilnetestiranjebackend.enums.Amenity;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidFileExtensionException;
@@ -11,6 +8,7 @@ import com.example.mobilnetestiranjebackend.exceptions.InvalidInputException;
 import com.example.mobilnetestiranjebackend.exceptions.NonExistingEntityException;
 import com.example.mobilnetestiranjebackend.model.Availability;
 import com.example.mobilnetestiranjebackend.model.Guest;
+import com.example.mobilnetestiranjebackend.model.Owner;
 import com.example.mobilnetestiranjebackend.model.Reservation;
 import com.example.mobilnetestiranjebackend.repositories.ReservationRepository;
 import com.example.mobilnetestiranjebackend.services.AccommodationService;
@@ -183,6 +181,15 @@ public class AccommodationController {
         return ResponseEntity.ok().body(pagedAccommodations);
     }
 
+    @PreAuthorize("hasAuthority('OWNER')")
+    @GetMapping(path = "/owner-list")
+    public ResponseEntity<?> getOwnerAccommodations(@AuthenticationPrincipal Owner owner,
+                                                    @RequestParam(defaultValue = "0") int pageNo,
+                                                    @RequestParam(defaultValue = "10") int pageSize){
+
+        Page<AccommodationViewDTO> accommodations = accommodationService.getOwnerAccommodations(owner, pageNo, pageSize);
+        return ResponseEntity.ok().body(accommodations);
+    }
 
     @PreAuthorize("hasAuthority('GUEST')")
     @PutMapping(path = "/{accommodationId}/add-favorites")

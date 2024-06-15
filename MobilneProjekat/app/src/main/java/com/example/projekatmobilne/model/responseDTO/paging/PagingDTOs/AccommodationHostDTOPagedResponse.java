@@ -1,16 +1,14 @@
-package com.example.projekatmobilne.model.paging.PagingDTOs;
+package com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs;
 
-
-
-import com.example.projekatmobilne.model.paging.Pageable;
-import com.example.projekatmobilne.model.paging.Sort;
-import com.example.projekatmobilne.model.responseDTO.ReviewDTO;
-import com.example.projekatmobilne.model.responseDTO.ReviewDTOResponse;
+import com.example.projekatmobilne.adapters.AdapterItems.AccommodationHostItem;
+import com.example.projekatmobilne.model.responseDTO.paging.Pageable;
+import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.PageTypes.AccommodationSearchDTOPageItem;
+import com.example.projekatmobilne.model.responseDTO.paging.Sort;
 
 import java.util.List;
 
-public class PagedReviewsDTOResponse {
-    private List<ReviewDTOResponse> content;
+public class AccommodationHostDTOPagedResponse {
+    private List<AccommodationHostItem> content;
     private Pageable pageable;
     private boolean last;
     private int totalPages;
@@ -22,7 +20,7 @@ public class PagedReviewsDTOResponse {
     private boolean first;
     private boolean empty;
 
-    public PagedReviewsDTOResponse(List<ReviewDTOResponse> content, Pageable pageable, boolean last, int totalPages, int totalElements, int size, int number, Sort sort, int numberOfElements, boolean first, boolean empty) {
+    public AccommodationHostDTOPagedResponse(List<AccommodationHostItem> content, Pageable pageable, boolean last, int totalPages, int totalElements, int size, int number, Sort sort, int numberOfElements, boolean empty, boolean first) {
         this.content = content;
         this.pageable = pageable;
         this.last = last;
@@ -32,15 +30,15 @@ public class PagedReviewsDTOResponse {
         this.number = number;
         this.sort = sort;
         this.numberOfElements = numberOfElements;
-        this.first = first;
         this.empty = empty;
+        this.first = first;
     }
 
-    public List<ReviewDTOResponse> getContent() {
+    public List<AccommodationHostItem> getContent() {
         return content;
     }
 
-    public void setContent(List<ReviewDTOResponse> content) {
+    public void setContent(List<AccommodationHostItem> content) {
         this.content = content;
     }
 
@@ -123,22 +121,4 @@ public class PagedReviewsDTOResponse {
     public void setEmpty(boolean empty) {
         this.empty = empty;
     }
-
-    @Override
-    public String toString() {
-        return "PagedSearchDTOResponse{" +
-                "content=" + content +
-                ", pageable=" + pageable +
-                ", last=" + last +
-                ", totalPages=" + totalPages +
-                ", totalElements=" + totalElements +
-                ", size=" + size +
-                ", number=" + number +
-                ", sort=" + sort +
-                ", numberOfElements=" + numberOfElements +
-                ", first=" + first +
-                ", empty=" + empty +
-                '}';
-    }
 }
-
