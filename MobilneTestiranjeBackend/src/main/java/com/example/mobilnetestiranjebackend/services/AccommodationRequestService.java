@@ -5,6 +5,7 @@ import com.example.mobilnetestiranjebackend.DTOs.AvailabilityDTO;
 import com.example.mobilnetestiranjebackend.DTOs.AccommodationDTO;
 import com.example.mobilnetestiranjebackend.enums.Amenity;
 import com.example.mobilnetestiranjebackend.enums.RequestStatus;
+import com.example.mobilnetestiranjebackend.enums.RequestType;
 import com.example.mobilnetestiranjebackend.exceptions.*;
 import com.example.mobilnetestiranjebackend.model.*;
 import com.example.mobilnetestiranjebackend.repositories.*;
@@ -19,8 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 
 @Service
@@ -32,6 +32,7 @@ public class AccommodationRequestService {
     private final ReservationService reservationService;
     private final AvailabilityRepository availabilityRepository;
     private final AccommodationRepository accommodationRepository;
+    private final AvailabilityService availabilityService;
 
     private static final String UPLOAD_DIR = "uploads";
 
@@ -124,6 +125,7 @@ public class AccommodationRequestService {
                     .cancelDeadline(availDTO.getCancellationDeadline())
                     .price(availDTO.getPrice())
                     .pricePerGuest(availDTO.getPricePerGuest())
+                    .requestType(RequestType.CREATE)
                     .build();
             availabilityRequestRepository.save(availabilityRequest);
             accommodationRequest.getAvailabilityRequests().add(availabilityRequest);
@@ -132,7 +134,7 @@ public class AccommodationRequestService {
         accommodationRequestRepository.save(accommodationRequest);
     }
 
-    public void createEditAccommodationRequest(Owner owner, List<MultipartFile> images, AccommodationDTOEdit accommodationDTO, Long accommodationId) {
+    public void createEditAccommodationRequest(Owner owner, List<MultipartFile> images, AccommodationDTO accommodationDTO, Long accommodationId) {
 
 
 
@@ -142,19 +144,64 @@ public class AccommodationRequestService {
 
         if(!accommodation.getOwner().getEmail().equals(owner.getEmail())) throw new InvalidAuthorizationException("You don't own this accommodation");
 
+        if(reservationService.reservationsNotEnded(accommodationId))
+            throw new ReservationNotEndedException("You cannot change details if there are active reservations ");
+
+
         List<Amenity> amenities = new ArrayList<>();
         for(Amenity amenityStr: accommodationDTO.getAmenities()){
             amenities.add(amenityStr);
         }
 
-//      ISKOMENTARISANO JE ZATO STO JE OVO PREBACENO U AVAILABILITY REQUEST CONTROLLER
-//        for(AvailabilityDTO avail :accommodationDTO.getAvailabilityList()){
-//            if(availabilityService.availabilityRangeTaken(accommodationId, avail.getStartDate(), avail.getEndDate(), avail.getId()))
-//                throw new InvalidDateException("There is already availability period that interferes with this period");
-//        }
 
-        if(reservationService.reservationsNotEnded(accommodationId))
-            throw new ReservationNotEndedException("You cannot change details if there are active reservations ");
+        Map<Long, AvailabilityDTO> availReqMap = new HashMap<>();
+        for(AvailabilityDTO a: accommodationDTO.getAvailabilityList()){
+            availReqMap.put(a.getId(), a);
+        }
+
+
+        Map<Long, AvailabilityDTO> visited = new HashMap<>();
+
+        for(AvailabilityDTO availReq: accommodationDTO.getAvailabilityList()){
+
+            if(!availReq.getRequestType().equals(RequestType.DELETE)){
+                for(Availability a: availabilityRepository.findAllByAccommodationId(accommodationId)){
+
+                    if(a.getId() != availReq.getId() || visited.containsKey(a.getId())){
+                        if(availReqMap.containsKey(a.getId())){
+
+                            var reqPom = availReqMap.get(a.getId());
+                            if(reqPom.getRequestType().equals(RequestType.EDIT)){
+
+                                if(!((availReq.getStartDate().compareTo(reqPom.getStartDate()) < 0 && availReq.getEndDate().compareTo(reqPom.getStartDate()) < 0) ||
+                                        (availReq.getStartDate().compareTo(reqPom.getEndDate()) > 0 && availReq.getEndDate().compareTo(reqPom.getEndDate()) > 0))){
+
+                                    System.out.println("REQ POM: " + reqPom.getId());
+                                    System.out.println("AVAIL REQ: " + availReq.getId());
+                                    throw new InvalidInputException("Some date ranges are in conflict");
+                                }
+
+
+                            }
+
+                        }else{
+                            if(!((availReq.getStartDate().compareTo(a.getStartDate()) < 0 && availReq.getEndDate().compareTo(a.getStartDate()) < 0) ||
+                                    (availReq.getStartDate().compareTo(a.getEndDate()) > 0 && availReq.getEndDate().compareTo(a.getEndDate()) > 0))){
+                                System.out.println("A: " + a.getId());
+                                System.out.println("AVAIL REQ: " + availReq.getId());
+                                throw new InvalidInputException("Some date ranges are in conflict");
+                            }
+                        }
+
+                    }
+
+                }
+                visited.put(availReq.getId(), availReq);
+            }
+        }
+
+
+
 
 
 
@@ -187,22 +234,35 @@ public class AccommodationRequestService {
 
         accommodationRequestRepository.save(accommodationRequest);
 
-//        for(AvailabilityDTO availDTO: accommodationDTO.getAvailabilityList()){
-//            Availability availability = null;
-//            if(availDTO.getId() != 0) availability = availabilityRepository.findById(availDTO.getId()).get();
-//
-//            var availabilityRequest = AvailabilityRequest.builder()
-//                    .startDate(availDTO.getStartDate())
-//                    .endDate(availDTO.getEndDate())
-//                    .cancelDeadline(availDTO.getCancellationDeadline())
-//                    .price(availDTO.getPrice())
-//                    .pricePerGuest(availDTO.getPricePerGuest())
-//                    .availability(availability)
-//                    .build();
-//
-//            availabilityRequestRepository.save(availabilityRequest);
-//            accommodationRequest.getAvailabilityRequests().add(availabilityRequest);
-//        }
+        for(AvailabilityDTO availDTO: accommodationDTO.getAvailabilityList()){
+
+            Availability availability = null;
+
+            RequestType type = RequestType.valueOf(availDTO.getRequestType().toString());
+            System.out.println(type);
+            if(type.equals(RequestType.EDIT) || type.equals(RequestType.DELETE)){
+                var availabilityWrappper = availabilityRepository.findByIdAndAccommodationId(availDTO.getId(), accommodationId);
+                System.out.println(availDTO.getId());
+                System.out.println(accommodationDTO.getId());
+                if(availabilityWrappper.isEmpty()) throw new InvalidInputException("Availability with this id doesn't exist");
+                availability = availabilityWrappper.get();
+            }
+
+            var availabilityRequest = AvailabilityRequest.builder()
+                    .startDate(availDTO.getStartDate())
+                    .endDate(availDTO.getEndDate())
+                    .cancelDeadline(availDTO.getCancellationDeadline())
+                    .price(availDTO.getPrice())
+                    .pricePerGuest(availDTO.getPricePerGuest())
+                    .availability(availability)
+                    .requestType(availDTO.getRequestType())
+                    .build();
+
+            availabilityRequestRepository.save(availabilityRequest);
+            accommodationRequest.getAvailabilityRequests().add(availabilityRequest);
+        }
+
+        accommodationRequestRepository.save(accommodationRequest);
 
     }
 
@@ -376,40 +436,44 @@ public class AccommodationRequestService {
 //
 //                availabilityRepository.delete(availability);
 //            }
-//
-//
-//
-//
-//            for(AvailabilityRequest ar: accommodationRequest.getAvailabilityRequests()){
-//                if (ar.getId() == 0){
-//                     var availability = Availability.builder()
-//                             .accommodation(accommodation)
-//                             .pricePerGuest(ar.getPricePerGuest())
-//                             .price(ar.getPrice())
-//                             .cancelDeadline(ar.getCancelDeadline())
-//                             .startDate(ar.getStartDate())
-//                             .endDate(ar.getEndDate())
-//                             .build();
-//
-//                     availabilityRepository.save(availability);
-//                     accommodation.getAvailabilityList().add(availability);
-//                     accommodationRepository.save(accommodation);
-//                }else{
-//
-//                    var availabilityWrapper = availabilityRepository.findById(ar.getId());
-//                    if(availabilityWrapper.isEmpty()) throw new NonExistingEntityException("Availability doesn't exist");
-//                    var availability = availabilityWrapper.get();
-//
-//                    availability.setPrice(ar.getPrice());
-//                    availability.setEndDate(ar.getEndDate());
-//                    availability.setStartDate(ar.getStartDate());
-//                    availability.setCancelDeadline(ar.getCancelDeadline());
-//                    availability.setPricePerGuest(ar.getPricePerGuest());
-//
-//                    availabilityRepository.save(availability);
-//
-//                }
-//            }
+
+
+
+
+            for(AvailabilityRequest ar: accommodationRequest.getAvailabilityRequests()){
+                if (ar.getRequestType().equals(RequestType.CREATE)){
+                     var availability = Availability.builder()
+                             .accommodation(accommodation)
+                             .pricePerGuest(ar.getPricePerGuest())
+                             .price(ar.getPrice())
+                             .cancelDeadline(ar.getCancelDeadline())
+                             .startDate(ar.getStartDate())
+                             .endDate(ar.getEndDate())
+                             .build();
+
+                     availabilityRepository.save(availability);
+                     accommodation.getAvailabilityList().add(availability);
+                     accommodationRepository.save(accommodation);
+                }else if(ar.getRequestType().equals(RequestType.EDIT)){
+
+                    var availabilityWrapper = availabilityRepository.findById(ar.getId());
+                    if(availabilityWrapper.isEmpty()) throw new NonExistingEntityException("Availability doesn't exist");
+                    var availability = availabilityWrapper.get();
+
+                    availability.setPrice(ar.getPrice());
+                    availability.setEndDate(ar.getEndDate());
+                    availability.setStartDate(ar.getStartDate());
+                    availability.setCancelDeadline(ar.getCancelDeadline());
+                    availability.setPricePerGuest(ar.getPricePerGuest());
+
+                    availabilityRepository.save(availability);
+                }else{
+                    var availabilityWrapper = availabilityRepository.findById(ar.getId());
+                    if(availabilityWrapper.isEmpty()) throw new NonExistingEntityException("Availability doesn't exist");
+                    var availability = availabilityWrapper.get();
+                    availabilityRepository.delete(availability);
+                }
+            }
         }
 
     }

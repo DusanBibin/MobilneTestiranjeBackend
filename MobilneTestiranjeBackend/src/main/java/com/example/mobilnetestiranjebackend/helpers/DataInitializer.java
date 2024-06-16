@@ -135,44 +135,6 @@ private final UserRepository userRepository;
         admin = userRepository.save(admin);
 
 
-
-        var accommodationRequest = AccommodationRequest.builder()
-                .name("AccName")
-                .description("Accommodation description")
-                .address("Some adresss")
-                .lat(90.0)
-                .lon(90.0)
-                .amenities(List.of(Amenity.WIFI))
-                .imagePaths(List.of("/dusanbibin2@gmail.com/AccName/1_1704322662222_soba.png"))
-                .minGuests(1L)
-                .maxGuests(1L)
-                .accommodationType(AccommodationType.valueOf("STUDIO"))
-                .autoAcceptEnabled(false)
-                .availabilityRequests(new ArrayList<>())
-                .owner(ownerDusan)
-                .status(RequestStatus.PENDING)
-                .build();
-        accommodationRequest = accommodationRequestRepository.save(accommodationRequest);
-
-        var availabilityRequest = AvailabilityRequest.builder()
-                .startDate(LocalDate.now().plusDays(5))
-                .endDate(LocalDate.now().plusDays(7))
-                .cancelDeadline(LocalDate.now().plusDays(4))
-                .price(200L)
-                .pricePerGuest(true)
-                .build();
-
-        availabilityRequest = availabilityRequestRepository.save(availabilityRequest);
-
-        accommodationRequest = accommodationRequestRepository.save(accommodationRequest);
-
-        ownerDusan.getAccommodationRequests().add(accommodationRequest);
-        ownerDusan = ownerRepository.save(ownerDusan);
-
-        accommodationRequest.getAvailabilityRequests().add(availabilityRequest);
-        accommodationRequest = accommodationRequestRepository.save(accommodationRequest);
-
-
         var accommodation = Accommodation.builder()
                 .name("NewAcc")
                 .description("Accommodation description")
@@ -240,132 +202,132 @@ private final UserRepository userRepository;
 
 
          //enddate 10 startdate 8 ako je u buducnsti stavi plus days
-        var reservationOlder = Reservation.builder()
-                .availability(null)
-                .guest(guestDusan2)
-                .status(ReservationStatus.ACCEPTED)
-                .accommodation(accommodation)
-                .reservationEndDate(LocalDate.now().minusDays(20))
-                .reservationStartDate(LocalDate.now().minusDays(18))
-                .guestNum(1L)
-                .build();
-
-        var reservationOld = Reservation.builder()
-                .availability(null)
-                .guest(guestDusan1)
-                .status(ReservationStatus.ACCEPTED)
-                .accommodation(accommodation)
-                .reservationEndDate(LocalDate.now().minusDays(10))
-                .reservationStartDate(LocalDate.now().minusDays(8))
-                .guestNum(1L)
-                .build();
-
-        var reservationNew = Reservation.builder()
-                .availability(availabilityEditTest)
-                .guest(guestDusan1)
-                .status(ReservationStatus.ACCEPTED)
-                .accommodation(accommodation)
-                .reservationEndDate(LocalDate.now().plusDays(10))
-                .reservationStartDate(LocalDate.now().plusDays(8))
-                .guestNum(1L)
-                .build();
-
-
-        reservationOlder = reservationRepository.save(reservationOlder);
-        reservationNew = reservationRepository.save(reservationNew);
-        reservationOld = reservationRepository.save(reservationOld);
-
-        guestDusan1.getReservations().add(reservationOld);
-        guestDusan1.getReservations().add(reservationNew);
-        guestDusan2.getReservations().add(reservationOlder);
-        guestDusan1 = guestRepository.save(guestDusan1);
-        guestDusan2 = guestRepository.save(guestDusan2);
-
-        accommodation.getReservations().add(reservationOlder);
-        accommodation.getReservations().add(reservationOld);
-        accommodation.getReservations().add(reservationNew);
-        accommodation = accommodationRepository.save(accommodation);
-
-
-
-        var ownerReview = OwnerReview.builder()
-                .rating(5L)
-                .comment("owner Review")
-                .owner(ownerDusan)
-                .guest(guestDusan1)
-                .complaint(null)
-                .build();
-
-        ownerReview = ownerReviewRepository.save(ownerReview);
-
-        var accommodationReview = AccommodationReview.builder()
-                .rating(3L)
-                .comment("accommodation review")
-                .allowed(false)
-                .guest(guestDusan1)
-                .reservation(reservationOld)
-                .accommodation(accommodation)
-                .complaint(null)
-                .build();
-
-        accommodationReview = accommodationReviewRepository.save(accommodationReview);
-
-
-
-
-
-        var ownerReviewOlder = OwnerReview.builder()
-                .rating(5L)
-                .comment("owner Review")
-                .owner(ownerDusan)
-                .guest(guestDusan2)
-                .complaint(null)
-                .build();
-
-        ownerReviewOlder = ownerReviewRepository.save(ownerReviewOlder);
-
-        var accommodationReviewOlder = AccommodationReview.builder()
-                .rating(3L)
-                .comment("accommodation review")
-                .allowed(false)
-                .guest(guestDusan2)
-                .reservation(reservationOld)
-                .accommodation(accommodation)
-                .complaint(null)
-                .build();
-
-        accommodationReviewOlder = accommodationReviewRepository.save(accommodationReviewOlder);
-
-        var ownerReviewComplaint = ReviewComplaint.builder()
-                .owner(ownerDusan)
-                .review(ownerReview)
-                .guest(guestDusan1)
-                .reason("some reason")
-                .status(RequestStatus.PENDING)
-                .response("")
-                .build();
-
-        ownerReviewComplaint = reviewComplaintRepository.save(ownerReviewComplaint);
-
-
-        var accommodationReviewComplaint = ReviewComplaint.builder()
-                .owner(ownerDusan)
-                .review(accommodationReview)
-                .guest(guestDusan1)
-                .reason("some reason")
-                .status(RequestStatus.PENDING)
-                .response("")
-                .build();
-
-
-        accommodationReviewComplaint = reviewComplaintRepository.save(accommodationReviewComplaint);
-
-
-        ownerReview.setComplaint(ownerReviewComplaint);
-        ownerReview = ownerReviewRepository.save(ownerReview);
-
-        accommodationReview.setComplaint(accommodationReviewComplaint);
-        accommodationReview = accommodationReviewRepository.save(accommodationReview);
+//        var reservationOlder = Reservation.builder()
+//                .availability(null)
+//                .guest(guestDusan2)
+//                .status(ReservationStatus.ACCEPTED)
+//                .accommodation(accommodation)
+//                .reservationEndDate(LocalDate.now().minusDays(20))
+//                .reservationStartDate(LocalDate.now().minusDays(18))
+//                .guestNum(1L)
+//                .build();
+//
+//        var reservationOld = Reservation.builder()
+//                .availability(null)
+//                .guest(guestDusan1)
+//                .status(ReservationStatus.ACCEPTED)
+//                .accommodation(accommodation)
+//                .reservationEndDate(LocalDate.now().minusDays(10))
+//                .reservationStartDate(LocalDate.now().minusDays(8))
+//                .guestNum(1L)
+//                .build();
+//
+//        var reservationNew = Reservation.builder()
+//                .availability(availabilityEditTest)
+//                .guest(guestDusan1)
+//                .status(ReservationStatus.ACCEPTED)
+//                .accommodation(accommodation)
+//                .reservationEndDate(LocalDate.now().plusDays(10))
+//                .reservationStartDate(LocalDate.now().plusDays(8))
+//                .guestNum(1L)
+//                .build();
+//
+//
+//        reservationOlder = reservationRepository.save(reservationOlder);
+//        reservationNew = reservationRepository.save(reservationNew);
+//        reservationOld = reservationRepository.save(reservationOld);
+//
+//        guestDusan1.getReservations().add(reservationOld);
+//        guestDusan1.getReservations().add(reservationNew);
+//        guestDusan2.getReservations().add(reservationOlder);
+//        guestDusan1 = guestRepository.save(guestDusan1);
+//        guestDusan2 = guestRepository.save(guestDusan2);
+//
+//        accommodation.getReservations().add(reservationOlder);
+//        accommodation.getReservations().add(reservationOld);
+//        accommodation.getReservations().add(reservationNew);
+//        accommodation = accommodationRepository.save(accommodation);
+//
+//
+//
+//        var ownerReview = OwnerReview.builder()
+//                .rating(5L)
+//                .comment("owner Review")
+//                .owner(ownerDusan)
+//                .guest(guestDusan1)
+//                .complaint(null)
+//                .build();
+//
+//        ownerReview = ownerReviewRepository.save(ownerReview);
+//
+//        var accommodationReview = AccommodationReview.builder()
+//                .rating(3L)
+//                .comment("accommodation review")
+//                .allowed(false)
+//                .guest(guestDusan1)
+//                .reservation(reservationOld)
+//                .accommodation(accommodation)
+//                .complaint(null)
+//                .build();
+//
+//        accommodationReview = accommodationReviewRepository.save(accommodationReview);
+//
+//
+//
+//
+//
+//        var ownerReviewOlder = OwnerReview.builder()
+//                .rating(5L)
+//                .comment("owner Review")
+//                .owner(ownerDusan)
+//                .guest(guestDusan2)
+//                .complaint(null)
+//                .build();
+//
+//        ownerReviewOlder = ownerReviewRepository.save(ownerReviewOlder);
+//
+//        var accommodationReviewOlder = AccommodationReview.builder()
+//                .rating(3L)
+//                .comment("accommodation review")
+//                .allowed(false)
+//                .guest(guestDusan2)
+//                .reservation(reservationOld)
+//                .accommodation(accommodation)
+//                .complaint(null)
+//                .build();
+//
+//        accommodationReviewOlder = accommodationReviewRepository.save(accommodationReviewOlder);
+//
+//        var ownerReviewComplaint = ReviewComplaint.builder()
+//                .owner(ownerDusan)
+//                .review(ownerReview)
+//                .guest(guestDusan1)
+//                .reason("some reason")
+//                .status(RequestStatus.PENDING)
+//                .response("")
+//                .build();
+//
+//        ownerReviewComplaint = reviewComplaintRepository.save(ownerReviewComplaint);
+//
+//
+//        var accommodationReviewComplaint = ReviewComplaint.builder()
+//                .owner(ownerDusan)
+//                .review(accommodationReview)
+//                .guest(guestDusan1)
+//                .reason("some reason")
+//                .status(RequestStatus.PENDING)
+//                .response("")
+//                .build();
+//
+//
+//        accommodationReviewComplaint = reviewComplaintRepository.save(accommodationReviewComplaint);
+//
+//
+//        ownerReview.setComplaint(ownerReviewComplaint);
+//        ownerReview = ownerReviewRepository.save(ownerReview);
+//
+//        accommodationReview.setComplaint(accommodationReviewComplaint);
+//        accommodationReview = accommodationReviewRepository.save(accommodationReview);
 
 
         //thirtyMore();

@@ -31,13 +31,12 @@ public class AvailabilityRequest {
     @ManyToOne
     private Availability availability;
 
-
-    @ManyToOne
-    private Accommodation accommodation;
-
-    private RequestStatus status;
-
-    private String reason;
+//    @ManyToOne
+//    private Accommodation accommodation;
+//
+//    private RequestStatus status;
+//
+//    private String reason;
 
     private RequestType requestType;
 }

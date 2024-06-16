@@ -243,6 +243,7 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
 
                 if(!isValid) {Toast.makeText(CreateAccommodationActivity.this, "All fields must be filled", Toast.LENGTH_SHORT).show(); return;}
                 accommodation = new AccommodationDTO();
+                accommodation.setId(0L);
                 accommodation.setName(binding.inputEditTextAccommodationName.getText().toString());
                 accommodation.setDescription(binding.inputEditTextDetails.getText().toString());
                 accommodation.setAddress(binding.txtAddress.getText().toString());

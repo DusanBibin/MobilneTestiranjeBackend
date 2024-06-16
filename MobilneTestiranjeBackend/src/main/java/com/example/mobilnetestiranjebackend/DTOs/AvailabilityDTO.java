@@ -39,6 +39,4 @@ public class AvailabilityDTO {
 
     private RequestType requestType;
 
-    private RequestStatus status;
-    private String reason;
 }
