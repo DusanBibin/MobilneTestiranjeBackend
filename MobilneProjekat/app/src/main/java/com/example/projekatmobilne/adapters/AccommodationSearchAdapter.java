@@ -57,6 +57,7 @@ public class AccommodationSearchAdapter extends RecyclerView.Adapter<Accommodati
         holder.txtDateRange.setText(dataList.get(position).getDateRange());
 
         Double rating = dataList.get(position).getRating();
+        System.out.println(rating);
         if(rating == 0){
             holder.ratingBar.setVisibility(View.GONE);
             holder.txtNoRatings.setVisibility(View.VISIBLE);

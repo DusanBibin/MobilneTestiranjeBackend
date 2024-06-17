@@ -2,6 +2,7 @@ package com.example.projekatmobilne.model.responseDTO;
 
 import com.example.projekatmobilne.model.Enum.AccommodationType;
 import com.example.projekatmobilne.model.Enum.Amenity;
+import com.example.projekatmobilne.model.requestDTO.AvailabilityDTO;
 import com.example.projekatmobilne.model.responseDTO.innerDTO.AvailabilityDTOInner;
 import com.example.projekatmobilne.model.responseDTO.innerDTO.ReservationDTOInner;
 
@@ -28,7 +29,7 @@ public class AccommodationDTOResponse {
 
     private Boolean autoAcceptEnabled;
 
-    private List<AvailabilityDTOInner> availabilityList;
+    private List<AvailabilityDTO> availabilityList;
 
     private List<ReservationDTOInner> futureReservations;
     private List<Long> imageIds;
@@ -37,7 +38,7 @@ public class AccommodationDTOResponse {
                                     Double lon, List<Amenity> amenities, Long minGuests,
                                     Long maxGuests, AccommodationType accommodationType,
                                     Boolean autoAcceptEnabled,
-                                    List<AvailabilityDTOInner> availabilityList,
+                                    List<AvailabilityDTO> availabilityList,
                                     List<Long> imagePaths, List<ReservationDTOInner> futureReservations) {
         this.name = name;
         this.description = description;
@@ -142,11 +143,11 @@ public class AccommodationDTOResponse {
         this.autoAcceptEnabled = autoAcceptEnabled;
     }
 
-    public List<AvailabilityDTOInner> getAvailabilityList() {
+    public List<AvailabilityDTO> getAvailabilityList() {
         return availabilityList;
     }
 
-    public void setAvailabilityList(List<AvailabilityDTOInner> availabilityList) {
+    public void setAvailabilityList(List<AvailabilityDTO> availabilityList) {
         this.availabilityList = availabilityList;
     }
 

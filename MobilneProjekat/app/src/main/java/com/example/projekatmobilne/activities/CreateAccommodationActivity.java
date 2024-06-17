@@ -41,8 +41,11 @@ import com.example.projekatmobilne.clients.ClientUtils;
 import com.example.projekatmobilne.databinding.ActivityCreateAccommodationBinding;
 import com.example.projekatmobilne.model.Enum.AccommodationType;
 import com.example.projekatmobilne.model.Enum.Amenity;
+import com.example.projekatmobilne.model.Enum.RequestType;
 import com.example.projekatmobilne.model.requestDTO.AccommodationDTO;
 import com.example.projekatmobilne.model.requestDTO.AvailabilityDTO;
+import com.example.projekatmobilne.model.responseDTO.AccommodationDTOResponse;
+import com.example.projekatmobilne.model.responseDTO.innerDTO.AvailabilityDTOInner;
 import com.example.projekatmobilne.tools.ImageUtils;
 import com.example.projekatmobilne.tools.ResponseParser;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -103,7 +106,8 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
     private List<File> imagesList = new ArrayList<>();
     private AccommodationDTO accommodation;
     private List<AvailabilityDTO> availabilitiesList = new ArrayList<>();
-
+    private Long accommodationId = 0L;
+    private AccommodationDTOResponse accommodationDTO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +125,11 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
 
 
         if (!checkPermissions()) requestPermissions();
+
+        Intent intent = getIntent();
+        if(intent != null && intent.hasExtra("accommodationId")){
+            accommodationId = (Long) intent.getSerializableExtra("accommodationId");
+        }
 
 
         LinearLayoutManager linearLayoutManagerImages = new LinearLayoutManager(CreateAccommodationActivity.this);
@@ -144,9 +153,10 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
 
                         Uri imageUri = result.getData().getData();
                         String filePath = ImageUtils.getFileNameFromPart(imageUri, getContentResolver());
-                        File file = new File(filePath);
-                        imagesList.add(file);
 
+                        File file = new File(filePath);
+                        
+                        imagesList.add(file);
                         imagesAddAdapter.notifyItemInserted(imagesList.size() - 1);
                     }
                 });
@@ -299,6 +309,59 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
                 RadioButton selectedRadioButton = group.findViewById(checkedId);
                 String accommodationTypeStr = selectedRadioButton.getText().toString();
                 accommodationType = AccommodationType.valueOf(accommodationTypeStr.toUpperCase());
+            }
+        });
+
+
+        Call<ResponseBody> call = ClientUtils.apiService.getAccommodation(accommodationId);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if(response.code() == 400){
+                    Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
+
+                    if(map.containsKey("message")){
+                        String errMessage = map.get("message");
+                        Toast.makeText(CreateAccommodationActivity.this, errMessage, Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                if(response.code() == 200){
+                    accommodationDTO = ResponseParser.parseResponse(response, AccommodationDTOResponse.class, false);
+                    binding.inputEditTextAccommodationName.setText(accommodationDTO.getName());
+                    binding.inputEditTextDetails.setText(accommodationDTO.getDescription());
+                    binding.inputEditTextMinGuests.setText(accommodationDTO.getMinGuests().toString());
+                    binding.inputEditTextMaxGuests.setText(accommodationDTO.getMaxGuests().toString());
+                    AccommodationType type = accommodationDTO.getAccommodationType();
+                    binding.radioButtonStudio.setChecked(type.equals(AccommodationType.STUDIO));
+                    binding.radioButtonRoom.setChecked(type.equals(AccommodationType.ROOM));
+                    binding.radioButtonApartment.setChecked(type.equals(AccommodationType.APARTMENT));
+                    for(Amenity amenity: accommodationDTO.getAmenities()){
+                        if(amenity.equals(Amenity.AC)) binding.checkBoxAC.setChecked(true);
+                        if(amenity.equals(Amenity.PARKING)) binding.checkBoxParking.setChecked(true);
+                        if(amenity.equals(Amenity.POOL)) binding.checkBoxPool.setChecked(true);
+                        if(amenity.equals(Amenity.WIFI)) binding.checkBoxWifi.setChecked(true);
+                    }
+                    binding.checkBoxAutoAccept.setChecked(accommodationDTO.getAutoAcceptEnabled());
+                    binding.searchView.setQuery(accommodationDTO.getAddress(), false);
+                    binding.txtAddress.setText(accommodationDTO.getAddress());
+                    LatLng location = new LatLng(accommodationDTO.getLat(), accommodationDTO.getLon());
+                    MarkerOptions markerOptions = new MarkerOptions().position(location);
+                    mMap.addMarker(markerOptions);
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 12.5f));
+
+                    for(AvailabilityDTO avail: accommodationDTO.getAvailabilityList()){
+                        avail.setRequestType(RequestType.EDIT);
+                        availabilitiesList.add(avail);
+                        availabilitiesAdapter.notifyItemInserted(availabilitiesList.size() - 1);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(CreateAccommodationActivity.this, "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                t.printStackTrace();
             }
         });
 

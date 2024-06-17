@@ -23,12 +23,15 @@ import com.example.projekatmobilne.adapters.ImageAdapter;
 import com.example.projekatmobilne.adapters.ReviewsAdapter;
 import com.example.projekatmobilne.clients.ClientUtils;
 import com.example.projekatmobilne.databinding.ActivityAccommodationDetailsBinding;
+import com.example.projekatmobilne.model.Enum.Role;
+import com.example.projekatmobilne.model.requestDTO.AvailabilityDTO;
 import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.ReviewsDTOPagedResponse;
 import com.example.projekatmobilne.model.responseDTO.AccommodationDTOResponse;
 import com.example.projekatmobilne.model.responseDTO.innerDTO.AvailabilityDTOInner;
 import com.example.projekatmobilne.model.responseDTO.innerDTO.ReservationDTOInner;
 import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.PageTypes.ReviewDTOPageItem;
 import com.example.projekatmobilne.tools.EventDecorator;
+import com.example.projekatmobilne.tools.JWTManager;
 import com.example.projekatmobilne.tools.ResponseParser;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -98,6 +101,20 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+
+        binding.txtNoRatings.setVisibility(View.GONE);
+        binding.btnEdit.setVisibility(View.GONE);
+        if(Role.OWNER.equals(Role.valueOf(JWTManager.getRole()))){
+            binding.btnEdit.setVisibility(View.VISIBLE);
+            binding.btnEdit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(AccommodationDetailsActivity.this, CreateAccommodationActivity.class);
+                    intent.putExtra("accommodationId", accommodationId);
+                    startActivity(intent);
+                }
+            });
+        }
 
         calendarView = findViewById(R.id.calendarView);
         calendarView.setShowOtherDates(MaterialCalendarView.SHOW_ALL);
@@ -198,7 +215,7 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
 
     private void setupSpinner() {
         options = new ArrayList<>();
-        for(AvailabilityDTOInner a: accommodationDTO.getAvailabilityList()){
+        for(AvailabilityDTO a: accommodationDTO.getAvailabilityList()){
             options.add(a.getPrice().toString());
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(AccommodationDetailsActivity.this, android.R.layout.simple_spinner_item, options);
@@ -215,7 +232,7 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
 
                 calendarView.removeDecorators();
                 String selectedOption = options.get(position);
-                for(AvailabilityDTOInner a: accommodationDTO.getAvailabilityList()){
+                for(AvailabilityDTO a: accommodationDTO.getAvailabilityList()){
 
                     if(selectedOption.equals(a.getPrice().toString())){
 
@@ -309,6 +326,8 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
 
                 reviewsAdapter = new ReviewsAdapter(AccommodationDetailsActivity.this, dataList);
                 binding.recyclerViewDetails.setAdapter(reviewsAdapter);
+
+                if(dataList.isEmpty()) binding.txtNoRatings.setVisibility(View.VISIBLE);
             }
 
             @Override

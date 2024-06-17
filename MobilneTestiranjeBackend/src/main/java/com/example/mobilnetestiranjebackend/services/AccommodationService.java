@@ -173,7 +173,9 @@ public class AccommodationService {
             for (AccommodationReview ar : accommodationsRatings) {
                 ratingSum += ar.getRating();
             }
-            double ratingAvg = ratingSum / accommodationsRatings.size();
+
+            double ratingAvg = 0;
+            if(ratingSum != 0) ratingAvg = ratingSum / accommodationsRatings.size();
 
             AccommodationSearchDTO dto = new AccommodationSearchDTO();
             dto.setAccommodationId(a.getId());

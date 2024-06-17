@@ -1,6 +1,7 @@
 package com.example.projekatmobilne.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.projekatmobilne.R;
+import com.example.projekatmobilne.activities.AccommodationDetailsActivity;
+import com.example.projekatmobilne.activities.CreateAccommodationActivity;
 import com.example.projekatmobilne.adapters.AdapterItems.AccommodationHostItem;
 
 import java.util.List;
@@ -48,7 +51,9 @@ public class AccommodationHostViewAdapter extends RecyclerView.Adapter<Accommoda
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, "iksdebro", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(context, AccommodationDetailsActivity.class);
+                intent.putExtra("accommodationId", dataList.get(holder.getAdapterPosition()).getId());
+                context.startActivity(intent);
             }
         });
     }
