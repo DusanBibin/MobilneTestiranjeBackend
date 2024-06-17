@@ -148,6 +148,12 @@ public interface ApiService {
     Call<ResponseBody> createNewAccommodationRequest(@Part("accommodationDTO") AccommodationDTO accommodationDTO,
                                                      @Part List<MultipartBody.Part> images);
 
+    @Multipart
+    @POST("accommodation-requests/accommodations/{accommodationId}")
+    Call<ResponseBody> createNewEditAccommodationRequest(@Part("accommodationDTO") AccommodationDTO accommodationDTO,
+                                                     @Part List<MultipartBody.Part> images,
+                                                         @Path("accommodationId") Long accommodationId);
+
     @Headers({
             "User-Agent: Mobile-Android",
             "Content-Type:application/json"

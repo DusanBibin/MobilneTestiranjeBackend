@@ -8,6 +8,8 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
@@ -63,6 +65,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -108,6 +111,7 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
     private List<AvailabilityDTO> availabilitiesList = new ArrayList<>();
     private Long accommodationId = 0L;
     private AccommodationDTOResponse accommodationDTO;
+    private Long newAvailabilityCreateId = 1L;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -214,6 +218,7 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
                 dateRangeEdit.setText(null);
                 cancelDeadlineEdit.setText(null);
                 priceEdit.setText(null);
+
             }
         });
 
@@ -257,8 +262,11 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
                 accommodation.setName(binding.inputEditTextAccommodationName.getText().toString());
                 accommodation.setDescription(binding.inputEditTextDetails.getText().toString());
                 accommodation.setAddress(binding.txtAddress.getText().toString());
-                accommodation.setLat(address.getLatitude());
-                accommodation.setLon(address.getLongitude());
+                Double lat, lon;
+                if(accommodationId == 0) {lat = address.getLatitude(); lon = address.getLongitude();}
+                else {lat = accommodationDTO.getLat(); lon = accommodationDTO.getLon();}
+                accommodation.setLat(lat);
+                accommodation.setLon(lon);
 
                 List<Amenity> amenities = new ArrayList<>();
                 if(binding.checkBoxAC.isChecked()) amenities.add(Amenity.AC);
@@ -277,7 +285,9 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
                 List<MultipartBody.Part> images = prepareFilePart("images", imagesList);
 
 
-                Call<ResponseBody> call = ClientUtils.apiService.createNewAccommodationRequest(accommodation, images);
+                Call<ResponseBody> call;
+                if(accommodationId == 0) call = ClientUtils.apiService.createNewAccommodationRequest(accommodation, images);
+                else call = ClientUtils.apiService.createNewEditAccommodationRequest(accommodation, images, accommodationId);
                 call.enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -312,7 +322,10 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
             }
         });
 
+        if(accommodationId != 0) getAccommodationForEditing();
+    }
 
+    private void getAccommodationForEditing() {
         Call<ResponseBody> call = ClientUtils.apiService.getAccommodation(accommodationId);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -328,14 +341,15 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
 
                 if(response.code() == 200){
                     accommodationDTO = ResponseParser.parseResponse(response, AccommodationDTOResponse.class, false);
+                    getImages();
                     binding.inputEditTextAccommodationName.setText(accommodationDTO.getName());
                     binding.inputEditTextDetails.setText(accommodationDTO.getDescription());
                     binding.inputEditTextMinGuests.setText(accommodationDTO.getMinGuests().toString());
                     binding.inputEditTextMaxGuests.setText(accommodationDTO.getMaxGuests().toString());
-                    AccommodationType type = accommodationDTO.getAccommodationType();
-                    binding.radioButtonStudio.setChecked(type.equals(AccommodationType.STUDIO));
-                    binding.radioButtonRoom.setChecked(type.equals(AccommodationType.ROOM));
-                    binding.radioButtonApartment.setChecked(type.equals(AccommodationType.APARTMENT));
+                    accommodationType = accommodationDTO.getAccommodationType();
+                    binding.radioButtonStudio.setChecked(accommodationType.equals(AccommodationType.STUDIO));
+                    binding.radioButtonRoom.setChecked(accommodationType.equals(AccommodationType.ROOM));
+                    binding.radioButtonApartment.setChecked(accommodationType.equals(AccommodationType.APARTMENT));
                     for(Amenity amenity: accommodationDTO.getAmenities()){
                         if(amenity.equals(Amenity.AC)) binding.checkBoxAC.setChecked(true);
                         if(amenity.equals(Amenity.PARKING)) binding.checkBoxParking.setChecked(true);
@@ -364,7 +378,48 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
                 t.printStackTrace();
             }
         });
+    }
 
+    private void getImages() {
+        for(Long imageId: accommodationDTO.getImageIds()){
+            Call<ResponseBody> imageResponse = ClientUtils.apiService.getAccommodationImage(accommodationId, imageId);
+            imageResponse.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    if(response.code() == 200){
+                        byte[] imageBytes;
+                        try {
+                            imageBytes = response.body().bytes();
+
+                            String contentDisposition = response.headers().get("Content-Disposition");
+                            String filename = null;
+                            if (contentDisposition != null && contentDisposition.contains("filename=")) {
+                                filename = contentDisposition.split("filename=")[1].replace(";", "").replace("\"", "");
+                            }
+                            System.out.println(filename);
+                            File cacheDir = getApplicationContext().getCacheDir();
+                            File tempFile = new File(cacheDir, filename);
+                            FileOutputStream fos = new FileOutputStream(tempFile);
+                            fos.write(imageBytes);
+                            fos.close();
+
+                            imagesList.add(tempFile);
+                            imagesAddAdapter.notifyItemInserted(imagesList.size() - 1);
+
+                        }catch (IOException e){
+                            e.printStackTrace();
+                            Toast.makeText(CreateAccommodationActivity.this, "Failed to load image", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Toast.makeText(CreateAccommodationActivity.this, "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                    t.printStackTrace();
+                }
+            });
+        }
     }
 
     public static List<MultipartBody.Part> prepareFilePart(String partName, List<File> files) {
@@ -521,9 +576,9 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
             if (!isValid) return;
 
 
-
-
             AvailabilityDTO availabilityDTO = new AvailabilityDTO();
+            availabilityDTO.setRequestType(RequestType.CREATE);
+            availabilityDTO.setId(newAvailabilityCreateId -= 1);
             availabilityDTO.setPrice(Long.parseLong(priceEdit.getText().toString()));
             availabilityDTO.setStartDate(dateStart);
             availabilityDTO.setEndDate(dateEnd);

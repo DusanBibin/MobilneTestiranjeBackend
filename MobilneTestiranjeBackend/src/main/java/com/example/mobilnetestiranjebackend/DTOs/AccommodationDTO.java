@@ -4,6 +4,8 @@ package com.example.mobilnetestiranjebackend.DTOs;
 import com.example.mobilnetestiranjebackend.enums.AccommodationType;
 import com.example.mobilnetestiranjebackend.enums.Amenity;
 import com.example.mobilnetestiranjebackend.enums.RequestStatus;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -17,6 +19,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AccommodationDTO {
 
 
@@ -62,6 +65,5 @@ public class AccommodationDTO {
 
 //    private List<String> imagePaths;
 
-    private RequestStatus status;
-    private String reason;
+
 }

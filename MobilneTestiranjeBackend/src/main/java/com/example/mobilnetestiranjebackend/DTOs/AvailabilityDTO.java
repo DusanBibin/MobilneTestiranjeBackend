@@ -38,5 +38,5 @@ public class AvailabilityDTO {
     private Long price;
 
     private RequestType requestType;
-
+    private String reason;
 }

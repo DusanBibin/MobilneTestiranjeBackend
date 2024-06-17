@@ -20,8 +20,6 @@ public class AvailabilityDTO {
 
     private RequestType requestType;
 
-    private RequestStatus status;
-    private String reason;
     public AvailabilityDTO(){
 
     }
@@ -33,7 +31,7 @@ public class AvailabilityDTO {
         this.price = price;
     }
 
-    public AvailabilityDTO(Long id, LocalDate startDate, LocalDate endDate, LocalDate cancellationDeadline, Boolean pricePerGuest, Long price, RequestType requestType, RequestStatus status, String reason) {
+    public AvailabilityDTO(Long id, LocalDate startDate, LocalDate endDate, LocalDate cancellationDeadline, Boolean pricePerGuest, Long price, RequestType requestType) {
         this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -41,8 +39,6 @@ public class AvailabilityDTO {
         this.pricePerGuest = pricePerGuest;
         this.price = price;
         this.requestType = requestType;
-        this.status = status;
-        this.reason = reason;
     }
 
     public Long getId() {
@@ -99,22 +95,6 @@ public class AvailabilityDTO {
 
     public void setRequestType(RequestType requestType) {
         this.requestType = requestType;
-    }
-
-    public RequestStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(RequestStatus status) {
-        this.status = status;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(String reason) {
-        this.reason = reason;
     }
 
 }

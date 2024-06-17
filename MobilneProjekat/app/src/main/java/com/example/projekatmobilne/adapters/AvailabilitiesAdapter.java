@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +21,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.projekatmobilne.R;
+import com.example.projekatmobilne.model.Enum.RequestType;
 import com.example.projekatmobilne.model.requestDTO.AvailabilityDTO;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.DateValidatorPointForward;
@@ -30,6 +32,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -38,6 +41,7 @@ import java.util.Locale;
 public class AvailabilitiesAdapter extends  RecyclerView.Adapter<AvailabilitiesViewHolder>{
     private Context context;
     private List<AvailabilityDTO> dataList;
+    private List<AvailabilityDTO> existingAvailabilitiesMarkedDeletion;
     private Dialog addAvailabilityDialog;
     private EditText dateRangeEdit, cancelDeadlineEdit, priceEdit;
     private TextInputLayout dateRangeInput, cancelDeadlineInput, priceInput;
@@ -56,6 +60,12 @@ public class AvailabilitiesAdapter extends  RecyclerView.Adapter<AvailabilitiesV
         this.context = context;
         this.dataList = dataList;
         this.supportFragmentManager = supportFragmentManager;
+        this.existingAvailabilitiesMarkedDeletion = new ArrayList<>();
+    }
+
+    public List<AvailabilityDTO> getEditList(){
+        existingAvailabilitiesMarkedDeletion.addAll(dataList);
+        return existingAvailabilitiesMarkedDeletion;
     }
 
     @NonNull
@@ -78,9 +88,15 @@ public class AvailabilitiesAdapter extends  RecyclerView.Adapter<AvailabilitiesV
         holder.btnRemoveAvailability.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dataList.remove(holder.getAdapterPosition());
+
+
+                AvailabilityDTO avail = dataList.remove(holder.getAdapterPosition());
+                if(avail.getId() >= 1){
+                    avail.setRequestType(RequestType.DELETE);
+                    existingAvailabilitiesMarkedDeletion.add(avail);}
                 notifyDataSetChanged();
                 notifyItemRemoved(holder.getAdapterPosition());
+
             }
         });
 
@@ -259,9 +275,11 @@ public class AvailabilitiesAdapter extends  RecyclerView.Adapter<AvailabilitiesV
 class AvailabilitiesViewHolder extends RecyclerView.ViewHolder{
     TextView txtDateRange, txtCancelDate, txtPrice, txtIsPerGuest;
     Button btnRemoveAvailability, btnChangeAvailability;
+    LinearLayout linearLayoutAvailabilityAdd;
     public AvailabilitiesViewHolder(@NonNull View itemView) {
         super(itemView);
 
+        linearLayoutAvailabilityAdd = itemView.findViewById(R.id.linearLayoutAvailabilityAdd);
         btnRemoveAvailability = itemView.findViewById(R.id.btnRemoveAvailability);
         btnChangeAvailability = itemView.findViewById(R.id.btnChangeAvailability);
         txtDateRange = itemView.findViewById(R.id.txtAvailabilityDateRange);

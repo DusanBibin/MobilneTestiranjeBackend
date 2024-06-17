@@ -29,7 +29,11 @@ public class ImageUtils {
 
     public static String getFileNameFromPart(Uri uri, ContentResolver contentResolver) {
         String result;
+        System.out.println("da li je content resolver null");
+        System.out.println(contentResolver == null);
         Cursor cursor = contentResolver.query(uri, null, null, null, null);
+        System.out.println("da li je cursor null ");
+        System.out.println(cursor == null);
         if (cursor == null) {
             result = uri.getPath();
         } else {

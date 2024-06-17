@@ -121,14 +121,14 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(ex.getMessage());
     }
 
-    @ExceptionHandler(value
-            = MissingServletRequestPartException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public @ResponseBody ErrorResponse
-    handleMissingServletRequestPartException(MissingServletRequestPartException ex)
-    {
-        return new ErrorResponse("Image must be uploaded");
-    }
+//    @ExceptionHandler(value
+//            = MissingServletRequestPartException.class)
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    public @ResponseBody ErrorResponse
+//    handleMissingServletRequestPartException(MissingServletRequestPartException ex)
+//    {
+//        return new ErrorResponse("Image must be uploaded");
+//    }
 
 
     @ExceptionHandler(value

@@ -56,11 +56,11 @@ public class ImagesAddAdapter extends RecyclerView.Adapter<ImageAddHolder> {
         holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//
-//                String path = dataList.get(holder.getAdapterPosition()).getAbsolutePath();
-//                Intent intent = new Intent(context, FullScreenImageActivity.class);
-//                intent.putExtra("picture", path);
-//                context.startActivity(intent);
+
+                String path = dataList.get(holder.getAdapterPosition()).getAbsolutePath();
+                Intent intent = new Intent(context, FullScreenImageActivity.class);
+                intent.putExtra("picture", path);
+                context.startActivity(intent);
 
             }
         });

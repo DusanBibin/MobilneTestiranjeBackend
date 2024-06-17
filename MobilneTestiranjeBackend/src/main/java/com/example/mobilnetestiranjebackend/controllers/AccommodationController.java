@@ -16,10 +16,7 @@ import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -152,6 +149,9 @@ public class AccommodationController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(foundImgType);
         headers.setContentLength(imageBytes.length);
+        headers.setContentDisposition(ContentDisposition.builder("inline")
+                .filename(Path.of(foundImgPath).getFileName().toString())
+                .build());
         return new ResponseEntity<>(imageBytes, headers, 200);
     }
 
