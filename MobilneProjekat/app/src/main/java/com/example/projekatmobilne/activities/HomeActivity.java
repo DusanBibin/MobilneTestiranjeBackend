@@ -143,6 +143,9 @@ public class HomeActivity extends AppCompatActivity {
             }else if(userRole.equals(Role.OWNER)){
                 inflater.inflate(R.menu.host_nav_menu, navigationView.getMenu());
                 navController.setGraph(R.navigation.owner_navigation);
+            }else if(userRole.equals(Role.ADMIN)){
+//                inflater.inflate(R.menu.host_nav_admin, navigationView.getMenu());
+//                navController.setGraph(R.navigation.admin_navigation);
             }
         }
 

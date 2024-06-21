@@ -40,7 +40,7 @@ public class AccommodationRequestController {
     @PreAuthorize("hasAuthority('OWNER')")
     @PostMapping(path = "/accommodations/{accommodationId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> createEditAccommodationRequest(@Valid @RequestPart("accommodationDTO") AccommodationDTO accommodationDTO,
-                                                            @RequestPart("photos") List<MultipartFile> images,
+                                                            @RequestPart(value = "images", required = false) List<MultipartFile> images,
                                                             @AuthenticationPrincipal Owner owner,
                                                             @PathVariable("accommodationId") Long accommodationId) {
 

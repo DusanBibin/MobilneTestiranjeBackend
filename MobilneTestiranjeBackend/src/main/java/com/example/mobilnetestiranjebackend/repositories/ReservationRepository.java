@@ -1,5 +1,6 @@
 package com.example.mobilnetestiranjebackend.repositories;
 
+import com.example.mobilnetestiranjebackend.model.Availability;
 import com.example.mobilnetestiranjebackend.model.Reservation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -79,4 +80,5 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Reservation> findGuestCompletedReservations(Long ownerId, Long guestId);
 
 
+    List<Reservation> findByAvailability(Availability availability);
 }

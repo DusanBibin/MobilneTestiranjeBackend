@@ -29,5 +29,6 @@ public class Reservation {
     @ManyToOne
     private Accommodation accommodation;
     @ManyToOne
+    @JoinColumn(name = "availability_id", nullable = true)
     private Availability availability;
 }

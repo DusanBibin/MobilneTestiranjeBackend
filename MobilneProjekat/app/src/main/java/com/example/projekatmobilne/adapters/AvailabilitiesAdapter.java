@@ -90,13 +90,18 @@ public class AvailabilitiesAdapter extends  RecyclerView.Adapter<AvailabilitiesV
             public void onClick(View v) {
 
 
-                AvailabilityDTO avail = dataList.remove(holder.getAdapterPosition());
+                AvailabilityDTO avail = dataList.get(holder.getAdapterPosition());
                 if(avail.getId() >= 1){
                     avail.setRequestType(RequestType.DELETE);
-                    existingAvailabilitiesMarkedDeletion.add(avail);}
+                    existingAvailabilitiesMarkedDeletion.add(avail);
+                    dataList.remove(holder.getAdapterPosition());
+                }
+
+
                 notifyDataSetChanged();
                 notifyItemRemoved(holder.getAdapterPosition());
-
+                System.out.println("SADA JE DATALIST:" + dataList.size());
+                System.out.println("SADA JE EXISTING BLA BLA:" + existingAvailabilitiesMarkedDeletion.size());
             }
         });
 

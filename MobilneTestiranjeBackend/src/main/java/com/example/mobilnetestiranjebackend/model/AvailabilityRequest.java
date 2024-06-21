@@ -29,6 +29,7 @@ public class AvailabilityRequest {
     private Boolean pricePerGuest;
     
     @ManyToOne
+    @JoinColumn(name = "availability_id", nullable = true)
     private Availability availability;
 
 //    @ManyToOne

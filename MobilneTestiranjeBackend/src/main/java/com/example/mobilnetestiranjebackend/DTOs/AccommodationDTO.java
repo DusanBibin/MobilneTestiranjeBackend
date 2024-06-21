@@ -63,7 +63,7 @@ public class AccommodationDTO {
     @Valid
     private List<@Valid AvailabilityDTO> availabilityList;
 
-//    private List<String> imagePaths;
+    private List<String> imagesToDelete;
 
 
 }

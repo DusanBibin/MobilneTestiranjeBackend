@@ -16,12 +16,15 @@ import com.example.projekatmobilne.R;
 import com.example.projekatmobilne.activities.FullScreenImageActivity;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ImagesAddAdapter extends RecyclerView.Adapter<ImageAddHolder> {
 
     private Context context;
     private List<File> dataList;
+    private List<File> imagesToAdd;
+    private List<String> imagesToDelete;
 
     public void setSearchList(List<File> dataSearchList){
         this.dataList = dataSearchList;
@@ -31,7 +34,13 @@ public class ImagesAddAdapter extends RecyclerView.Adapter<ImageAddHolder> {
     public ImagesAddAdapter(Context context, List<File> dataList){
         this.context = context;
         this.dataList = dataList;
+        this.imagesToAdd = new ArrayList<>();
+        this.imagesToDelete = new ArrayList<>();
     }
+
+    public void addNewImage(File image){imagesToAdd.add(image);}
+    public List<File> getImagesToAdd(){return imagesToAdd;}
+    public List<String> getImagesToDelete(){return imagesToDelete;}
 
     @NonNull
     @Override
@@ -47,7 +56,10 @@ public class ImagesAddAdapter extends RecyclerView.Adapter<ImageAddHolder> {
         holder.btnRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dataList.remove(holder.getAdapterPosition());
+                File file = dataList.remove(holder.getAdapterPosition());
+                if(imagesToAdd.contains(file)) imagesToAdd.remove(file);
+                else imagesToDelete.add(file.getName());
+
                 notifyDataSetChanged();
                 notifyItemRemoved(holder.getAdapterPosition());
             }

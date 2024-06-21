@@ -159,8 +159,9 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
                         String filePath = ImageUtils.getFileNameFromPart(imageUri, getContentResolver());
 
                         File file = new File(filePath);
-                        
+
                         imagesList.add(file);
+                        imagesAddAdapter.addNewImage(file);
                         imagesAddAdapter.notifyItemInserted(imagesList.size() - 1);
                     }
                 });
@@ -279,12 +280,15 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
                 accommodation.setMaxGuests(Long.valueOf(binding.inputEditTextMaxGuests.getText().toString()));
                 accommodation.setAccommodationType(accommodationType);
                 accommodation.setAutoAcceptEnabled(binding.checkBoxAutoAccept.isChecked());
-                accommodation.setAvailabilityList(availabilitiesList);
+                accommodation.setAvailabilityList(availabilitiesAdapter.getEditList());
+                accommodation.setImagesToDelete(imagesAddAdapter.getImagesToDelete());
 
-
-                List<MultipartBody.Part> images = prepareFilePart("images", imagesList);
-
-
+                for(File iksde: imagesAddAdapter.getImagesToAdd()){
+                    System.out.println(iksde.getName());
+                }
+                List<MultipartBody.Part> images = prepareFilePart("images", imagesAddAdapter.getImagesToAdd());
+                System.out.println("broj slika je:" );
+                System.out.println(images.size());
                 Call<ResponseBody> call;
                 if(accommodationId == 0) call = ClientUtils.apiService.createNewAccommodationRequest(accommodation, images);
                 else call = ClientUtils.apiService.createNewEditAccommodationRequest(accommodation, images, accommodationId);
@@ -442,21 +446,21 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
         binding.inputLayoutMaxGuests.setError(null);
 
         boolean isValid = true;
-        if(binding.inputEditTextAccommodationName.getText().toString().equals("")){
+        if(binding.inputEditTextAccommodationName.getText().toString().isEmpty()){
             binding.inputLayoutAccommodationName.setError("Name must be provided");isValid = false;
         }
 
-        if(binding.inputEditTextDetails.getText().toString().equals("")){
+        if(binding.inputEditTextDetails.getText().toString().isEmpty()){
             binding.inputLayoutDetails.setError("Details must be provided");isValid = false;
         }
 
         Long min = 1L, max = 1L;
-        if(binding.inputEditTextMinGuests.getText().toString().equals("")){
+        if(binding.inputEditTextMinGuests.getText().toString().isEmpty()){
             binding.inputLayoutMinGuests.setError("Min guests must be provided");isValid = false;
         }else{
             min = Long.valueOf(binding.inputEditTextMinGuests.getText().toString());
         }
-        if(binding.inputEditTextMaxGuests.getText().toString().equals("")){
+        if(binding.inputEditTextMaxGuests.getText().toString().isEmpty()){
             binding.inputLayoutMaxGuests.setError("Max guests must be provided");isValid = false;
         }else{
             max = Long.valueOf(binding.inputEditTextMaxGuests.getText().toString());
@@ -468,7 +472,7 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
             isValid = false;
         }
 
-        if(binding.txtAddress.getText().toString().equals("")) isValid = false;
+        if(binding.txtAddress.getText().toString().isEmpty()) isValid = false;
 
         if(availabilitiesList.isEmpty()) isValid = false;
         if(imagesList.isEmpty()) isValid = false;

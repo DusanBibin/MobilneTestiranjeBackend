@@ -121,7 +121,7 @@ private final UserRepository userRepository;
         Admin admin = Admin.builder()
                 .firstName("admin")
                 .lastname("admin")
-                .email("supportadmin@support.com")
+                .email("admin")
                 .password(passwordEncoder.encode("123"))
                 .phoneNumber("43264235")
                 .address("Neka ulica 123")

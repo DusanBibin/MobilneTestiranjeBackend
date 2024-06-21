@@ -137,7 +137,7 @@ public class AccommodationController {
 
         if(foundImgPath.isEmpty()) throw new NonExistingEntityException("The image with this path does not exist");
 
-
+        System.out.println("OVDE NE RADIII " + foundImgPath);
         Path filePath = Path.of("uploads/" + foundImgPath);
 
         if (!Files.exists(filePath)) {

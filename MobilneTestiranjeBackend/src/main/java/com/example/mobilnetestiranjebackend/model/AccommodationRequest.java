@@ -33,7 +33,10 @@ public class AccommodationRequest {
     private List<Amenity> amenities;
 
     @ElementCollection
-    private List<String> imagePaths;
+    private List<String> imagePathsNew;
+
+    @ElementCollection
+    private List<String> imagesToRemove;
 
     private Long minGuests;
     private Long maxGuests;

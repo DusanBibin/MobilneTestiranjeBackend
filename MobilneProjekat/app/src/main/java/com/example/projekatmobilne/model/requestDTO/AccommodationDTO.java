@@ -22,11 +22,12 @@ public class AccommodationDTO {
     private List<AvailabilityDTO> availabilityList;
     private RequestStatus status;
     private String reason;
+    private List<String> imagesToDelete;
     public AccommodationDTO(){};
     public AccommodationDTO(Long id, String name, String description, String address, Double lat, Double lon,
                             List<Amenity> amenities, Long minGuests, Long maxGuests,
                             AccommodationType accommodationType, Boolean autoAcceptEnabled,
-                            List<AvailabilityDTO> availabilityList, RequestStatus status, String reason) {
+                            List<AvailabilityDTO> availabilityList, RequestStatus status, String reason, List<String> imagesToDelete) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -41,6 +42,15 @@ public class AccommodationDTO {
         this.availabilityList = availabilityList;
         this.status = status;
         this.reason = reason;
+        this.imagesToDelete = imagesToDelete;
+    }
+
+    public List<String> getImagesToDelete() {
+        return imagesToDelete;
+    }
+
+    public void setImagesToDelete(List<String> imagesToDelete) {
+        this.imagesToDelete = imagesToDelete;
     }
 
     public RequestStatus getStatus() {

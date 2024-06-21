@@ -9,6 +9,7 @@ import com.example.mobilnetestiranjebackend.enums.RequestType;
 import com.example.mobilnetestiranjebackend.exceptions.*;
 import com.example.mobilnetestiranjebackend.model.*;
 import com.example.mobilnetestiranjebackend.repositories.*;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,6 +36,7 @@ public class AccommodationRequestService {
     private final AvailabilityService availabilityService;
 
     private static final String UPLOAD_DIR = "uploads";
+    private final ReservationRepository reservationRepository;
 
 
     private void checkInputValues(AccommodationDTO accommodationDTO){
@@ -106,7 +108,7 @@ public class AccommodationRequestService {
                 .lat(accommodationDTO.getLat())
                 .lon(accommodationDTO.getLon())
                 .amenities(amenities)
-                .imagePaths(imagePaths)
+                .imagePathsNew(imagePaths)
                 .minGuests(accommodationDTO.getMinGuests())
                 .maxGuests(accommodationDTO.getMaxGuests())
                 .accommodationType(accommodationDTO.getAccommodationType())
@@ -136,11 +138,14 @@ public class AccommodationRequestService {
 
     public void createEditAccommodationRequest(Owner owner, List<MultipartFile> images, AccommodationDTO accommodationDTO, Long accommodationId) {
 
+        var accommodationWrapper = accommodationRepository.findAccommodationsByOwnerAndName(owner, accommodationDTO.getName());
+        if(accommodationWrapper.isPresent() && !Objects.equals(accommodationWrapper.get().getId(), accommodationId)) throw new EntityAlreadyExistsException("You already have accommodation with this name");
 
-
-        var accommodationWrapper = accommodationRepository.findAccommodationById(accommodationId);
+        accommodationWrapper = accommodationRepository.findAccommodationById(accommodationId);
         if(accommodationWrapper.isEmpty()) throw new NonExistingEntityException("The accommodation with this id does not exist");
         var accommodation = accommodationWrapper.get();
+
+
 
         if(!accommodation.getOwner().getEmail().equals(owner.getEmail())) throw new InvalidAuthorizationException("You don't own this accommodation");
 
@@ -171,7 +176,7 @@ public class AccommodationRequestService {
                         if(availReqMap.containsKey(a.getId())){
 
                             var reqPom = availReqMap.get(a.getId());
-                            if(reqPom.getRequestType().equals(RequestType.EDIT)){
+                            if(reqPom.getRequestType().equals(RequestType.EDIT) && !reqPom.getId().equals(availReq.getId())){
 
                                 if(!((availReq.getStartDate().compareTo(reqPom.getStartDate()) < 0 && availReq.getEndDate().compareTo(reqPom.getStartDate()) < 0) ||
                                         (availReq.getStartDate().compareTo(reqPom.getEndDate()) > 0 && availReq.getEndDate().compareTo(reqPom.getEndDate()) > 0))){
@@ -206,12 +211,40 @@ public class AccommodationRequestService {
 
 
 
-        List<String> imagePaths = new ArrayList<>();
-        for(MultipartFile image: images){
-            int currentIndex = images.indexOf(image);
-            String relativePath = saveImage(owner.getEmail(), accommodationDTO.getName(), image, currentIndex);
-            imagePaths.add(relativePath);
+        List<String> imagePathsNew = new ArrayList<>();
+        if(images != null){
+            if(images.size() > 5) throw new TooManyFilesException("You can only upload 5 images");
+
+            int currentIndex = 1;
+            for(MultipartFile image: images){
+
+                for(String imgPath: accommodation.getImagePaths()) {
+                    String[] pathParts = imgPath.split("/");
+                    System.out.println("OVO JE INDEKS");
+                    System.out.println(pathParts);
+                    String fileName = pathParts[3];
+                    System.out.println("===========");
+                    System.out.println(fileName);
+                    System.out.println(fileName.charAt(0));
+                    System.out.println(currentIndex);
+                    System.out.println("===========");
+                    if (Character.getNumericValue(fileName.charAt(0)) == currentIndex) currentIndex += 1;
+                    System.out.println(currentIndex);
+                }
+
+                for(String imgPath: imagePathsNew) {
+                    String[] pathParts = imgPath.split("/");
+
+                    String fileName = pathParts[3];
+                    if (Character.getNumericValue(fileName.charAt(0)) == currentIndex) currentIndex += 1;
+                }
+
+                checkExtension(image.getOriginalFilename());
+                String relativePath = saveImage(owner.getEmail(), accommodationDTO.getName(), image, currentIndex);
+                imagePathsNew.add(relativePath);
+            }
         }
+
 
 
         var accommodationRequest = AccommodationRequest.builder()
@@ -221,7 +254,8 @@ public class AccommodationRequestService {
                 .lat(accommodationDTO.getLat())
                 .lon(accommodationDTO.getLon())
                 .amenities(amenities)
-                .imagePaths(imagePaths)
+                .imagePathsNew(imagePathsNew)
+                .imagesToRemove(accommodationDTO.getImagesToDelete())
                 .minGuests(accommodationDTO.getMinGuests())
                 .maxGuests(accommodationDTO.getMaxGuests())
                 .accommodationType(accommodationDTO.getAccommodationType())
@@ -274,6 +308,8 @@ public class AccommodationRequestService {
             uploadDir.mkdirs();
         }
 
+
+
         String fileName = currentIndex + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
 
         Path filePath = Paths.get(uploadPath.toString(), fileName);
@@ -288,9 +324,11 @@ public class AccommodationRequestService {
     }
 
     public void deleteImage(String filePath) {
-        System.out.println("Brisi" + filePath);
-        String directory = "uploads" + filePath;
+        System.out.println("Brisi " + filePath);
+        String directory = "uploads/" + filePath;
+        System.out.println(directory);
         Path path = Paths.get(directory);
+
         // Check if the file exists before attempting to delete
         if (Files.exists(path)) {
             try {
@@ -326,6 +364,7 @@ public class AccommodationRequestService {
         }
     }
 
+
     public void acceptRequest(Long requestId) {
 
         var accommodationRequestWrapper = accommodationRequestRepository.findById(requestId);
@@ -348,7 +387,7 @@ public class AccommodationRequestService {
                     .lat(accommodationRequest.getLat())
                     .lon(accommodationRequest.getLon())
                     .amenities(new ArrayList<>(accommodationRequest.getAmenities()))
-                    .imagePaths(new ArrayList<>(accommodationRequest.getImagePaths()))
+                    .imagePaths(new ArrayList<>(accommodationRequest.getImagePathsNew()))
                     .minGuests(accommodationRequest.getMinGuests())
                     .maxGuests(accommodationRequest.getMaxGuests())
                     .accommodationType(accommodationRequest.getAccommodationType())
@@ -374,6 +413,7 @@ public class AccommodationRequestService {
                         .build();
 
                 availabilityRepository.save(availability);
+                System.out.println("jesmo li usli u if za kreiranje requeqesta novog");
                 accommdation.getAvailabilityList().add(availability);
             }
 
@@ -381,6 +421,26 @@ public class AccommodationRequestService {
 
         }else{
             var accommodation = accommodationRequest.getAccommodation();
+
+            if(!accommodation.getName().equals(accommodationRequest.getName())){
+                System.out.println("zasto nismo usli ovde");
+                String[] pathParts = accommodation.getImagePaths().get(0).split("/");
+                File oldFolder = new File("uploads/" + pathParts[1] + "/" + pathParts[2]);
+                File newFolder = new File("uploads/" + pathParts[1] + "/" + accommodationRequest.getName());
+                if (oldFolder.renameTo(newFolder)) {
+                    System.out.println("Folder renamed successfully!");
+                } else {
+                    System.err.println("Failed to rename folder.");
+                }
+
+                for (int i = 0; i < accommodation.getImagePaths().size(); i++) {
+                    String path = accommodation.getImagePaths().get(i);
+                    String[] split = path.split("/");
+                    accommodation.getImagePaths().set(i, split[1] + "/" + accommodationRequest.getName() + "/" + split[3]);
+                }
+            }
+
+
             accommodation.setName(accommodationRequest.getName());
             accommodation.setDescription(accommodationRequest.getDescription());
             accommodation.setAddress(accommodationRequest.getAddress());
@@ -394,24 +454,34 @@ public class AccommodationRequestService {
 
 
 
-            for (String imagePath : accommodationRequest.getImagePaths()) {
+
+            for (String imagePath : accommodationRequest.getImagePathsNew()) {
                 if (!accommodation.getImagePaths().contains(imagePath)) {
                     accommodation.getImagePaths().add(imagePath);
                 }
             }
 
+//
+//            List<String> imagesToRemove = new ArrayList<>();
+//            for (String imagePath : accommodation.getImagePaths()) {
+//                if (!accommodationRequest.getImagePathsNew().contains(imagePath)) {
+//                    imagesToRemove.add(imagePath);
+//                }
+//            }
 
-            List<String> imagesToRemove = new ArrayList<>();
-            for (String imagePath : accommodation.getImagePaths()) {
-                if (!accommodationRequest.getImagePaths().contains(imagePath)) {
-                    imagesToRemove.add(imagePath);
-                }
+
+            accommodation.getImagePaths().removeAll(accommodationRequest.getImagesToRemove());
+            for(String imagePath: accommodationRequest.getImagesToRemove()){
+                System.out.println("DA LI OVDE ULAZIMO UOPSTE U PM");
+                System.out.println(imagePath);
+                accommodation.getImagePaths().remove("/" + accommodation.getOwner().getEmail() + "/" + accommodation.getName() + "/" + imagePath);
+                System.out.println(accommodation.getOwner().getEmail() + "/" + accommodation.getName() + "/" + imagePath);
+                accommodation = accommodationRepository.save(accommodation);
+                deleteImage(accommodation.getOwner().getEmail() + "/" + accommodation.getName() + "/" + imagePath);
             }
 
-            accommodation.getImagePaths().removeAll(imagesToRemove);
-            for(String imagePath: imagesToRemove){
-                deleteImage(imagePath);
-            }
+
+
 
             accommodationRepository.save(accommodation);
 
@@ -452,6 +522,7 @@ public class AccommodationRequestService {
                              .build();
 
                      availabilityRepository.save(availability);
+                     System.out.println("jesmo li usli u kreiranje create novog availabilitija");
                      accommodation.getAvailabilityList().add(availability);
                      accommodationRepository.save(accommodation);
                 }else if(ar.getRequestType().equals(RequestType.EDIT)){
@@ -466,11 +537,43 @@ public class AccommodationRequestService {
                     availability.setCancelDeadline(ar.getCancelDeadline());
                     availability.setPricePerGuest(ar.getPricePerGuest());
 
+                    System.out.println("jesmo li usli u kreiranje novog edit availabilitija");
                     availabilityRepository.save(availability);
                 }else{
+
                     var availabilityWrapper = availabilityRepository.findById(ar.getId());
                     if(availabilityWrapper.isEmpty()) throw new NonExistingEntityException("Availability doesn't exist");
                     var availability = availabilityWrapper.get();
+
+//                    ar.setAvailability(null);
+//                    ar = availabilityRequestRepository.save(ar);
+                    System.out.println("AR JE: ");
+                    System.out.println(ar.getAvailability() == null);
+
+
+//                    availability.setAccommodation(null);
+//                    availability = availabilityRepository.save(availability);
+                    System.out.println("availability je ");
+                    System.out.println(availability.getAccommodation() == null);
+
+                    accommodation.getAvailabilityList().remove(availability);
+                    accommodation = accommodationRepository.save(accommodation);
+                    System.out.println("Avail za ovaj accom su sada: ");
+                    for(Availability a: accommodation.getAvailabilityList()){
+                        System.out.println(a.getId());
+                    }
+                    List<AvailabilityRequest> availabilityRequests = availabilityRequestRepository.findByAvailability(availability);
+                    for (AvailabilityRequest request : availabilityRequests) {
+                        request.setAvailability(null);
+                        availabilityRequestRepository.save(request);
+                    }
+
+                    List<Reservation> reservations = reservationRepository.findByAvailability(availability);
+                    for(Reservation reservation: reservations){
+                        reservation.setAvailability(null);
+                        reservationRepository.save(reservation);
+                    }
+                    System.out.println("da li smo usli u brisanje availabilitija");
                     availabilityRepository.delete(availability);
                 }
             }
@@ -478,6 +581,8 @@ public class AccommodationRequestService {
 
     }
     public void declineRequest(Long requestId, String reason) {
+
+        if(reason.isEmpty()) throw new InvalidInputException("No reason provided");
 
         var accommodationRequestWrapper = accommodationRequestRepository.findById(requestId);
         if(accommodationRequestWrapper.isEmpty()) throw new NonExistingEntityException("This request doesn't exist");
@@ -488,7 +593,7 @@ public class AccommodationRequestService {
         accommodationRequest.setStatus(RequestStatus.REJECTED);
         accommodationRequest.setReason(reason);
 
-        for(String imgPath: accommodationRequest.getImagePaths()){
+        for(String imgPath: accommodationRequest.getImagePathsNew()){
             deleteImage(imgPath);
         }
 
