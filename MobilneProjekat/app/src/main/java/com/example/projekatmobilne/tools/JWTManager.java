@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import androidx.preference.PreferenceManager;
 import android.util.Base64;
 
+import com.example.projekatmobilne.model.Enum.Role;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -80,6 +82,11 @@ public class JWTManager {
 
     public static String getRole() {
         return sharedPreferences.getString("role", null);
+    }
+
+    public static Role getRoleEnum(){
+        if(getRole() != null) return Role.valueOf(getRole());
+        else return null;
     }
 
 

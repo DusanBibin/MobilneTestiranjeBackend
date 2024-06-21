@@ -2,6 +2,7 @@ package com.example.projekatmobilne.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -51,14 +52,20 @@ public class LoginActivity extends AppCompatActivity {
             binding.emailInputLayout.setError(null);
             binding.passwordInputLayout.setError(null);
 
+            boolean isValid = true;
             if (binding.emailInputEditText.getText().toString().isEmpty()) {
                 binding.emailInputLayout.setError("This field cannot be empty");
+                isValid = false;
             }
 
             if (binding.passwordInputEditText.getText().toString().isEmpty()) {
                 binding.passwordInputLayout.setError("This field cannot be em  pty");
+                isValid = false;
             }
+            if(!isValid) return;
 
+            binding.loginButton.setVisibility(View.INVISIBLE);
+            binding.progressBarLogin.setVisibility(View.VISIBLE);
             AuthenticationRequestDTO request = new AuthenticationRequestDTO();
             request.setEmail(binding.emailInputEditText.getText().toString());
             request.setPassword(binding.passwordInputEditText.getText().toString());
@@ -67,6 +74,7 @@ public class LoginActivity extends AppCompatActivity {
             call.enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+
 
 
 
@@ -86,7 +94,8 @@ public class LoginActivity extends AppCompatActivity {
                             binding.passwordInputLayout.setError(map.get("password"));
                         }
 
-
+                        binding.loginButton.setVisibility(View.VISIBLE);
+                        binding.progressBarLogin.setVisibility(View.INVISIBLE);
                     }
                     if(response.code() == 200) {
                         AuthenticationDTOResponse responseDTO =
@@ -97,6 +106,8 @@ public class LoginActivity extends AppCompatActivity {
                         startActivity(intent);
                         finish();
                     }
+
+
                 }
 
                 @Override

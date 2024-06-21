@@ -65,7 +65,7 @@ public class HomeActivity extends AppCompatActivity {
         //actionBar = getSupportActionBar();
         if(getSupportActionBar() != null){
 
-            if(JWTManager.getRole() == null){
+            if(JWTManager.getRoleEnum() == null){
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 getSupportActionBar().setDisplayShowHomeEnabled(true);
                 //getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -111,7 +111,7 @@ public class HomeActivity extends AppCompatActivity {
 //        });
         System.out.println("ROLA ZA OVU GRESKU STO HOCU DA ULOVIM JE: " + JWTManager.getRole());
 
-        if(JWTManager.getRole() != null) populateNavigationToolbarMenu(JWTManager.getRole());
+        if(JWTManager.getRoleEnum() != null) populateNavigationToolbarMenu(JWTManager.getRoleEnum());
         else populateNavigationToolbarMenu(null);
         //addMenu();
 //        mAppBarConfiguration = new AppBarConfiguration
@@ -125,25 +125,23 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
-    private void populateNavigationToolbarMenu(String strRole) {
+    private void populateNavigationToolbarMenu(Role role) {
         navigationView.getMenu().clear();
 
         MenuInflater inflater = getMenuInflater();
-        if(strRole == null){
+        if(role == null){
 
             inflater.inflate(R.menu.guest_nav_menu, navigationView.getMenu());
             navController.setGraph(R.navigation.guest_navigation);
 
         }else{
-
-            Role userRole = Role.valueOf(strRole);
-            if(userRole.equals(Role.GUEST)){
+            if(role.equals(Role.GUEST)){
                 inflater.inflate(R.menu.guest_nav_menu, navigationView.getMenu());
                 navController.setGraph(R.navigation.guest_navigation);
-            }else if(userRole.equals(Role.OWNER)){
+            }else if(role.equals(Role.OWNER)){
                 inflater.inflate(R.menu.host_nav_menu, navigationView.getMenu());
                 navController.setGraph(R.navigation.owner_navigation);
-            }else if(userRole.equals(Role.ADMIN)){
+            }else if(role.equals(Role.ADMIN)){
 //                inflater.inflate(R.menu.host_nav_admin, navigationView.getMenu());
 //                navController.setGraph(R.navigation.admin_navigation);
             }
@@ -193,7 +191,7 @@ public class HomeActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             // Handle the back button press here
-            if(JWTManager.getRole() == null){
+            if(JWTManager.getRoleEnum() == null){
                 Intent intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);
                 finish(); // Optional: if you want to close the current activity

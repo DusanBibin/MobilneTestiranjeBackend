@@ -131,6 +131,8 @@ public class HomeFragment extends Fragment {
             adapter = new AccommodationSearchAdapter(getActivity(), dataList);
             binding.recyclerView.setAdapter(adapter);
             loadPage();
+            binding.btnSearch.setVisibility(View.GONE);
+            binding.progressBarSearch.setVisibility(View.VISIBLE);
 
         });
 
@@ -241,6 +243,9 @@ public class HomeFragment extends Fragment {
                         binding.dateRangeInputLayout.setError(errMessage);
                     }
                 }
+
+                binding.btnSearch.setVisibility(View.VISIBLE);
+                binding.progressBarSearch.setVisibility(View.GONE);
             }
 
             @Override

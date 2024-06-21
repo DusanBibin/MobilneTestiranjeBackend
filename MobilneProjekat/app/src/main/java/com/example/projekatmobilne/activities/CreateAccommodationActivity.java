@@ -258,6 +258,9 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
                 boolean isValid = checkInputs();
 
                 if(!isValid) {Toast.makeText(CreateAccommodationActivity.this, "All fields must be filled", Toast.LENGTH_SHORT).show(); return;}
+
+                binding.btnConfirm.setVisibility(View.GONE);
+                binding.progressBar.setVisibility(View.VISIBLE);
                 accommodation = new AccommodationDTO();
                 accommodation.setId(0L);
                 accommodation.setName(binding.inputEditTextAccommodationName.getText().toString());
@@ -295,16 +298,18 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
                 call.enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
                         if(response.code() == 200){
                             String responseMessage = ResponseParser.parseResponse(response, String.class, false);
                             Toast.makeText(CreateAccommodationActivity.this, responseMessage, Toast.LENGTH_SHORT).show();
                             getOnBackPressedDispatcher().onBackPressed();
                             finish();
-
                         }
                         if(response.code() == 400){
                             Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
                             if(map.containsKey("message")) Toast.makeText(CreateAccommodationActivity.this, map.get("message"), Toast.LENGTH_SHORT).show();
+                            binding.btnConfirm.setVisibility(View.VISIBLE);
+                            binding.progressBar.setVisibility(View.GONE);
                         }
                     }
 
@@ -330,6 +335,8 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
     }
 
     private void getAccommodationForEditing() {
+        binding.nestedScrollView.setVisibility(View.GONE);
+        binding.progressBar.setVisibility(View.VISIBLE);
         Call<ResponseBody> call = ClientUtils.apiService.getAccommodation(accommodationId);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -374,6 +381,8 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
                         availabilitiesAdapter.notifyItemInserted(availabilitiesList.size() - 1);
                     }
                 }
+                binding.nestedScrollView.setVisibility(View.VISIBLE);
+                binding.progressBar.setVisibility(View.GONE);
             }
 
             @Override

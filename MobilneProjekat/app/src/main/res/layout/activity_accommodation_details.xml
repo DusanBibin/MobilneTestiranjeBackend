@@ -37,14 +37,26 @@
         app:layout_constraintTop_toBottomOf="@id/app_bar">
 
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="parent"
+            />
+
+
         <androidx.core.widget.NestedScrollView
-            android:id="@+id/scrollViewReviews"
+            android:id="@+id/scrollViewAccommodationDetails"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            android:visibility="gone">
 
 
             <LinearLayout
@@ -260,17 +272,34 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
+                    <TextView
+                        android:textSize="25sp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:paddingTop="10dp"
+                        android:text="Comments and ratings"/>
+                    <ProgressBar
+                        android:id="@+id/progressBarReviews"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        />
                     <LinearLayout
-                        android:padding="10dp"
+                        android:id="@+id/linearLayoutReviews"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:paddingBottom="10dp"
                         android:layout_weight="1"
-                        android:orientation="vertical">
-                        <TextView
-                            android:textSize="25sp"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Comments and ratings"/>
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
 
                         <TextView
                             android:textSize="15sp"
@@ -280,9 +309,9 @@
                             android:text="No ratings and comments yet"/>
 
                         <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recyclerViewDetails"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:id="@+id/recyclerViewDetails"
                             android:scrollbars="vertical"
                             android:nestedScrollingEnabled="false">
                         </androidx.recyclerview.widget.RecyclerView>

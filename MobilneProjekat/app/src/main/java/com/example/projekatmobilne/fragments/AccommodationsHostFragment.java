@@ -74,7 +74,6 @@ public class AccommodationsHostFragment extends Fragment {
         adapter = new AccommodationHostViewAdapter(getActivity(), dataList);
         binding.recyclerViewAccommodationsHost.setAdapter(adapter);
 
-
         binding.recyclerViewAccommodationsHost.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -105,6 +104,8 @@ public class AccommodationsHostFragment extends Fragment {
                 dataList.addAll(responseDTO.getContent());
                 isLastPage = responseDTO.isLast();
                 adapter.notifyDataSetChanged();
+                binding.recyclerViewAccommodationsHost.setVisibility(View.VISIBLE);
+                binding.progressBar.setVisibility(View.INVISIBLE);
             }
 
             @Override

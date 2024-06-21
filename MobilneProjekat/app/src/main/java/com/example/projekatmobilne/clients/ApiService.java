@@ -45,6 +45,12 @@ public interface ApiService {
     @POST("auth/register")
     Call<ResponseBody> register(@Body RegisterRequestDTO request);
 
+
+
+
+
+
+
     @Headers({
             "User-Agent: Mobile-Android",
             "Content-Type:application/json"
@@ -52,14 +58,12 @@ public interface ApiService {
     @GET("user")
     Call<ResponseBody> getUserData();
 
-
     @Headers({
             "User-Agent: Mobile-Android",
             "Content-Type:application/json"
     })
     @PUT("user/change-info")
     Call<ResponseBody> changeUserData(@Body UserDTO request);
-
 
     @Headers({
             "User-Agent: Mobile-Android",
@@ -83,13 +87,13 @@ public interface ApiService {
     @DELETE("owner")
     Call<ResponseBody> deleteOwner();
 
+
     @Headers({
             "User-Agent: Mobile-Android",
             "Content-Type:application/json"
     })
     @GET("auth/send-email-change-code")
     Call<ResponseBody> sendCodeEmail();
-
 
     @Headers({
             "User-Agent: Mobile-Android",
@@ -118,7 +122,7 @@ public interface ApiService {
             @Query("pageSize") int pageSize
     );
 
-
+    //napraviti ovo
     @Headers({
             "User-Agent: Mobile-Android",
             "Content-Type:application/json"
@@ -126,13 +130,18 @@ public interface ApiService {
     @GET("accommodations/{accommodationId}/images/{imageId}")
     Call<ResponseBody> getAccommodationImage(@Path("accommodationId") Long accommodationId, @Path("imageId") Long imageId);
 
+
+
+
+
+
+
     @Headers({
             "User-Agent: Mobile-Android",
             "Content-Type:application/json"
     })
     @GET("accommodations/{accommodationId}")
     Call<ResponseBody> getAccommodation(@Path("accommodationId") Long accommodationId);
-
 
     @Headers({
             "User-Agent: Mobile-Android",
@@ -153,14 +162,6 @@ public interface ApiService {
     Call<ResponseBody> createNewEditAccommodationRequest(@Part("accommodationDTO") AccommodationDTO accommodationDTO,
                                                      @Part List<MultipartBody.Part> images,
                                                          @Path("accommodationId") Long accommodationId);
-
-    @Headers({
-            "User-Agent: Mobile-Android",
-            "Content-Type:application/json"
-    })
-    @POST("create-new-request")
-    Call<ResponseBody> createNewAvailabilityRequest(@Body AvailabilityDTO availabilityDTO);
-
 
     @Headers({
             "User-Agent: Mobile-Android",

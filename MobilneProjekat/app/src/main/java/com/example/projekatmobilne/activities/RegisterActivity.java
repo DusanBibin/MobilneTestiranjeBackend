@@ -2,6 +2,7 @@ package com.example.projekatmobilne.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -65,6 +66,9 @@ public class RegisterActivity extends AppCompatActivity {
 
            RegisterRequestDTO request = createDTO();
 
+           binding.progressBar.setVisibility(View.VISIBLE);
+           binding.registerButton.setVisibility(View.GONE);
+
            Call<ResponseBody> call = ClientUtils.apiService.register(request);
            call.enqueue(new Callback<ResponseBody>() {
                @Override
@@ -73,13 +77,15 @@ public class RegisterActivity extends AppCompatActivity {
 
                    if(response.code() == 400){
                        Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
-
+                        System.out.println(map);
                         if(map.containsKey("message")){
                             String errMessage = map.get("message");
 
                             if(errMessage.equals("User with this email already exists")) binding.emailInputLayout.setError(errMessage);
                             else binding.phoneInputLayout.setError(errMessage);
                         }
+
+
                    }
 
 
@@ -95,6 +101,8 @@ public class RegisterActivity extends AppCompatActivity {
                        finish();
 
                    }
+
+
                }
 
                @Override
@@ -134,6 +142,7 @@ public class RegisterActivity extends AppCompatActivity {
             isValid = false;
         }
 
+        if(binding.phoneInputEditText.getText().length() < 10) binding.passwordInputLayout.setError("This field must contain at least 10 characters");
 
         if(binding.passwordInputEditText.getText().length() < 10) binding.passwordInputLayout.setError("This field must contain at least 10 characters");
         if(binding.passwordRepeatInputEditText.getText().length() < 10) binding.passwordRepeatInputLayout.setError("This field must contain at least 10 characters");

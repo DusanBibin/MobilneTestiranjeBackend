@@ -104,7 +104,7 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
 
         binding.txtNoRatings.setVisibility(View.GONE);
         binding.btnEdit.setVisibility(View.GONE);
-        if(Role.OWNER.equals(Role.valueOf(JWTManager.getRole()))){
+        if(Role.OWNER.equals(JWTManager.getRoleEnum())){
             binding.btnEdit.setVisibility(View.VISIBLE);
             binding.btnEdit.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -129,17 +129,17 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
                 switch (action) {
                     case MotionEvent.ACTION_DOWN:
                         // Disallow ScrollView to intercept touch events.
-                        binding.scrollViewReviews.requestDisallowInterceptTouchEvent(true);
+                        binding.scrollViewAccommodationDetails.requestDisallowInterceptTouchEvent(true);
                         // Disable touch on transparent view
                         return false;
 
                     case MotionEvent.ACTION_UP:
                         // Allow ScrollView to intercept touch events.
-                        binding.scrollViewReviews.requestDisallowInterceptTouchEvent(false);
+                        binding.scrollViewAccommodationDetails.requestDisallowInterceptTouchEvent(false);
                         return true;
 
                     case MotionEvent.ACTION_MOVE:
-                        binding.scrollViewReviews.requestDisallowInterceptTouchEvent(true);
+                        binding.scrollViewAccommodationDetails.requestDisallowInterceptTouchEvent(true);
                         return false;
 
                     default:
@@ -164,7 +164,7 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
 
 
 
-        binding.scrollViewReviews.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+        binding.scrollViewAccommodationDetails.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
                 if(v.getChildAt(v.getChildCount() - 1) != null){
@@ -201,7 +201,10 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
                     setupCalendar();
                     setupImages();
                     setupTextViews();
+                    binding.progressBar.setVisibility(View.GONE);
+                    binding.scrollViewAccommodationDetails.setVisibility(View.VISIBLE);
                 }
+
             }
 
             @Override
@@ -311,6 +314,8 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
         binding.txtType.setText(type);
     }
     private void loadReviewPage() {
+        binding.progressBarReviews.setVisibility(View.VISIBLE);
+        binding.linearLayoutReviews.setVisibility(View.GONE);
         Call<ResponseBody> callReviews = ClientUtils.apiService.getReviews(accommodationId, currentPage, 1);
         callReviews.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -328,6 +333,9 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
                 binding.recyclerViewDetails.setAdapter(reviewsAdapter);
 
                 if(dataList.isEmpty()) binding.txtNoRatings.setVisibility(View.VISIBLE);
+
+                binding.progressBarReviews.setVisibility(View.GONE);
+                binding.linearLayoutReviews.setVisibility(View.VISIBLE);
             }
 
             @Override
