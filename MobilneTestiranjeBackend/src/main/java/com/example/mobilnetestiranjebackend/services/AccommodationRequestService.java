@@ -423,7 +423,6 @@ public class AccommodationRequestService {
             var accommodation = accommodationRequest.getAccommodation();
 
             if(!accommodation.getName().equals(accommodationRequest.getName())){
-                System.out.println("zasto nismo usli ovde");
                 String[] pathParts = accommodation.getImagePaths().get(0).split("/");
                 File oldFolder = new File("uploads/" + pathParts[1] + "/" + pathParts[2]);
                 File newFolder = new File("uploads/" + pathParts[1] + "/" + accommodationRequest.getName());

@@ -37,31 +37,10 @@ import retrofit2.Response;
 
 public class AccountFragment extends Fragment {
 
-    private EditText nameEdit;
-    private EditText surnameEdit;
-    private EditText addressEdit;
-    private TextInputLayout nameInput;
-    private TextInputLayout surnameInput;
-    private TextInputLayout addressInput;
-
-    private EditText passwordEdit;
-    private EditText newPasswordEdit;
-    private EditText repeatPasswordEdit;
-    private TextInputLayout passwordInput;
-    private TextInputLayout newPasswordInput;
-    private TextInputLayout repeatPasswordInput;
-
-
-    private EditText confirmDeletionEdit;
-    private TextInputLayout confirmDeletionInput;
-
-
-    private EditText confirmationCodeEdit;
-    private EditText newEmailEdit;
-
-    private TextInputLayout confirmationCodeInput;
-    private TextInputLayout newEmailInput;
-
+    private EditText passwordEdit, newPasswordEdit, repeatPasswordEdit, nameEdit, surnameEdit,
+            addressEdit, confirmDeletionEdit, confirmationCodeEdit, newEmailEdit;
+    private TextInputLayout passwordInput, newPasswordInput, repeatPasswordInput, nameInput,
+            surnameInput, addressInput, confirmDeletionInput, confirmationCodeInput, newEmailInput;
     private FragmentAccountBinding binding;
     private Dialog changeDetailsDialog, changePasswordDialog, deleteAccountDialog, confirmCodeDialog;
     private UserDTOResponse data;
@@ -253,7 +232,8 @@ public class AccountFragment extends Fragment {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     if(response.code() == 200){
-                        Toast.makeText(getActivity(), "USPEH", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "Email validated", Toast.LENGTH_SHORT).show();
+                        confirmCodeDialog.dismiss();
                     }
 
                     if(response.code() == 400){

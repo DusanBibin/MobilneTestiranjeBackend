@@ -25,9 +25,11 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -45,6 +47,7 @@ public class AuthenticationService {
     private final TwilioService twilioService;
     private final VerificationEmailChangeRepository verificationEmailChangeRepository;
     private final VerificationRepository verificationRepository;
+    private final AccommodationRepository accommodationRepository;
 
     @Value("${spring.sendgrid.api-key}")
     private String SENDGRID_API_KEY;
@@ -237,6 +240,28 @@ public class AuthenticationService {
             throw new CodeExpiredException("Verification code expired. Register again!");
         }else if (user.getEmailConfirmed()){
             var newEmail = user.getEmailChangeVerification().getNewEmail();
+            if(user.getRole().equals(Role.OWNER)){
+                List<Accommodation> accommodations = accommodationRepository.findByOwnerId(user.getId());
+                for(Accommodation accommodation: accommodations){
+                    String[] pathParts = accommodation.getImagePaths().get(0).split("/");
+                    System.out.println("uploads/" + user.getEmail() + "/" + pathParts[2]);
+                    System.out.println("uploads/" + newEmail + "/" + pathParts[2]);
+                    File oldFolder = new File("uploads/" + user.getEmail());
+                    File newFolder = new File("uploads/" + newEmail);
+                    if (oldFolder.renameTo(newFolder)) {
+                        System.out.println("Folder renamed successfully!");
+                    } else {
+                        System.err.println("Failed to rename folder.");
+                    }
+
+                    for (int i = 0; i < accommodation.getImagePaths().size(); i++) {
+                        String path = accommodation.getImagePaths().get(i);
+                        String[] split = path.split("/");
+                        accommodation.getImagePaths().set(i, "/" + newEmail + "/" + split[2] + "/" + split[3]);
+                    }
+                }
+            }
+
             user.setEmail(newEmail);
             userRepository.save(user);
         }
