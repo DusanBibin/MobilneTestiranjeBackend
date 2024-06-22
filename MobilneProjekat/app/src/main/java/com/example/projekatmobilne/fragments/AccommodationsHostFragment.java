@@ -105,7 +105,7 @@ public class AccommodationsHostFragment extends Fragment {
                 isLastPage = responseDTO.isLast();
                 adapter.notifyDataSetChanged();
                 binding.recyclerViewAccommodationsHost.setVisibility(View.VISIBLE);
-                binding.progressBar.setVisibility(View.INVISIBLE);
+                binding.progressBar.setVisibility(View.GONE);
             }
 
             @Override

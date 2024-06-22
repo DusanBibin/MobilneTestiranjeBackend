@@ -76,7 +76,7 @@ public class AccountFragment extends Fragment {
         setUpConfirmCodeDialog();
 
         binding.progressBar.setVisibility(View.VISIBLE);
-        binding.constraintLayoutAccountDetails.setVisibility(View.GONE);
+        binding.constraintLayoutAccountDetails.setVisibility(View.INVISIBLE);
 
         Call<ResponseBody> call = ClientUtils.apiService.getUserData();
         call.enqueue(new Callback<ResponseBody>() {
@@ -117,7 +117,7 @@ public class AccountFragment extends Fragment {
 
                 }
 
-                binding.progressBar.setVisibility(View.GONE);
+                binding.progressBar.setVisibility(View.INVISIBLE);
                 binding.constraintLayoutAccountDetails.setVisibility(View.VISIBLE);
             }
 
@@ -232,7 +232,7 @@ public class AccountFragment extends Fragment {
             if(!isValid) return;
 
             confirmCodeDialog.findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
-            confirmCodeDialog.findViewById(R.id.linearLayout5).setVisibility(View.GONE);
+            confirmCodeDialog.findViewById(R.id.linearLayout5).setVisibility(View.INVISIBLE);
 
 
             String email = JWTManager.getEmail();
@@ -263,7 +263,7 @@ public class AccountFragment extends Fragment {
                         }
                     }
 
-                    confirmCodeDialog.findViewById(R.id.progressBar).setVisibility(View.GONE);
+                    confirmCodeDialog.findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
                     confirmCodeDialog.findViewById(R.id.linearLayout5).setVisibility(View.VISIBLE);
                 }
 
@@ -300,7 +300,7 @@ public class AccountFragment extends Fragment {
 
 
             deleteAccountDialog.findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
-            deleteAccountDialog.findViewById(R.id.linearLayout5).setVisibility(View.GONE);
+            deleteAccountDialog.findViewById(R.id.linearLayout5).setVisibility(View.INVISIBLE);
 
             Call<ResponseBody> call;
             if(Role.GUEST.equals(JWTManager.getRoleEnum())) call = ClientUtils.apiService.deleteGuest();
@@ -334,7 +334,7 @@ public class AccountFragment extends Fragment {
                         getActivity().finish();
                     }
 
-                    deleteAccountDialog.findViewById(R.id.progressBar).setVisibility(View.GONE);
+                    deleteAccountDialog.findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
                     deleteAccountDialog.findViewById(R.id.linearLayout5).setVisibility(View.VISIBLE);
                 }
 
@@ -392,7 +392,7 @@ public class AccountFragment extends Fragment {
 
             if(!isValid) return;
 
-            changePasswordDialog.findViewById(R.id.linearLayout5).setVisibility(View.GONE);
+            changePasswordDialog.findViewById(R.id.linearLayout5).setVisibility(View.INVISIBLE);
             changePasswordDialog.findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
             ChangePasswordDTO request = new ChangePasswordDTO();
             request.setCurrentPassword(passwordEdit.getText().toString());
@@ -442,7 +442,7 @@ public class AccountFragment extends Fragment {
                     }
 
                     changePasswordDialog.findViewById(R.id.linearLayout5).setVisibility(View.VISIBLE);
-                    changePasswordDialog.findViewById(R.id.progressBar).setVisibility(View.GONE);
+                    changePasswordDialog.findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
                 }
 
                 @Override
@@ -491,7 +491,7 @@ public class AccountFragment extends Fragment {
             if(!isValid) return;
 
             changeDetailsDialog.findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
-            changeDetailsDialog.findViewById(R.id.linearLayout5).setVisibility(View.GONE);
+            changeDetailsDialog.findViewById(R.id.linearLayout5).setVisibility(View.INVISIBLE);
 
             UserDTO request = new UserDTO();
             request.setFirstName(nameEdit.getText().toString());
@@ -538,7 +538,7 @@ public class AccountFragment extends Fragment {
                         Toast.makeText(getActivity(), "Successfully changed user info", Toast.LENGTH_SHORT).show();
                         changeDetailsDialog.dismiss();
                     }
-                    changeDetailsDialog.findViewById(R.id.progressBar).setVisibility(View.GONE);
+                    changeDetailsDialog.findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
                     changeDetailsDialog.findViewById(R.id.linearLayout5).setVisibility(View.VISIBLE);
                 }
 
