@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/accommodations_host_navigation"
+    app:startDestination="@id/accommodationsHostTabFragment">
+
+    <fragment
+        android:id="@+id/accommodationsHostTabFragment"
+        android:name="com.example.projekatmobilne.fragments.AccommodationsHostTabFragment"
+        android:label="fragment_accommodations_host_tab"
+        tools:layout="@layout/fragment_accommodations_host_tab" />
+    <fragment
+        android:id="@+id/accommodationRequestsTabFragment"
+        android:name="com.example.projekatmobilne.fragments.AccommodationRequestsTabFragment"
+        android:label="fragment_accommodation_requests_tab"
+        tools:layout="@layout/fragment_accommodation_requests_tab" />
+</navigation>

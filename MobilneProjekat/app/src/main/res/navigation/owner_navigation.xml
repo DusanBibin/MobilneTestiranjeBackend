@@ -30,4 +30,6 @@
         android:name="com.example.projekatmobilne.fragments.AccommodationsHostFragment"
         android:label="fragment_accommodations_host"
         tools:layout="@layout/fragment_accommodations_host" />
+
+
 </navigation>
