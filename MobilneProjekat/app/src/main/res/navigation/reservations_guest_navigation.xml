@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/reservations_host_navigation"
+    app:startDestination="@id/reservationsGuestTabFragment">
+
+    <fragment
+        android:id="@+id/reservationsGuestTabFragment"
+        android:name="com.example.projekatmobilne.ReservationsGuestTabFragment"
+        android:label="fragment_reservations_guest_tab"
+        tools:layout="@layout/fragment_reservations_guest_tab" />
+    <fragment
+        android:id="@+id/requestsTabFragment"
+        android:name="com.example.projekatmobilne.RequestsTabFragment"
+        android:label="fragment_requests_tab"
+        tools:layout="@layout/fragment_requests_tab" />
+    <fragment
+        android:id="@+id/favoritesTabFragment"
+        android:name="com.example.projekatmobilne.FavoritesTabFragment"
+        android:label="fragment_favorites_tab"
+        tools:layout="@layout/fragment_favorites_tab" />
+</navigation>
