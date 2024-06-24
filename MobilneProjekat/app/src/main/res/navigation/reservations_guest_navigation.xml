@@ -7,17 +7,17 @@
 
     <fragment
         android:id="@+id/reservationsGuestTabFragment"
-        android:name="com.example.projekatmobilne.ReservationsGuestTabFragment"
+        android:name="com.example.projekatmobilne.fragments.AccommodationsGuestTabs.ReservationsGuestTabFragment"
         android:label="fragment_reservations_guest_tab"
         tools:layout="@layout/fragment_reservations_guest_tab" />
     <fragment
         android:id="@+id/requestsTabFragment"
-        android:name="com.example.projekatmobilne.RequestsTabFragment"
+        android:name="com.example.projekatmobilne.fragments.AccommodationsGuestTabs.RequestsTabFragment"
         android:label="fragment_requests_tab"
         tools:layout="@layout/fragment_requests_tab" />
     <fragment
         android:id="@+id/favoritesTabFragment"
-        android:name="com.example.projekatmobilne.FavoritesTabFragment"
+        android:name="com.example.projekatmobilne.fragments.AccommodationsGuestTabs.FavoritesTabFragment"
         android:label="fragment_favorites_tab"
         tools:layout="@layout/fragment_favorites_tab" />
 </navigation>

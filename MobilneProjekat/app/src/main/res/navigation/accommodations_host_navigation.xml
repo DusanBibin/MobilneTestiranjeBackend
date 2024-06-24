@@ -7,12 +7,12 @@
 
     <fragment
         android:id="@+id/accommodationsHostTabFragment"
-        android:name="com.example.projekatmobilne.fragments.AccommodationsHostTabFragment"
+        android:name="com.example.projekatmobilne.fragments.AccommodationHostTabs.AccommodationsHostTabFragment"
         android:label="fragment_accommodations_host_tab"
         tools:layout="@layout/fragment_accommodations_host_tab" />
     <fragment
         android:id="@+id/accommodationRequestsTabFragment"
-        android:name="com.example.projekatmobilne.fragments.AccommodationRequestsTabFragment"
+        android:name="com.example.projekatmobilne.fragments.AccommodationHostTabs.AccommodationRequestsTabFragment"
         android:label="fragment_accommodation_requests_tab"
         tools:layout="@layout/fragment_accommodation_requests_tab" />
 </navigation>

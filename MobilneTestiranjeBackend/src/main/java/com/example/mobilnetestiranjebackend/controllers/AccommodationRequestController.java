@@ -61,4 +61,14 @@ public class AccommodationRequestController {
         return ResponseEntity.ok().body("Successfully accepted accommodation request");
     }
 
+
+    @PreAuthorize("hasAuthority('OWNER')")
+    @GetMapping()
+    public ResponseEntity<?> getAccommodationRequests(@AuthenticationPrincipal Owner owner,
+                                                      @RequestParam(defaultValue = "0") int pageNo,
+                                                      @RequestParam(defaultValue = "10") int pageSize){
+
+        return ResponseEntity.ok().body(accommodationRequestService.getAccommodationRequests(pageNo, pageSize, owner));
+    }
+
 }

@@ -1,16 +1,16 @@
 package com.example.mobilnetestiranjebackend.services;
 
-import com.example.mobilnetestiranjebackend.DTOs.AccommodationDTOEdit;
-import com.example.mobilnetestiranjebackend.DTOs.AvailabilityDTO;
-import com.example.mobilnetestiranjebackend.DTOs.AccommodationDTO;
+import com.example.mobilnetestiranjebackend.DTOs.*;
 import com.example.mobilnetestiranjebackend.enums.Amenity;
 import com.example.mobilnetestiranjebackend.enums.RequestStatus;
 import com.example.mobilnetestiranjebackend.enums.RequestType;
 import com.example.mobilnetestiranjebackend.exceptions.*;
+import com.example.mobilnetestiranjebackend.helpers.PageConverter;
 import com.example.mobilnetestiranjebackend.model.*;
 import com.example.mobilnetestiranjebackend.repositories.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -596,5 +596,26 @@ public class AccommodationRequestService {
             deleteImage(imgPath);
         }
 
+    }
+
+    public Page<AccommodationRequestPreviewDTO> getAccommodationRequests(int pageNum, int pageSize, Owner owner) {
+
+        List<AccommodationRequest> requests = accommodationRequestRepository.findAllByOwnerId(owner.getId());
+        List<AccommodationRequestPreviewDTO> convertedList = new ArrayList<>(requests.stream().map(a -> {
+            AccommodationRequestPreviewDTO ar = new AccommodationRequestPreviewDTO();
+            ar.setReason(a.getReason());
+            ar.setAccommodationName(a.getName());
+            ar.setStatus(a.getStatus());
+            ar.setAccommodationAddress(a.getAddress());
+            ar.setRequestType((a.getAccommodation() == null) ? RequestType.CREATE : RequestType.EDIT);
+            if(a.getAccommodation() != null){
+                ar.setExistingAccommodationName(a.getAccommodation().getName());
+                ar.setExistingAddress(a.getAccommodation().getAddress());
+            }
+
+            return ar;
+        }).toList());
+
+        return PageConverter.convertListToPage(pageNum, pageSize, convertedList);
     }
 }

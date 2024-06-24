@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.AccommodationsHostTabFragment">
+    tools:context=".fragments.AccommodationHostTabs.AccommodationsHostTabFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
@@ -21,6 +21,17 @@
             app:layout_constraintEnd_toEndOf="@+id/recyclerViewAccommodationsHost"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/txtNoItemsAccommodations"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="You don't have any registered accommodations,"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/recyclerViewAccommodationsHost"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewAccommodationsHost"

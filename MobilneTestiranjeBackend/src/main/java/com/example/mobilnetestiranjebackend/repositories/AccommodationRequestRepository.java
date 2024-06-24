@@ -4,6 +4,7 @@ import com.example.mobilnetestiranjebackend.model.AccommodationRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface AccommodationRequestRepository extends JpaRepository<AccommodationRequest, Long> {
@@ -12,4 +13,7 @@ public interface AccommodationRequestRepository extends JpaRepository<Accommodat
     @Query("select ar from AccommodationRequest ar where ar.address = :address")
     Optional<AccommodationRequest> findByAccommodationRequestAddress(String address);
 
+
+    @Query("select ar from AccommodationRequest ar where ar.owner.id = :ownerId")
+    List<AccommodationRequest> findAllByOwnerId(Long ownerId);
 }

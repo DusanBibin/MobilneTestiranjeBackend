@@ -1,4 +1,4 @@
-package com.example.projekatmobilne.fragments;
+package com.example.projekatmobilne.fragments.AccommodationHostTabs;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,11 +12,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.projekatmobilne.activities.CreateAccommodationActivity;
 import com.example.projekatmobilne.adapters.AccommodationHostViewAdapter;
 import com.example.projekatmobilne.clients.ClientUtils;
-import com.example.projekatmobilne.databinding.FragmentAccommodationsHostBinding;
 import com.example.projekatmobilne.adapters.AdapterItems.AccommodationHostItem;
 import com.example.projekatmobilne.databinding.FragmentAccommodationsHostTabBinding;
 import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.AccommodationHostDTOPagedResponse;
@@ -96,6 +96,7 @@ public class AccommodationsHostTabFragment extends Fragment {
     }
 
     private void loadPage() {
+        binding.txtNoItemsAccommodations.setVisibility(View.GONE);
         Call<ResponseBody> call = ClientUtils.apiService.getOwnerAccommodations(currentPage, 10);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -106,11 +107,13 @@ public class AccommodationsHostTabFragment extends Fragment {
                 adapter.notifyDataSetChanged();
                 binding.recyclerViewAccommodationsHost.setVisibility(View.VISIBLE);
                 binding.progressBar.setVisibility(View.GONE);
+                if(dataList.isEmpty()) binding.txtNoItemsAccommodations.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-
+                Toast.makeText(getActivity(), "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                t.printStackTrace();
             }
         });
 
