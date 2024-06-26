@@ -28,16 +28,6 @@ public class AccommodationRequest {
     private Double lat;
     private Double lon;
 
-
-    @ElementCollection
-    private List<Amenity> amenities;
-
-    @ElementCollection
-    private List<String> imagePathsNew;
-
-    @ElementCollection
-    private List<String> imagesToRemove;
-
     private Long minGuests;
     private Long maxGuests;
 
@@ -45,16 +35,29 @@ public class AccommodationRequest {
 
     private Boolean autoAcceptEnabled;
 
-    @ManyToOne
-    private Accommodation accommodation;
+    @ElementCollection
+    private List<Amenity> amenities;
+
+    @ElementCollection
+    private List<String> imagePathsNew;
+    @ElementCollection
+    private List<String> imagesToRemove;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AvailabilityRequest> availabilityRequests;
 
-    @ManyToOne
-    private Owner owner;
+
+
 
     private RequestStatus status;
 
     private String reason;
+
+
+
+    @ManyToOne
+    private Owner owner;
+
+    @ManyToOne
+    private Accommodation accommodation;
 }

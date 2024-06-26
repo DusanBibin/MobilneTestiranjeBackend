@@ -151,6 +151,8 @@ public class HomeFragment extends Fragment {
     }
 
     private void loadPage() {
+        binding.txtNoResults.setVisibility(View.GONE);
+        binding.progressBarRecyclerView.setVisibility(View.VISIBLE);
         Long guestNum;
 
         if(binding.guestNumberInputEditText.getText().toString().equals("")) guestNum = 1L;
@@ -175,6 +177,7 @@ public class HomeFragment extends Fragment {
                     AccommodationSearchDTOPagedResponse responseDTO = ResponseParser.parseResponse(response, AccommodationSearchDTOPagedResponse.class, false);
                     if(responseDTO.getContent().isEmpty()){
                         Toast.makeText(getActivity(), "There are no accommodations that are available within this period", Toast.LENGTH_SHORT).show();
+                        binding.txtNoResults.setVisibility(View.VISIBLE);
                     }
 
                     isLastPage = responseDTO.isLast();
@@ -246,6 +249,7 @@ public class HomeFragment extends Fragment {
 
                 binding.btnSearch.setVisibility(View.VISIBLE);
                 binding.progressBarSearch.setVisibility(View.GONE);
+                binding.progressBarRecyclerView.setVisibility(View.GONE);
             }
 
             @Override

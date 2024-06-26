@@ -5,6 +5,7 @@ import com.example.projekatmobilne.model.Enum.RequestStatus;
 import com.example.projekatmobilne.model.Enum.RequestType;
 
 public class AccommodationRequestPreviewDTO {
+    private Long requestId;
     private String accommodationName;
     private String accommodationAddress;
     private RequestStatus status;
@@ -17,7 +18,8 @@ public class AccommodationRequestPreviewDTO {
 
     public AccommodationRequestPreviewDTO(String accommodationName, String accommodationAddress,
                                           RequestStatus status, String reason, RequestType requestType,
-                                          String existingAddress, String existingAccommodationName) {
+                                          String existingAddress, String existingAccommodationName,
+                                          Long requestId) {
         this.accommodationName = accommodationName;
         this.accommodationAddress = accommodationAddress;
         this.status = status;
@@ -25,6 +27,15 @@ public class AccommodationRequestPreviewDTO {
         this.requestType = requestType;
         this.existingAddress = existingAddress;
         this.existingAccommodationName = existingAccommodationName;
+        this.requestId = requestId;
+    }
+
+    public Long getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(Long requestId) {
+        this.requestId = requestId;
     }
 
     public String getExistingAccommodationName() {

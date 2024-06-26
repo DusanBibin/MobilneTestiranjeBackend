@@ -240,7 +240,7 @@ public class AccommodationRequestService {
                 }
 
                 checkExtension(image.getOriginalFilename());
-                String relativePath = saveImage(owner.getEmail(), accommodationDTO.getName(), image, currentIndex);
+                String relativePath = saveImage(owner.getEmail(), accommodation.getName(), image, currentIndex);
                 imagePathsNew.add(relativePath);
             }
         }
@@ -603,6 +603,7 @@ public class AccommodationRequestService {
         List<AccommodationRequest> requests = accommodationRequestRepository.findAllByOwnerId(owner.getId());
         List<AccommodationRequestPreviewDTO> convertedList = new ArrayList<>(requests.stream().map(a -> {
             AccommodationRequestPreviewDTO ar = new AccommodationRequestPreviewDTO();
+            ar.setRequestId(a.getId());
             ar.setReason(a.getReason());
             ar.setAccommodationName(a.getName());
             ar.setStatus(a.getStatus());
@@ -618,4 +619,88 @@ public class AccommodationRequestService {
 
         return PageConverter.convertListToPage(pageNum, pageSize, convertedList);
     }
+
+    public AccommodationDifferencesDTO getAccommodationRequest(Owner owner, Long requestId) {
+
+        var requestWrapper = accommodationRequestRepository.findByOwnerIdAndId(requestId, owner.getId());
+        if(requestWrapper.isEmpty()) throw new NonExistingEntityException("This request does not exist");
+        AccommodationRequest request = requestWrapper.get();
+        Accommodation accommodation = request.getAccommodation();
+
+        AccommodationDTOEdit requestDTOOld = new AccommodationDTOEdit();
+        requestDTOOld.setAddress(accommodation.getAddress());
+        requestDTOOld.setDescription(accommodation.getDescription());
+        requestDTOOld.setName(accommodation.getName());
+        requestDTOOld.setAmenities(accommodation.getAmenities());
+        requestDTOOld.setLat(accommodation.getLat());
+        requestDTOOld.setLon(accommodation.getLon());
+        requestDTOOld.setAccommodationType(accommodation.getAccommodationType());
+        requestDTOOld.setAutoAcceptEnabled(accommodation.getAutoAcceptEnabled());
+        requestDTOOld.setMinGuests(accommodation.getMinGuests());
+        requestDTOOld.setMaxGuests(accommodation.getMaxGuests());
+
+        AccommodationDTOEdit requestDTONew = new AccommodationDTOEdit();
+        requestDTONew.setAddress(request.getAddress());
+        requestDTONew.setDescription(request.getDescription());
+        requestDTONew.setName(request.getName());
+        requestDTONew.setAmenities(request.getAmenities());
+        requestDTONew.setLat(request.getLat());
+        requestDTONew.setLon(request.getLon());
+        requestDTONew.setAccommodationType(request.getAccommodationType());
+        requestDTONew.setAutoAcceptEnabled(request.getAutoAcceptEnabled());
+        requestDTONew.setMinGuests(request.getMinGuests());
+        requestDTONew.setMaxGuests(request.getMaxGuests());
+
+
+        List<AvailabilityDTO> oldAvailabilities = new ArrayList<>();
+        for(Availability a: accommodation.getAvailabilityList()){
+            AvailabilityDTO avail = new AvailabilityDTO();
+            avail.setId(a.getId());
+            avail.setStartDate(a.getStartDate());
+            avail.setEndDate(a.getEndDate());
+            avail.setPrice(a.getPrice());
+            avail.setCancellationDeadline(a.getCancelDeadline());
+            avail.setPricePerGuest(a.getPricePerGuest());
+            oldAvailabilities.add(avail);
+        }
+
+        List<AvailabilityDTO> newAvailabilities = new ArrayList<>();
+        for(AvailabilityRequest ar: request.getAvailabilityRequests()){
+            AvailabilityDTO avail = new AvailabilityDTO();
+            if(ar.getAvailability() != null) avail.setId(ar.getAvailability().getId());
+            else avail.setId(0L);
+            avail.setStartDate(ar.getStartDate());
+            avail.setEndDate(ar.getEndDate());
+            avail.setPrice(ar.getPrice());
+            avail.setCancellationDeadline(ar.getCancelDeadline());
+            avail.setPricePerGuest(ar.getPricePerGuest());
+            avail.setRequestType(ar.getRequestType());
+            newAvailabilities.add(avail);
+        }
+
+        AccommodationDifferencesDTO requestDifferences = new AccommodationDifferencesDTO();
+        requestDifferences.setAccommodationInfo(requestDTOOld);
+        requestDifferences.setRequestAccommodationInfo(requestDTONew);
+        requestDifferences.setAvailabilities(oldAvailabilities);
+        requestDifferences.setRequestAvailabilities(newAvailabilities);
+
+        List<String> images = new ArrayList<>();
+        for(int i = 0; i < accommodation.getImagePaths().size(); i++){
+            String[] split = accommodation.getImagePaths().get(i).split("/");
+            images.add(split[3]);
+        }
+
+        List<String> imagesToAdd = new ArrayList<>();
+        for(int i = 0; i < request.getImagePathsNew().size(); i++){
+            String[] split = request.getImagePathsNew().get(i).split("/");
+            imagesToAdd.add(split[3]);
+        }
+
+        requestDifferences.setCurrentImages(images);
+        requestDifferences.setImagesToAdd(imagesToAdd);
+        requestDifferences.setImagesToRemove(request.getImagesToRemove());
+
+        return requestDifferences;
+    }
+
 }

@@ -177,4 +177,13 @@ public interface ApiService {
     })
     @GET("accommodation-requests")
     Call<ResponseBody> getOwnerAccommodationRequests(@Query("pageNo") int pageNo, @Query("pageSize") int pageSize);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @GET("accommodation-requests/{accommodationRequestId}")
+    Call<ResponseBody> getOwnerAccommodationRequest(@Path("accommodationRequestId") Long accommodationRequestId);
+
+
 }

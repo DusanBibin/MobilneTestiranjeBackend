@@ -1,6 +1,7 @@
 package com.example.projekatmobilne.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,8 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.projekatmobilne.R;
+import com.example.projekatmobilne.activities.AccommodationDetailsActivity;
+import com.example.projekatmobilne.activities.AccommodationsDifferencesCompareActivity;
 import com.example.projekatmobilne.adapters.AdapterItems.AccommodationSearchItem;
 import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.PageTypes.AccommodationRequestPreviewDTO;
 
@@ -77,6 +80,11 @@ public class AccommodationRequestPreviewAdapter extends RecyclerView.Adapter<Acc
             @Override
             public void onClick(View v) {
                 Toast.makeText(context, "KLIK RADI", Toast.LENGTH_SHORT).show();
+                AccommodationRequestPreviewDTO clickedRequest = dataList.get(holder.getAdapterPosition());
+
+                Intent intent = new Intent(context, AccommodationsDifferencesCompareActivity.class);
+                intent.putExtra("requestId", clickedRequest.getRequestId());
+                context.startActivity(intent);
             }
         });
     }

@@ -101,7 +101,6 @@ class AccommodationSearchViewHolder extends RecyclerView.ViewHolder{
     public AccommodationSearchViewHolder(@NonNull View itemView) {
         super(itemView);
 
-
         imageView = itemView.findViewById(R.id.imgAccommodation);
         txtName = itemView.findViewById(R.id.txtName);
         txtAddress = itemView.findViewById(R.id.txtAddress);

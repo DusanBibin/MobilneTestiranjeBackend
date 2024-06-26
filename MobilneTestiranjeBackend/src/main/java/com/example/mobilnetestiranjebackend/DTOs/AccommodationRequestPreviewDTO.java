@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AccommodationRequestPreviewDTO {
+    private Long requestId;
     private String accommodationName;
     private String accommodationAddress;
     private RequestStatus status;

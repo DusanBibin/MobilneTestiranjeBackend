@@ -71,4 +71,13 @@ public class AccommodationRequestController {
         return ResponseEntity.ok().body(accommodationRequestService.getAccommodationRequests(pageNo, pageSize, owner));
     }
 
+    @PreAuthorize("hasAuthority('OWNER')")
+    @GetMapping("/{accommodationRequestId}")
+    public ResponseEntity<?> getAccommodationRequests(@AuthenticationPrincipal Owner owner,
+                                                      @PathVariable("accommodationRequestId") Long requestId){
+
+        return ResponseEntity.ok().body(accommodationRequestService.getAccommodationRequest(owner,requestId));
+
+    }
+
 }

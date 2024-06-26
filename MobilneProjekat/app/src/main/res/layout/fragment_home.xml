@@ -134,9 +134,22 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="10dp"
             android:id="@+id/scroll_accommodations_list"
             >
+            <TextView
+                android:id="@+id/txtNoResults"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="No results"
+                android:visibility="gone"
+                android:textSize="25sp"/>
+            <ProgressBar
+                android:id="@+id/progressBarRecyclerView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                android:layout_centerInParent="true"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"

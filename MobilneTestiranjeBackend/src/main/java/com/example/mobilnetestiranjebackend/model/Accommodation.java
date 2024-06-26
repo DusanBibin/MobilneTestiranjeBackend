@@ -24,13 +24,6 @@ public class  Accommodation {
     private Double lat;
     private Double lon;
 
-
-    @ElementCollection
-    private List<Amenity> amenities;
-
-    @ElementCollection
-    private List<String> imagePaths;
-
     private Long minGuests;
     private Long maxGuests;
 
@@ -38,8 +31,28 @@ public class  Accommodation {
 
     private Boolean autoAcceptEnabled;
 
+    @ElementCollection
+    private List<Amenity> amenities;
+
+
+
+    @ElementCollection
+    private List<String> imagePaths;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "accommodation")
     private List<Availability> availabilityList;
+
+
+
+
+
+
+
+
+
+
+
+
 
     @ManyToOne
     private Owner owner;

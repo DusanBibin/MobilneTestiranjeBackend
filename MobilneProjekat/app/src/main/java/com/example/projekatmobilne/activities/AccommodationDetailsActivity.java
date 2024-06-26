@@ -197,12 +197,11 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
                     SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                             .findFragmentById(R.id.mapview);
                     mapFragment.getMapAsync(AccommodationDetailsActivity.this);
+                    setupImages();
                     setupSpinner();
                     setupCalendar();
-                    setupImages();
                     setupTextViews();
-                    binding.progressBar.setVisibility(View.GONE);
-                    binding.scrollViewAccommodationDetails.setVisibility(View.VISIBLE);
+
                 }
 
             }
@@ -226,6 +225,7 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
 
         binding.spinner.setAdapter(adapter);
     }
+
     private void setupCalendar() {
         binding.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -265,7 +265,6 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
         });
     }
     private void setupImages() {
-
         for(Long imageId: accommodationDTO.getImageIds()){
             Call<ResponseBody> imageResponse = ClientUtils.apiService.getAccommodationImage(accommodationId, imageId);
             imageResponse.enqueue(new Callback<ResponseBody>() {
@@ -276,9 +275,18 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
                         try {
                             imageBytes = response.body().bytes();
                             Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                            imageList.add(bitmap);
-                            imageAdapter.notifyItemInserted(imageList.size() - 1);
 
+                            synchronized(imageList) {
+                                imageList.add(bitmap);
+                                imageAdapter.notifyItemInserted(imageList.size() - 1);
+
+                                if(accommodationDTO.getImageIds().size() == imageList.size()){
+                                    runOnUiThread(() -> {
+                                        binding.progressBar.setVisibility(View.GONE);
+                                        binding.scrollViewAccommodationDetails.setVisibility(View.VISIBLE);
+                                    });
+                                }
+                            }
                         }catch (IOException e){
                             e.printStackTrace();
                             Toast.makeText(AccommodationDetailsActivity.this, "Failed to load image", Toast.LENGTH_SHORT).show();
