@@ -36,15 +36,230 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/app_bar">
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="TextViewfdasfdsaf"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardElevation="8dp"
+                app:cardCornerRadius="16dp"
+                app:cardUseCompatPadding="true">
+                    <LinearLayout
+                        android:id="@+id/linearLayoutGeneralInformation"
+                        android:padding="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/txtName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="15sp"
+                            android:text="Accommodation Name:"/>
+                        <TextView
+                            android:id="@+id/txtAccommodationNameValue"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="18sp"
+                            android:text="Ime akomodacije"/>
+
+                        <LinearLayout
+                            android:visibility="gone"
+                            android:id="@+id/linearLayoutAccommodationNames"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="15sp"
+                                android:layout_marginStart="10dp"
+                                android:text="Changed from:"/>
+                            <TextView
+                                android:id="@+id/txtOldAccommodationName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="15sp"
+                                android:layout_marginStart="10dp"
+                                android:text="Novo ime akomodacije"/>
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_marginTop="15dp"
+                            android:id="@+id/txtDescription"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Description:" />
+                        <TextView
+                            android:id="@+id/txtDescriptionValue"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="18sp"
+                            android:text="Description value"/>
+
+                        <LinearLayout
+                            android:visibility="gone"
+                            android:id="@+id/linearLayoutDescription"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="15sp"
+                                android:layout_marginStart="10dp"
+                                android:text="Changed from:"/>
+                            <TextView
+                                android:id="@+id/txtOldDescriptionValue"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="15sp"
+                                android:layout_marginStart="10dp"
+                                android:text="Novi opis"/>
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_marginTop="15dp"
+                            android:id="@+id/txtGuests"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Number of guests:" />
+                        <TextView
+                            android:id="@+id/txtGuestsValue"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="18sp"
+                            android:text="Broj gostiju"/>
+
+                        <LinearLayout
+                            android:visibility="gone"
+                            android:id="@+id/linearLayoutGuestNumber"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="15sp"
+                                android:layout_marginStart="10dp"
+                                android:text="Changed from:"/>
+                            <TextView
+                                android:id="@+id/txtOldGuestsValue"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="15sp"
+                                android:layout_marginStart="10dp"
+                                android:text="Novi broj gostiju"/>
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_marginTop="15dp"
+                            android:id="@+id/txtAmenities"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Amenities:" />
+                        <TextView
+                            android:id="@+id/txtAmenitiesValue"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="18sp"
+                            android:text="Dodaci"/>
+
+                        <LinearLayout
+                            android:visibility="gone"
+                            android:id="@+id/linearLayoutAmenities"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="15sp"
+                                android:layout_marginStart="10dp"
+                                android:text="Changed from:"/>
+                            <TextView
+                                android:id="@+id/txtOldAmenitiesValue"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="15sp"
+                                android:layout_marginStart="10dp"
+                                android:text="Novi dodaci"/>
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_marginTop="15dp"
+                            android:id="@+id/txtType"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Type:" />
+                        <TextView
+                            android:id="@+id/txtTypeValue"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="18sp"
+                            android:text="Tip"/>
+
+                        <LinearLayout
+                            android:visibility="gone"
+                            android:id="@+id/linearLayoutType"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="15sp"
+                                android:layout_marginStart="10dp"
+                                android:text="Changed from:"/>
+                            <TextView
+                                android:id="@+id/txtOldTypeValue"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="15sp"
+                                android:layout_marginStart="10dp"
+                                android:text="Novi tip"/>
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_marginTop="15dp"
+                            android:id="@+id/txtAutoAccept"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Auto accept:" />
+                        <TextView
+                            android:id="@+id/txtAutoAcceptValue"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="18sp"
+                            android:text="Auto prihvatanje"/>
+
+                        <LinearLayout
+                            android:visibility="gone"
+                            android:id="@+id/linearLayoutAutoAccept"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="15sp"
+                                android:layout_marginStart="10dp"
+                                android:text="Changed from:"/>
+                            <TextView
+                                android:id="@+id/txtOldAutoAcceptValue"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="15sp"
+                                android:layout_marginStart="10dp"
+                                android:text="Novo Auto prihvatanje"/>
+                        </LinearLayout>
+                    </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </androidx.core.widget.NestedScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

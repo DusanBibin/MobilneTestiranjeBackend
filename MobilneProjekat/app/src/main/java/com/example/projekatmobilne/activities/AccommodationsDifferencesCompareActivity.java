@@ -4,29 +4,23 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
-import com.example.projekatmobilne.clients.ApiService;
+import com.example.projekatmobilne.R;
 import com.example.projekatmobilne.clients.ClientUtils;
 import com.example.projekatmobilne.databinding.ActivityAccomodationsDifferencesCompareBinding;
-import com.example.projekatmobilne.model.Enum.AccommodationType;
 import com.example.projekatmobilne.model.Enum.Amenity;
-import com.example.projekatmobilne.model.Enum.RequestType;
-import com.example.projekatmobilne.model.requestDTO.AvailabilityDTO;
+import com.example.projekatmobilne.model.responseDTO.AccommodationDTOEdit;
 import com.example.projekatmobilne.model.responseDTO.AccommodationDTOResponse;
 import com.example.projekatmobilne.model.responseDTO.AccommodationDifferencesDTO;
 import com.example.projekatmobilne.tools.ResponseParser;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Map;
+import java.util.HashSet;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -38,7 +32,6 @@ public class AccommodationsDifferencesCompareActivity extends AppCompatActivity 
     private Long requestId = 0L;
     private Toolbar toolbar;
     private ActivityAccomodationsDifferencesCompareBinding binding;
-    private AccommodationDTOResponse accommodationDTO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +57,71 @@ public class AccommodationsDifferencesCompareActivity extends AppCompatActivity 
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     if(response.code() == 200){
                         AccommodationDifferencesDTO responseDTO = ResponseParser.parseResponse(response, AccommodationDifferencesDTO.class, false);
-                        System.out.println(responseDTO);
+
+
+                        AccommodationDTOEdit requestInfo = responseDTO.getRequestAccommodationInfo();
+                        binding.txtAccommodationNameValue.setText(requestInfo.getName());
+                        binding.txtDescriptionValue.setText(requestInfo.getDescription());
+                        binding.txtGuestsValue.setText(requestInfo.getMinGuests() + "-" + requestInfo.getMaxGuests());
+
+                        StringBuilder amenitiesBuilder = new StringBuilder();
+                        for(int i = 0; i < requestInfo.getAmenities().size(); i++){
+                            Amenity amenity = requestInfo.getAmenities().get(i);
+                            amenitiesBuilder.append(amenity.toString());
+                            if (requestInfo.getAmenities().size() != i + 1) {
+                                amenitiesBuilder.append(", ");
+                            }
+                        }
+                        String amenities = amenitiesBuilder.toString();
+
+                        binding.txtAmenitiesValue.setText(amenities);
+                        binding.txtTypeValue.setText(requestInfo.getAccommodationType().toString());
+                        binding.txtAutoAcceptValue.setText(requestInfo.getAutoAcceptEnabled().toString());
+
+
+                        if(responseDTO.getAccommodationInfo() != null){
+                            AccommodationDTOEdit oldInfo = responseDTO.getAccommodationInfo();
+
+                            if(!oldInfo.getName().equals(requestInfo.getName())){
+                                fillOldTxtValue(binding.txtOldAccommodationName, binding.linearLayoutAccommodationNames,
+                                        binding.txtAccommodationNameValue, oldInfo.getName());
+                            }
+
+                            if(!oldInfo.getDescription().equals(requestInfo.getDescription())){
+                                fillOldTxtValue(binding.txtOldDescriptionValue, binding.linearLayoutDescription,
+                                        binding.txtDescriptionValue, oldInfo.getDescription());
+                            }
+
+                            if(!(oldInfo.getMinGuests().equals(requestInfo.getMinGuests()) && oldInfo.getMaxGuests().equals(requestInfo.getMaxGuests()))){
+                                fillOldTxtValue(binding.txtOldGuestsValue, binding.linearLayoutGuestNumber,
+                                        binding.txtGuestsValue, oldInfo.getMinGuests() + "-" + oldInfo.getMaxGuests());
+                            }
+
+                            if(!((new HashSet<>(oldInfo.getAmenities())).equals(new HashSet<>(requestInfo.getAmenities())))){
+                                amenitiesBuilder = new StringBuilder();
+                                for(int i = 0; i < requestInfo.getAmenities().size(); i++){
+                                    Amenity amenity = requestInfo.getAmenities().get(i);
+                                    amenitiesBuilder.append(amenity.toString());
+                                    if (requestInfo.getAmenities().size() != i + 1) {
+                                        amenitiesBuilder.append(", ");
+                                    }
+                                }
+                                fillOldTxtValue(binding.txtOldAmenitiesValue, binding.linearLayoutAmenities,
+                                        binding.txtAmenitiesValue, amenitiesBuilder.toString());
+                            }
+
+
+                            if(!(oldInfo.getAccommodationType().equals(requestInfo.getAccommodationType()))){
+                                fillOldTxtValue(binding.txtOldTypeValue, binding.linearLayoutType,
+                                        binding.txtTypeValue, oldInfo.getAccommodationType().toString());
+                            }
+
+                            if(!(oldInfo.getAutoAcceptEnabled().equals(requestInfo.getAutoAcceptEnabled()))){
+                                fillOldTxtValue(binding.txtOldAutoAcceptValue, binding.linearLayoutAutoAccept,
+                                        binding.txtAutoAcceptValue, oldInfo.getAutoAcceptEnabled().toString());
+                            }
+
+                        }
                     }
                 }
 
@@ -75,6 +132,16 @@ public class AccommodationsDifferencesCompareActivity extends AppCompatActivity 
                 }
             });
         }
+    }
+
+    private void fillOldTxtValue(TextView txtOldValue,
+                                 LinearLayout linearLayoutOldValues,
+                                 TextView txtValue,
+                                 String value) {
+        int color = ContextCompat.getColor(AccommodationsDifferencesCompareActivity.this, R.color.colorAccent);
+        txtOldValue.setText(value);
+        linearLayoutOldValues.setVisibility(View.VISIBLE);
+        txtValue.setTextColor(color);
     }
 
     @Override
