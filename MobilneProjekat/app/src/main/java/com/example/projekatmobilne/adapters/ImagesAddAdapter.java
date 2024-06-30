@@ -10,9 +10,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.projekatmobilne.R;
+import com.example.projekatmobilne.activities.AccommodationsDifferencesCompareActivity;
 import com.example.projekatmobilne.activities.FullScreenImageActivity;
 
 import java.io.File;
@@ -25,7 +27,10 @@ public class ImagesAddAdapter extends RecyclerView.Adapter<ImageAddHolder> {
     private List<File> dataList;
     private List<File> imagesToAdd;
     private List<String> imagesToDelete;
-
+    private List<String> differencesImagesToDelete;
+    private List<String> differencesImagesToAdd;
+    private int red;
+    private int green;
     public void setSearchList(List<File> dataSearchList){
         this.dataList = dataSearchList;
         notifyDataSetChanged();
@@ -36,12 +41,16 @@ public class ImagesAddAdapter extends RecyclerView.Adapter<ImageAddHolder> {
         this.dataList = dataList;
         this.imagesToAdd = new ArrayList<>();
         this.imagesToDelete = new ArrayList<>();
+        green = ContextCompat.getColor(context, R.color.green);
+        red = ContextCompat.getColor(context, R.color.red);
     }
 
+
+    public void setDifferencesImagesToDelete(List<String> imagesToDelete){differencesImagesToDelete = imagesToDelete;}
+    public void setDifferencesImagesToAdd(List<String> imagesToAdd){differencesImagesToAdd = imagesToAdd;}
     public void addNewImage(File image){imagesToAdd.add(image);}
     public List<File> getImagesToAdd(){return imagesToAdd;}
     public List<String> getImagesToDelete(){return imagesToDelete;}
-
     @NonNull
     @Override
     public ImageAddHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType){
@@ -51,6 +60,26 @@ public class ImagesAddAdapter extends RecyclerView.Adapter<ImageAddHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ImageAddHolder holder, int position) {
+
+        if(context instanceof AccommodationsDifferencesCompareActivity){
+            holder.btnRemove.setVisibility(View.INVISIBLE);
+            for(String str: differencesImagesToAdd){
+                if(dataList.get(position).getName().contains(str)){
+                    holder.txtImageName.setTextColor(green);
+                    break;
+                }
+            }
+
+            for(String str: differencesImagesToDelete){
+                if(dataList.get(position).getName().contains(str)){
+                    holder.txtImageName.setTextColor(red);
+                    break;
+                }
+
+            }
+
+        }
+
         holder.txtImageName.setText(dataList.get(position).getName());
 
         holder.btnRemove.setOnClickListener(new View.OnClickListener() {

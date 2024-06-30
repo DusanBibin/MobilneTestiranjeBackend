@@ -68,7 +68,7 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
     private ActivityAccommodationDetailsBinding binding;
 
     private ViewPager2 viewPager;
-    private Long accommodationId;
+    private Long accommodationId = 0L;
     private AccommodationDTOResponse accommodationDTO;
     private ReviewsDTOPagedResponse reviewsDTOPagedResponse;
     private List<String> pinkDateList;
@@ -104,17 +104,7 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
 
         binding.txtNoRatings.setVisibility(View.GONE);
         binding.btnEdit.setVisibility(View.GONE);
-        if(Role.OWNER.equals(JWTManager.getRoleEnum())){
-            binding.btnEdit.setVisibility(View.VISIBLE);
-            binding.btnEdit.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(AccommodationDetailsActivity.this, CreateAccommodationActivity.class);
-                    intent.putExtra("accommodationId", accommodationId);
-                    startActivity(intent);
-                }
-            });
-        }
+
 
         calendarView = findViewById(R.id.calendarView);
         calendarView.setShowOtherDates(MaterialCalendarView.SHOW_ALL);
@@ -155,7 +145,17 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
             accommodationId = (Long) intent.getSerializableExtra("accommodationId");
         }
 
-
+        if(Role.OWNER.equals(JWTManager.getRoleEnum()) && accommodationId != 0L){
+            binding.btnEdit.setVisibility(View.VISIBLE);
+            binding.btnEdit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(AccommodationDetailsActivity.this, CreateAccommodationActivity.class);
+                    intent.putExtra("accommodationId", accommodationId);
+                    startActivity(intent);
+                }
+            });
+        }
 
         imageList = new ArrayList<>();
         imageAdapter = new ImageAdapter(this, imageList);

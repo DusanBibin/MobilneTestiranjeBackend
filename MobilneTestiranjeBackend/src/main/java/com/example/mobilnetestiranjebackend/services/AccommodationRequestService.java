@@ -8,7 +8,6 @@ import com.example.mobilnetestiranjebackend.exceptions.*;
 import com.example.mobilnetestiranjebackend.helpers.PageConverter;
 import com.example.mobilnetestiranjebackend.model.*;
 import com.example.mobilnetestiranjebackend.repositories.*;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -138,6 +137,9 @@ public class AccommodationRequestService {
 
     public void createEditAccommodationRequest(Owner owner, List<MultipartFile> images, AccommodationDTO accommodationDTO, Long accommodationId) {
 
+
+        boolean differencesPresent = true;
+
         var accommodationWrapper = accommodationRepository.findAccommodationsByOwnerAndName(owner, accommodationDTO.getName());
         if(accommodationWrapper.isPresent() && !Objects.equals(accommodationWrapper.get().getId(), accommodationId)) throw new EntityAlreadyExistsException("You already have accommodation with this name");
 
@@ -164,9 +166,11 @@ public class AccommodationRequestService {
             availReqMap.put(a.getId(), a);
         }
 
+        differencesPresent = checkGeneralInfo(accommodation, accommodationDTO, images);
+        if(!differencesPresent) throw new InvalidInputException("There need to be differences to create new edit request");
+
 
         Map<Long, AvailabilityDTO> visited = new HashMap<>();
-
         for(AvailabilityDTO availReq: accommodationDTO.getAvailabilityList()){
 
             if(!availReq.getRequestType().equals(RequestType.DELETE)){
@@ -297,7 +301,60 @@ public class AccommodationRequestService {
         }
 
         accommodationRequestRepository.save(accommodationRequest);
+    }
 
+    private boolean checkGeneralInfo(Accommodation accommodation, AccommodationDTO accommodationDTO, List<MultipartFile> images) {
+
+        if(!accommodation.getName().equals(accommodationDTO.getName())) return false;
+        System.out.println("iksde1");
+        if(!accommodation.getDescription().equals(accommodationDTO.getDescription())) return false;
+        System.out.println("iksde2");
+        if(!accommodation.getAddress().equals(accommodationDTO.getAddress())) return false;
+        System.out.println("iksde3");
+        if(!accommodation.getLat().equals(accommodationDTO.getLat())) return false;
+        System.out.println("iksde4");
+        if(!accommodation.getLon().equals(accommodationDTO.getLon())) return false;
+        System.out.println("iksde5");
+        if(!(new HashSet<>(accommodation.getAmenities())).equals(new HashSet<>(accommodationDTO.getAmenities()))) return false;
+        for(Amenity amenity: accommodation.getAmenities()) {System.out.println(amenity.toString());}
+        System.out.println(accommodationDTO.getAmenities());
+        for(Amenity amenity: accommodationDTO.getAmenities()) {System.out.println(amenity.toString());}
+        System.out.println("iksde6");
+        if(!accommodation.getMinGuests().equals(accommodationDTO.getMinGuests())) return false;
+        System.out.println("iksde7");
+        if(!accommodation.getMaxGuests().equals(accommodationDTO.getMaxGuests())) return false;
+        System.out.println("iksde8");
+        if(!accommodation.getAccommodationType().equals(accommodationDTO.getAccommodationType())) return false;
+        System.out.println("iksde9");
+        if(!accommodation.getAutoAcceptEnabled().equals(accommodationDTO.getAutoAcceptEnabled())) return false;
+        System.out.println("iksde10");
+
+        for(AvailabilityDTO availDTO: accommodationDTO.getAvailabilityList()){
+
+            if(availDTO.getRequestType().equals(RequestType.EDIT) || availDTO.getRequestType().equals(RequestType.DELETE)){
+
+                var availabilityWrapper = availabilityRepository.findByIdAndAccommodationId(availDTO.getId(), accommodation.getId());
+                if(availabilityWrapper.isEmpty()) throw new InvalidInputException("Availability not found");
+                var availability = availabilityWrapper.get();
+
+                if(!availability.getPricePerGuest().equals(availDTO.getPricePerGuest())) return false;
+                System.out.println("iksde11");
+                if(!availability.getStartDate().equals(availDTO.getStartDate())) return false;
+                System.out.println("iksde12");
+                if(!availability.getEndDate().equals(availDTO.getEndDate())) return false;
+                System.out.println("iksde13");
+                if(!availability.getCancelDeadline().equals(availDTO.getCancellationDeadline())) return false;
+                System.out.println("iksde14");
+                if(!availability.getPrice().equals(availDTO.getPrice())) return false;
+                System.out.println("iksde15");
+            }
+            
+        }
+
+
+        if(images.isEmpty() && accommodationDTO.getImagesToDelete().isEmpty()) return false;
+        System.out.println("iksde16");
+        return true;
     }
 
     public String saveImage(String email, String accommodationName, MultipartFile file, int currentIndex){

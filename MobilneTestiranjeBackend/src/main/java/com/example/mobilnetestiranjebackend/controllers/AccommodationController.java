@@ -3,14 +3,13 @@ package com.example.mobilnetestiranjebackend.controllers;
 import com.example.mobilnetestiranjebackend.DTOs.*;
 import com.example.mobilnetestiranjebackend.enums.AccommodationType;
 import com.example.mobilnetestiranjebackend.enums.Amenity;
+import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthorizationException;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidFileExtensionException;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidInputException;
 import com.example.mobilnetestiranjebackend.exceptions.NonExistingEntityException;
-import com.example.mobilnetestiranjebackend.model.Availability;
-import com.example.mobilnetestiranjebackend.model.Guest;
-import com.example.mobilnetestiranjebackend.model.Owner;
-import com.example.mobilnetestiranjebackend.model.Reservation;
-import com.example.mobilnetestiranjebackend.repositories.ReservationRepository;
+import com.example.mobilnetestiranjebackend.model.*;
+import com.example.mobilnetestiranjebackend.repositories.*;
+import com.example.mobilnetestiranjebackend.services.AccommodationRequestService;
 import com.example.mobilnetestiranjebackend.services.AccommodationService;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
@@ -28,6 +27,8 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/accommodations")
@@ -35,6 +36,11 @@ import java.util.List;
 public class AccommodationController {
     private final AccommodationService accommodationService;
     private final ReservationRepository reservationRepository;
+    private final AccommodationRequestService accommodationRequestService;
+    private final OwnerRepository ownerRepository;
+    private final UserRepository userRepository;
+    private final AdminRepository adminRepository;
+    private final AccommodationRequestRepository accommodationRequestRepository;
 
 
     @GetMapping(path = "/{accommodationId}")
@@ -154,6 +160,13 @@ public class AccommodationController {
                 .build());
         return new ResponseEntity<>(imageBytes, headers, 200);
     }
+
+
+
+
+
+
+
 
 
     @GetMapping("")

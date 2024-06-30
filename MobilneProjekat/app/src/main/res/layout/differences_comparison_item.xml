@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/linearLayoutAvailabilityAdd"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <!--    <androidx.cardview.widget.CardView-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        app:cardElevation="8dp"-->
+    <!--        app:cardCornerRadius="16dp"-->
+    <!--        android:layout_margin="5dp">-->
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:paddingBottom="20dp">
+
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:columnCount="2"
+            android:rowCount="2">
+
+            <TextView
+                android:id="@+id/txtAvailabilityDateRange"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:text="Date range: "
+                android:textSize="11sp"/>
+            <TextView
+                android:id="@+id/txtAvailabilityCancel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:text="Cancel deadline: "
+                android:textSize="11sp"
+                android:layout_marginStart="5dp"/>
+
+            <TextView
+                android:id="@+id/txtAvailabilityUnitPrice"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:text="Unit price: "
+                android:textSize="11sp"/>
+            <TextView
+                android:id="@+id/txtIsPricePerGuest"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:text="Is per guest price: "
+                android:textSize="11sp"
+                android:layout_marginStart="5dp"/>
+            
+        </GridLayout>
+
+        <GridLayout
+            android:layout_marginStart="20dp"
+            android:id="@+id/gridLayoutOldInformation"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:columnCount="2"
+            android:rowCount="2">
+
+            <TextView
+                android:id="@+id/txtAvailabilityDateRangeOld"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:text="Date range: "
+                android:textSize="11sp"/>
+            <TextView
+                android:id="@+id/txtAvailabilityCancelOld"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:text="Cancel deadline: "
+                android:textSize="11sp"
+                android:layout_marginStart="5dp"/>
+
+            <TextView
+                android:id="@+id/txtAvailabilityUnitPriceOld"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:text="Unit price: "
+                android:textSize="11sp"/>
+            <TextView
+                android:id="@+id/txtIsPricePerGuestOld"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:text="Is per guest price: "
+                android:textSize="11sp"
+                android:layout_marginStart="5dp"/>
+
+        </GridLayout>
+
+
+    </LinearLayout>
+</LinearLayout>

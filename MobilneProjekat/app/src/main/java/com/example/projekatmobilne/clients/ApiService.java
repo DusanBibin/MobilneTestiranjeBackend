@@ -130,9 +130,12 @@ public interface ApiService {
     @GET("accommodations/{accommodationId}/images/{imageId}")
     Call<ResponseBody> getAccommodationImage(@Path("accommodationId") Long accommodationId, @Path("imageId") Long imageId);
 
-
-
-
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @GET("accommodation-requests/{accommodationRequestId}/images/{imageId}")
+    Call<ResponseBody> getAccommodationRequestImage(@Path("accommodationRequestId") Long accommodationId, @Path("imageId") Long imageId);
 
 
 

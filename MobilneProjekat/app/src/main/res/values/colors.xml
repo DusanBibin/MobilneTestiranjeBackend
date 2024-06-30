@@ -13,4 +13,7 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="colorGray">#C0C0C0</color>
+    <color name="red">#8B0000</color>
+    <color name="green">#027148</color>
+    <color name="orange">#FF8C00</color>
 </resources>

@@ -6,7 +6,7 @@ import java.util.List;
 
 
 public class AccommodationDTOEdit {
-
+    private Long id;
     private String name;
     private String description;
     private String address;
@@ -17,6 +17,14 @@ public class AccommodationDTOEdit {
     private Long maxGuests;
     private AccommodationType accommodationType;
     private Boolean autoAcceptEnabled;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -101,7 +109,8 @@ public class AccommodationDTOEdit {
     public AccommodationDTOEdit(String name, String description, String address, Double lat,
                                 Double lon, Long minGuests, Long maxGuests,
                                 AccommodationType accommodationType, List<Amenity> amenities,
-                                Boolean autoAcceptEnabled) {
+                                Boolean autoAcceptEnabled, Long id) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.address = address;

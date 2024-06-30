@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AccommodationDTOEdit {
-
+    private Long id;
     @NotBlank(message = "Accommodation name must be present")
     private String name;
 
