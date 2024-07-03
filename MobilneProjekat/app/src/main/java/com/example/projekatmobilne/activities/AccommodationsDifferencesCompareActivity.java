@@ -13,12 +13,15 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.projekatmobilne.R;
+import com.example.projekatmobilne.adapters.AvailabilitiesAdapter;
 import com.example.projekatmobilne.adapters.ImagesAddAdapter;
 import com.example.projekatmobilne.clients.ClientUtils;
 import com.example.projekatmobilne.databinding.ActivityAccomodationsDifferencesCompareBinding;
 import com.example.projekatmobilne.model.Enum.Amenity;
+import com.example.projekatmobilne.model.requestDTO.AvailabilityDTO;
 import com.example.projekatmobilne.model.responseDTO.AccommodationDTOEdit;
 import com.example.projekatmobilne.model.responseDTO.AccommodationDifferencesDTO;
+import com.example.projekatmobilne.model.responseDTO.innerDTO.AvailabilityDTOInner;
 import com.example.projekatmobilne.tools.ResponseParser;
 
 import java.io.File;
@@ -40,6 +43,8 @@ public class AccommodationsDifferencesCompareActivity extends AppCompatActivity 
     private ActivityAccomodationsDifferencesCompareBinding binding;
     private List<File> imagesList = new ArrayList<>();
     private ImagesAddAdapter imagesAddAdapter;
+    private AvailabilitiesAdapter availabilitiesAdapter;
+    private List<AvailabilityDTO> availabilitiesList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +63,12 @@ public class AccommodationsDifferencesCompareActivity extends AppCompatActivity 
         binding.recyclerViewImagesDifferences.setLayoutManager(linearLayoutManagerImages);
         imagesAddAdapter = new ImagesAddAdapter(AccommodationsDifferencesCompareActivity.this, imagesList);
         binding.recyclerViewImagesDifferences.setAdapter(imagesAddAdapter);
+
+
+        LinearLayoutManager linearLayoutManagerAvailabilities = new LinearLayoutManager(AccommodationsDifferencesCompareActivity.this);
+        binding.recyclerViewAvailabilitiesDifferences.setLayoutManager(linearLayoutManagerAvailabilities);
+        availabilitiesAdapter = new AvailabilitiesAdapter(AccommodationsDifferencesCompareActivity.this, availabilitiesList, getSupportFragmentManager());
+        binding.recyclerViewAvailabilitiesDifferences.setAdapter(availabilitiesAdapter);
 
         Intent intent = getIntent();
         if(intent != null && intent.hasExtra("requestId")){
@@ -123,10 +134,10 @@ public class AccommodationsDifferencesCompareActivity extends AppCompatActivity 
 
                             if(!((new HashSet<>(oldInfo.getAmenities())).equals(new HashSet<>(requestInfo.getAmenities())))){
                                 amenitiesBuilder = new StringBuilder();
-                                for(int i = 0; i < requestInfo.getAmenities().size(); i++){
-                                    Amenity amenity = requestInfo.getAmenities().get(i);
+                                for(int i = 0; i < responseDTO.getAccommodationInfo().getAmenities().size(); i++){
+                                    Amenity amenity = responseDTO.getAccommodationInfo().getAmenities().get(i);
                                     amenitiesBuilder.append(amenity.toString());
-                                    if (requestInfo.getAmenities().size() != i + 1) {
+                                    if (responseDTO.getAccommodationInfo().getAmenities().size() != i + 1) {
                                         amenitiesBuilder.append(", ");
                                     }
                                 }
@@ -144,17 +155,16 @@ public class AccommodationsDifferencesCompareActivity extends AppCompatActivity 
                                 fillOldTxtValue(binding.txtOldAutoAcceptValue, binding.linearLayoutAutoAccept,
                                         binding.txtAutoAcceptValue, oldInfo.getAutoAcceptEnabled().toString());
                             }
+                        } 
 
 
-
-
+                        for(AvailabilityDTO avail: responseDTO.getRequestAvailabilities()){
+                            availabilitiesAdapter.addAvailability(avail);
                         }
 
-
-
-
-
-
+                        for(AvailabilityDTO avail: responseDTO.getAvailabilities()){
+                            availabilitiesAdapter.addExistingAvailability(avail);
+                        }
                     }
                 }
 

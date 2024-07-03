@@ -1,6 +1,7 @@
 package com.example.projekatmobilne.model.responseDTO;
 
 import com.example.projekatmobilne.model.Enum.RequestStatus;
+import com.example.projekatmobilne.model.requestDTO.AvailabilityDTO;
 import com.example.projekatmobilne.model.responseDTO.innerDTO.AvailabilityDTOInner;
 
 import java.util.List;
@@ -11,8 +12,8 @@ public class AccommodationDifferencesDTO {
     private AccommodationDTOEdit accommodationInfo;
     private AccommodationDTOEdit requestAccommodationInfo;
 
-    private List<AvailabilityDTOInner> availabilities;
-    private List<AvailabilityDTOInner> requestAvailabilities;
+    private List<AvailabilityDTO> availabilities;
+    private List<AvailabilityDTO> requestAvailabilities;
 
     private List<String> imagesToAdd;
     private List<String> imagesToRemove;
@@ -29,11 +30,11 @@ public class AccommodationDifferencesDTO {
         this.accommodationInfo = accommodationInfo;
     }
 
-    public List<AvailabilityDTOInner> getAvailabilities() {
+    public List<AvailabilityDTO> getAvailabilities() {
         return availabilities;
     }
 
-    public void setAvailabilities(List<AvailabilityDTOInner> availabilities) {
+    public void setAvailabilities(List<AvailabilityDTO> availabilities) {
         this.availabilities = availabilities;
     }
 
@@ -45,11 +46,11 @@ public class AccommodationDifferencesDTO {
         this.requestAccommodationInfo = requestAccommodationInfo;
     }
 
-    public List<AvailabilityDTOInner> getRequestAvailabilities() {
+    public List<AvailabilityDTO> getRequestAvailabilities() {
         return requestAvailabilities;
     }
 
-    public void setRequestAvailabilities(List<AvailabilityDTOInner> requestAvailabilities) {
+    public void setRequestAvailabilities(List<AvailabilityDTO> requestAvailabilities) {
         this.requestAvailabilities = requestAvailabilities;
     }
 
@@ -95,8 +96,8 @@ public class AccommodationDifferencesDTO {
 
     public AccommodationDifferencesDTO(AccommodationDTOEdit accommodationInfo,
                                        AccommodationDTOEdit requestAccommodationInfo,
-                                       List<AvailabilityDTOInner> availabilities,
-                                       List<AvailabilityDTOInner> requestAvailabilities,
+                                       List<AvailabilityDTO> availabilities,
+                                       List<AvailabilityDTO> requestAvailabilities,
                                        List<String> imagesToAdd, RequestStatus status,
                                        String reason, List<String> imagesToRemove,
                                        List<String> currentImages) {

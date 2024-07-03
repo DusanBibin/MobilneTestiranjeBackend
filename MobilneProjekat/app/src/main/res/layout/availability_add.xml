@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:paddingBottom="20dp">
+            android:paddingTop="20dp">
 
 
             <GridLayout
@@ -38,7 +38,7 @@
                     android:text="Date range: "
                     android:textSize="11sp"/>
                 <TextView
-                    android:id="@+id/txtAvailabilityCancel"
+                    android:id="@+id/txtAvailabilityCancelDifferences"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
@@ -76,25 +76,71 @@
                     android:text="remove"
                     android:layout_marginStart="5dp"/>
             </GridLayout>
-
-<!--            <LinearLayout-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:orientation="vertical">-->
-<!--                <Button-->
-<!--                    android:id="@+id/btnChangeAvailability"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="Change"-->
-<!--                    android:layout_marginEnd="5dp"/>-->
-<!--                <Button-->
-<!--                    android:id="@+id/btnRemoveAvailability"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="remove"-->
-<!--                    android:layout_marginEnd="5dp"/>-->
-<!--            </LinearLayout>-->
-
         </LinearLayout>
-<!--    </androidx.cardview.widget.CardView>-->
+
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/txtChangedFromMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:layout_marginStart="10dp"
+            android:text="Changed from:"/>
+        <LinearLayout
+            android:visibility="gone"
+            android:baselineAligned="false"
+            android:id="@+id/linearLayoutAvailabilityOld"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+
+            android:layout_marginStart="10dp">
+
+
+            <GridLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:columnCount="2"
+                android:rowCount="2">
+
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/txtAvailabilityDateRangeOld"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:text="Date range: "
+                    android:textSize="11sp"/>
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/txtAvailabilityCancelDifferencesOld"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:text="Cancel deadline: "
+                    android:textSize="11sp"
+                    android:layout_marginStart="5dp"/>
+
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/txtAvailabilityUnitPriceOld"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:text="Unit price: "
+                    android:textSize="11sp"/>
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/txtIsPricePerGuestOld"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:text="Is per guest price: "
+                    android:textSize="11sp"
+                    android:layout_marginStart="5dp"/>
+                
+            </GridLayout>
+        </LinearLayout>
 </LinearLayout>

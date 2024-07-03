@@ -21,8 +21,10 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.projekatmobilne.R;
+import com.example.projekatmobilne.activities.AccommodationsDifferencesCompareActivity;
 import com.example.projekatmobilne.model.Enum.RequestType;
 import com.example.projekatmobilne.model.requestDTO.AvailabilityDTO;
+import com.example.projekatmobilne.model.responseDTO.innerDTO.AvailabilityDTOInner;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.DateValidatorPointForward;
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -35,17 +37,21 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class AvailabilitiesAdapter extends  RecyclerView.Adapter<AvailabilitiesViewHolder>{
     private Context context;
     private List<AvailabilityDTO> dataList;
     private List<AvailabilityDTO> existingAvailabilitiesMarkedDeletion;
+    private Map<Long, AvailabilityDTO> existingAvailabilitiesForEdit;
     private Dialog addAvailabilityDialog;
     private EditText dateRangeEdit, cancelDeadlineEdit, priceEdit;
     private TextInputLayout dateRangeInput, cancelDeadlineInput, priceInput;
     private CheckBox checkBoxIsPerGuest;
+    private int red, green, orange;
 
 
     private LocalDate dateStart, dateEnd, dateCancel;
@@ -53,6 +59,7 @@ public class AvailabilitiesAdapter extends  RecyclerView.Adapter<AvailabilitiesV
     private int editingPosition = -1;
     public void setSearchList(List<AvailabilityDTO> dataSearchList){
         this.dataList = dataSearchList;
+
         notifyDataSetChanged();
     }
 
@@ -61,11 +68,24 @@ public class AvailabilitiesAdapter extends  RecyclerView.Adapter<AvailabilitiesV
         this.dataList = dataList;
         this.supportFragmentManager = supportFragmentManager;
         this.existingAvailabilitiesMarkedDeletion = new ArrayList<>();
+        this.existingAvailabilitiesForEdit = new HashMap<>();
+        green = ContextCompat.getColor(context, R.color.green);
+        red = ContextCompat.getColor(context, R.color.red);
+        orange = ContextCompat.getColor(context, R.color.orange);
     }
 
     public List<AvailabilityDTO> getEditList(){
         existingAvailabilitiesMarkedDeletion.addAll(dataList);
         return existingAvailabilitiesMarkedDeletion;
+    }
+
+    public void addAvailability(AvailabilityDTO avail){
+        dataList.add(avail);
+        notifyItemInserted(dataList.size() - 1);
+    }
+
+    public void addExistingAvailability(AvailabilityDTO avail){
+        existingAvailabilitiesForEdit.put(avail.getId(), avail);
     }
 
     @NonNull
@@ -84,6 +104,68 @@ public class AvailabilitiesAdapter extends  RecyclerView.Adapter<AvailabilitiesV
         holder.txtIsPerGuest.setText("Is per guest price: " + item.getPricePerGuest().toString());
         holder.txtDateRange.setText("Date range: " + item.getStartDate().format(formatter) + " " + item.getEndDate().format(formatter));
         holder.txtCancelDate.setText("Cancel date: " + item.getCancellationDeadline().format(formatter));
+
+        if(context instanceof AccommodationsDifferencesCompareActivity){
+            holder.btnRemoveAvailability.setVisibility(View.GONE);
+            holder.btnChangeAvailability.setVisibility(View.GONE);
+
+            if(item.getRequestType().equals(RequestType.CREATE)){
+                holder.txtPrice.setTextColor(green);
+                holder.txtIsPerGuest.setTextColor(green);
+                holder.txtDateRange.setTextColor(green);
+                holder.txtCancelDate.setTextColor(green);
+            }
+
+            if(item.getRequestType().equals(RequestType.DELETE)){
+                holder.txtPrice.setTextColor(red);
+                holder.txtIsPerGuest.setTextColor(red);
+                holder.txtDateRange.setTextColor(red);
+                holder.txtCancelDate.setTextColor(red);
+            }
+
+            if(item.getRequestType().equals(RequestType.EDIT)){
+
+                AvailabilityDTO avail = existingAvailabilitiesForEdit.get(item.getId());
+
+
+                holder.txtPriceOld.setText("Price: " + avail.getPrice().toString());
+                holder.txtIsPerGuestOld.setText("Is per guest price: " + avail.getPricePerGuest().toString());
+                holder.txtDateRangeOld.setText("Date range: " + avail.getStartDate().format(formatter) + " " + avail.getEndDate().format(formatter));
+                holder.txtCancelDateOld.setText("Cancel date: " + avail.getCancellationDeadline().format(formatter));
+
+
+
+                if(!avail.getPricePerGuest().equals(item.getPricePerGuest())){
+                    holder.txtChangeFromMessage.setVisibility(View.VISIBLE);
+                    holder.linearLayoutAvailabilityOld.setVisibility(View.VISIBLE);
+                    holder.txtIsPerGuestOld.setVisibility(View.VISIBLE);
+                    holder.txtIsPerGuest.setTextColor(orange);
+                }
+
+                if(!avail.getPrice().equals(item.getPrice())){
+                    holder.txtChangeFromMessage.setVisibility(View.VISIBLE);
+                    holder.linearLayoutAvailabilityOld.setVisibility(View.VISIBLE);
+                    holder.txtPriceOld.setVisibility(View.VISIBLE);
+                    holder.txtPrice.setTextColor(orange);
+                }
+
+                if(!avail.getEndDate().equals(item.getEndDate()) || !avail.getStartDate().equals(item.getStartDate())){
+                    holder.txtChangeFromMessage.setVisibility(View.VISIBLE);
+                    holder.linearLayoutAvailabilityOld.setVisibility(View.VISIBLE);
+                    holder.txtDateRangeOld.setVisibility(View.VISIBLE);
+                    holder.txtDateRange.setTextColor(orange);
+                }
+
+                if(!avail.getCancellationDeadline().equals(item.getCancellationDeadline())){
+                    holder.txtChangeFromMessage.setVisibility(View.VISIBLE);
+                    holder.linearLayoutAvailabilityOld.setVisibility(View.VISIBLE);
+                    holder.txtCancelDateOld.setVisibility(View.VISIBLE);
+                    holder.txtCancelDate.setTextColor(orange);
+                }
+
+            }
+
+        }
 
         holder.btnRemoveAvailability.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -278,19 +360,26 @@ public class AvailabilitiesAdapter extends  RecyclerView.Adapter<AvailabilitiesV
 }
 
 class AvailabilitiesViewHolder extends RecyclerView.ViewHolder{
-    TextView txtDateRange, txtCancelDate, txtPrice, txtIsPerGuest;
+    TextView txtDateRange, txtCancelDate, txtPrice, txtIsPerGuest, txtChangeFromMessage;
+    TextView txtDateRangeOld, txtCancelDateOld, txtPriceOld, txtIsPerGuestOld;
     Button btnRemoveAvailability, btnChangeAvailability;
-    LinearLayout linearLayoutAvailabilityAdd;
+    LinearLayout linearLayoutAvailabilityAdd, linearLayoutAvailabilityOld;
     public AvailabilitiesViewHolder(@NonNull View itemView) {
         super(itemView);
 
         linearLayoutAvailabilityAdd = itemView.findViewById(R.id.linearLayoutAvailabilityAdd);
+        linearLayoutAvailabilityOld = itemView.findViewById(R.id.linearLayoutAvailabilityOld);
         btnRemoveAvailability = itemView.findViewById(R.id.btnRemoveAvailability);
         btnChangeAvailability = itemView.findViewById(R.id.btnChangeAvailability);
         txtDateRange = itemView.findViewById(R.id.txtAvailabilityDateRange);
-        txtCancelDate = itemView.findViewById(R.id.txtAvailabilityCancel);
+        txtCancelDate = itemView.findViewById(R.id.txtAvailabilityCancelDifferences);
         txtPrice = itemView.findViewById(R.id.txtAvailabilityUnitPrice);
         txtIsPerGuest = itemView.findViewById(R.id.txtIsPricePerGuest);
+        txtChangeFromMessage = itemView.findViewById(R.id.txtChangedFromMessage);
+        txtDateRangeOld = itemView.findViewById(R.id.txtAvailabilityDateRangeOld);
+        txtCancelDateOld = itemView.findViewById(R.id.txtAvailabilityCancelDifferencesOld);
+        txtPriceOld = itemView.findViewById(R.id.txtAvailabilityUnitPriceOld);
+        txtIsPerGuestOld = itemView.findViewById(R.id.txtIsPricePerGuestOld);
 
     }
 }

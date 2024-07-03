@@ -289,8 +289,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textSize="25sp"
-                            android:text="Availabilities information"
-                            android:layout_marginBottom="5dp"/>
+                            android:text="Availabilities information" />
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/recyclerViewAvailabilitiesDifferences"

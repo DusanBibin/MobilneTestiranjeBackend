@@ -22,7 +22,6 @@
         android:gravity="center_vertical"
         android:paddingBottom="20dp">
 
-
         <GridLayout
             android:layout_width="match_parent"
             android:layout_weight="1"
@@ -38,7 +37,7 @@
                 android:text="Date range: "
                 android:textSize="11sp"/>
             <TextView
-                android:id="@+id/txtAvailabilityCancel"
+                android:id="@+id/txtAvailabilityCancelDifferences"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="1"
@@ -64,6 +63,14 @@
             
         </GridLayout>
 
+
+        <TextView
+            android:id="@+id/txtChangedFromMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:layout_marginStart="10dp"
+            android:text="Changed from:"/>
         <GridLayout
             android:layout_marginStart="20dp"
             android:id="@+id/gridLayoutOldInformation"
@@ -81,7 +88,7 @@
                 android:text="Date range: "
                 android:textSize="11sp"/>
             <TextView
-                android:id="@+id/txtAvailabilityCancelOld"
+                android:id="@+id/txtAvailabilityCancelDifferencesOld"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="1"

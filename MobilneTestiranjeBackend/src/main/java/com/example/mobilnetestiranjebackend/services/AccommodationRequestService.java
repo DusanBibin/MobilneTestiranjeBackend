@@ -305,28 +305,28 @@ public class AccommodationRequestService {
 
     private boolean checkGeneralInfo(Accommodation accommodation, AccommodationDTO accommodationDTO, List<MultipartFile> images) {
 
-        if(!accommodation.getName().equals(accommodationDTO.getName())) return false;
+        if(!accommodation.getName().equals(accommodationDTO.getName())) return true;
         System.out.println("iksde1");
-        if(!accommodation.getDescription().equals(accommodationDTO.getDescription())) return false;
+        if(!accommodation.getDescription().equals(accommodationDTO.getDescription())) return true;
         System.out.println("iksde2");
-        if(!accommodation.getAddress().equals(accommodationDTO.getAddress())) return false;
+        if(!accommodation.getAddress().equals(accommodationDTO.getAddress())) return true;
         System.out.println("iksde3");
-        if(!accommodation.getLat().equals(accommodationDTO.getLat())) return false;
+        if(!accommodation.getLat().equals(accommodationDTO.getLat())) return true;
         System.out.println("iksde4");
-        if(!accommodation.getLon().equals(accommodationDTO.getLon())) return false;
+        if(!accommodation.getLon().equals(accommodationDTO.getLon())) return true;
         System.out.println("iksde5");
-        if(!(new HashSet<>(accommodation.getAmenities())).equals(new HashSet<>(accommodationDTO.getAmenities()))) return false;
+        if(!(new HashSet<>(accommodation.getAmenities())).equals(new HashSet<>(accommodationDTO.getAmenities()))) return true;
         for(Amenity amenity: accommodation.getAmenities()) {System.out.println(amenity.toString());}
         System.out.println(accommodationDTO.getAmenities());
         for(Amenity amenity: accommodationDTO.getAmenities()) {System.out.println(amenity.toString());}
         System.out.println("iksde6");
-        if(!accommodation.getMinGuests().equals(accommodationDTO.getMinGuests())) return false;
+        if(!accommodation.getMinGuests().equals(accommodationDTO.getMinGuests())) return true;
         System.out.println("iksde7");
-        if(!accommodation.getMaxGuests().equals(accommodationDTO.getMaxGuests())) return false;
+        if(!accommodation.getMaxGuests().equals(accommodationDTO.getMaxGuests())) return true;
         System.out.println("iksde8");
-        if(!accommodation.getAccommodationType().equals(accommodationDTO.getAccommodationType())) return false;
+        if(!accommodation.getAccommodationType().equals(accommodationDTO.getAccommodationType())) return true;
         System.out.println("iksde9");
-        if(!accommodation.getAutoAcceptEnabled().equals(accommodationDTO.getAutoAcceptEnabled())) return false;
+        if(!accommodation.getAutoAcceptEnabled().equals(accommodationDTO.getAutoAcceptEnabled())) return true;
         System.out.println("iksde10");
 
         for(AvailabilityDTO availDTO: accommodationDTO.getAvailabilityList()){
@@ -337,24 +337,24 @@ public class AccommodationRequestService {
                 if(availabilityWrapper.isEmpty()) throw new InvalidInputException("Availability not found");
                 var availability = availabilityWrapper.get();
 
-                if(!availability.getPricePerGuest().equals(availDTO.getPricePerGuest())) return false;
+                if(!availability.getPricePerGuest().equals(availDTO.getPricePerGuest())) return true;
                 System.out.println("iksde11");
-                if(!availability.getStartDate().equals(availDTO.getStartDate())) return false;
+                if(!availability.getStartDate().equals(availDTO.getStartDate())) return true;
                 System.out.println("iksde12");
-                if(!availability.getEndDate().equals(availDTO.getEndDate())) return false;
+                if(!availability.getEndDate().equals(availDTO.getEndDate())) return true;
                 System.out.println("iksde13");
-                if(!availability.getCancelDeadline().equals(availDTO.getCancellationDeadline())) return false;
+                if(!availability.getCancelDeadline().equals(availDTO.getCancellationDeadline())) return true;
                 System.out.println("iksde14");
-                if(!availability.getPrice().equals(availDTO.getPrice())) return false;
+                if(!availability.getPrice().equals(availDTO.getPrice())) return true;
                 System.out.println("iksde15");
             }
             
         }
 
 
-        if(images.isEmpty() && accommodationDTO.getImagesToDelete().isEmpty()) return false;
+        if(images.isEmpty() && accommodationDTO.getImagesToDelete().isEmpty()) return true;
         System.out.println("iksde16");
-        return true;
+        return false;
     }
 
     public String saveImage(String email, String accommodationName, MultipartFile file, int currentIndex){
@@ -701,6 +701,7 @@ public class AccommodationRequestService {
 
         List<AvailabilityDTO> newAvailabilities = new ArrayList<>();
         for(AvailabilityRequest ar: request.getAvailabilityRequests()){
+
             AvailabilityDTO avail = new AvailabilityDTO();
             if(ar.getAvailability() != null) avail.setId(ar.getAvailability().getId());
             else avail.setId(0L);
