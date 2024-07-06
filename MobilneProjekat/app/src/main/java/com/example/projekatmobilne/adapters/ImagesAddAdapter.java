@@ -41,13 +41,14 @@ public class ImagesAddAdapter extends RecyclerView.Adapter<ImageAddHolder> {
         this.dataList = dataList;
         this.imagesToAdd = new ArrayList<>();
         this.imagesToDelete = new ArrayList<>();
+        this.differencesImagesToAdd = new ArrayList<>();
         green = ContextCompat.getColor(context, R.color.green);
         red = ContextCompat.getColor(context, R.color.red);
     }
 
 
     public void setDifferencesImagesToDelete(List<String> imagesToDelete){differencesImagesToDelete = imagesToDelete;}
-    public void setDifferencesImagesToAdd(List<String> imagesToAdd){differencesImagesToAdd = imagesToAdd;}
+    public void setDifferencesImagesToAdd(List<String> imagesToAdd){differencesImagesToAdd.addAll(imagesToAdd);}
     public void addNewImage(File image){imagesToAdd.add(image);}
     public List<File> getImagesToAdd(){return imagesToAdd;}
     public List<String> getImagesToDelete(){return imagesToDelete;}

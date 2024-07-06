@@ -126,42 +126,45 @@ public class AvailabilitiesAdapter extends  RecyclerView.Adapter<AvailabilitiesV
             if(item.getRequestType().equals(RequestType.EDIT)){
 
                 AvailabilityDTO avail = existingAvailabilitiesForEdit.get(item.getId());
+                if(avail != null){
+                    System.out.println(avail);
+
+                    holder.txtPriceOld.setText("Price: " + avail.getPrice().toString());
+                    holder.txtIsPerGuestOld.setText("Is per guest price: " + avail.getPricePerGuest().toString());
+                    holder.txtDateRangeOld.setText("Date range: " + avail.getStartDate().format(formatter) + " " + avail.getEndDate().format(formatter));
+                    holder.txtCancelDateOld.setText("Cancel date: " + avail.getCancellationDeadline().format(formatter));
 
 
-                holder.txtPriceOld.setText("Price: " + avail.getPrice().toString());
-                holder.txtIsPerGuestOld.setText("Is per guest price: " + avail.getPricePerGuest().toString());
-                holder.txtDateRangeOld.setText("Date range: " + avail.getStartDate().format(formatter) + " " + avail.getEndDate().format(formatter));
-                holder.txtCancelDateOld.setText("Cancel date: " + avail.getCancellationDeadline().format(formatter));
 
+                    if(!avail.getPricePerGuest().equals(item.getPricePerGuest())){
+                        holder.txtChangeFromMessage.setVisibility(View.VISIBLE);
+                        holder.linearLayoutAvailabilityOld.setVisibility(View.VISIBLE);
+                        holder.txtIsPerGuestOld.setVisibility(View.VISIBLE);
+                        holder.txtIsPerGuest.setTextColor(orange);
+                    }
 
+                    if(!avail.getPrice().equals(item.getPrice())){
+                        holder.txtChangeFromMessage.setVisibility(View.VISIBLE);
+                        holder.linearLayoutAvailabilityOld.setVisibility(View.VISIBLE);
+                        holder.txtPriceOld.setVisibility(View.VISIBLE);
+                        holder.txtPrice.setTextColor(orange);
+                    }
 
-                if(!avail.getPricePerGuest().equals(item.getPricePerGuest())){
-                    holder.txtChangeFromMessage.setVisibility(View.VISIBLE);
-                    holder.linearLayoutAvailabilityOld.setVisibility(View.VISIBLE);
-                    holder.txtIsPerGuestOld.setVisibility(View.VISIBLE);
-                    holder.txtIsPerGuest.setTextColor(orange);
+                    if(!avail.getEndDate().equals(item.getEndDate()) || !avail.getStartDate().equals(item.getStartDate())){
+                        holder.txtChangeFromMessage.setVisibility(View.VISIBLE);
+                        holder.linearLayoutAvailabilityOld.setVisibility(View.VISIBLE);
+                        holder.txtDateRangeOld.setVisibility(View.VISIBLE);
+                        holder.txtDateRange.setTextColor(orange);
+                    }
+
+                    if(!avail.getCancellationDeadline().equals(item.getCancellationDeadline())){
+                        holder.txtChangeFromMessage.setVisibility(View.VISIBLE);
+                        holder.linearLayoutAvailabilityOld.setVisibility(View.VISIBLE);
+                        holder.txtCancelDateOld.setVisibility(View.VISIBLE);
+                        holder.txtCancelDate.setTextColor(orange);
+                    }
                 }
 
-                if(!avail.getPrice().equals(item.getPrice())){
-                    holder.txtChangeFromMessage.setVisibility(View.VISIBLE);
-                    holder.linearLayoutAvailabilityOld.setVisibility(View.VISIBLE);
-                    holder.txtPriceOld.setVisibility(View.VISIBLE);
-                    holder.txtPrice.setTextColor(orange);
-                }
-
-                if(!avail.getEndDate().equals(item.getEndDate()) || !avail.getStartDate().equals(item.getStartDate())){
-                    holder.txtChangeFromMessage.setVisibility(View.VISIBLE);
-                    holder.linearLayoutAvailabilityOld.setVisibility(View.VISIBLE);
-                    holder.txtDateRangeOld.setVisibility(View.VISIBLE);
-                    holder.txtDateRange.setTextColor(orange);
-                }
-
-                if(!avail.getCancellationDeadline().equals(item.getCancellationDeadline())){
-                    holder.txtChangeFromMessage.setVisibility(View.VISIBLE);
-                    holder.linearLayoutAvailabilityOld.setVisibility(View.VISIBLE);
-                    holder.txtCancelDateOld.setVisibility(View.VISIBLE);
-                    holder.txtCancelDate.setTextColor(orange);
-                }
 
             }
 

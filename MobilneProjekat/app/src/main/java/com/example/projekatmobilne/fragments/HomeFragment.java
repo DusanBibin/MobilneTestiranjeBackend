@@ -58,7 +58,7 @@ public class HomeFragment extends Fragment {
 
    private FragmentHomeBinding binding;
    private LocalDate dateStart = LocalDate.now().plusDays(1), dateEnd = LocalDate.now().plusYears(1);
-
+   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
    private List<AccommodationSearchItem> dataList = new ArrayList<>();
 
    private AccommodationSearchAdapter adapter;
@@ -164,6 +164,9 @@ public class HomeFragment extends Fragment {
         Long minValue = null;
         if(editTextMinValue.getText() != null && !editTextMinValue.getText().toString().isEmpty()) minValue = Long.parseLong(editTextMinValue.getText().toString());
         if(editTextMaxValue.getText() != null && !editTextMaxValue.getText().toString().isEmpty()) maxValue = Long.parseLong(editTextMaxValue.getText().toString());
+
+        binding.guestNumberInputEditText.setText(guestNum.toString());
+        binding.dateRangeInputEditText.setText(dateStart.format(formatter) + "  " + dateEnd.format(formatter));
 
         Call<ResponseBody> call = ClientUtils.apiService.getAccommodationsSearch(guestNum,
                 search, dateStart, dateEnd, getCheckBoxAmenities(), type, minValue,
@@ -350,8 +353,6 @@ public class HomeFragment extends Fragment {
                     String end = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date(selection.second));
                     String display = start + "  " + end;
 
-
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
                     dateStart = LocalDate.parse(start, formatter);
                     if(dateStart.equals(LocalDate.now()) || dateStart.isBefore(LocalDate.now())){

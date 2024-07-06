@@ -63,7 +63,7 @@ public class SplashActivity extends AppCompatActivity {
         });
 
         JWTManager.setup(this);
-        //JWTManager.clearUserData();
+        JWTManager.clearUserData();
         //getSupportActionBar().hide();
         int SPLASH_TIME_OUT = 3000;
         String jwt = JWTManager.getJWT();

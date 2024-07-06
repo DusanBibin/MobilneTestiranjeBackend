@@ -18,6 +18,7 @@ import com.example.projekatmobilne.R;
 import com.example.projekatmobilne.activities.AccommodationDetailsActivity;
 import com.example.projekatmobilne.activities.AccommodationsDifferencesCompareActivity;
 import com.example.projekatmobilne.adapters.AdapterItems.AccommodationSearchItem;
+import com.example.projekatmobilne.model.Enum.RequestStatus;
 import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.PageTypes.AccommodationRequestPreviewDTO;
 
 import org.w3c.dom.Text;
@@ -79,12 +80,16 @@ public class AccommodationRequestPreviewAdapter extends RecyclerView.Adapter<Acc
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, "KLIK RADI", Toast.LENGTH_SHORT).show();
-                AccommodationRequestPreviewDTO clickedRequest = dataList.get(holder.getAdapterPosition());
 
-                Intent intent = new Intent(context, AccommodationsDifferencesCompareActivity.class);
-                intent.putExtra("requestId", clickedRequest.getRequestId());
-                context.startActivity(intent);
+                if(preview.getStatus().equals(RequestStatus.PENDING)){
+                    AccommodationRequestPreviewDTO clickedRequest = dataList.get(holder.getAdapterPosition());
+
+                    Intent intent = new Intent(context, AccommodationsDifferencesCompareActivity.class);
+                    intent.putExtra("requestId", clickedRequest.getRequestId());
+                    context.startActivity(intent);
+                }
+
+
             }
         });
     }

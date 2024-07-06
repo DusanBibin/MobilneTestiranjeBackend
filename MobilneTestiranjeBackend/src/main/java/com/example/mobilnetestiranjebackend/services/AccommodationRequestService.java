@@ -352,7 +352,7 @@ public class AccommodationRequestService {
         }
 
 
-        if(images.isEmpty() && accommodationDTO.getImagesToDelete().isEmpty()) return true;
+        if(images == null && accommodationDTO.getImagesToDelete().isEmpty()) return true;
         System.out.println("iksde16");
         return false;
     }
@@ -481,18 +481,40 @@ public class AccommodationRequestService {
 
             if(!accommodation.getName().equals(accommodationRequest.getName())){
                 String[] pathParts = accommodation.getImagePaths().get(0).split("/");
+                System.out.println(Arrays.toString(pathParts));
                 File oldFolder = new File("uploads/" + pathParts[1] + "/" + pathParts[2]);
                 File newFolder = new File("uploads/" + pathParts[1] + "/" + accommodationRequest.getName());
+
+                System.out.println(oldFolder.getAbsolutePath());
+                System.out.println(newFolder.getAbsolutePath());
                 if (oldFolder.renameTo(newFolder)) {
                     System.out.println("Folder renamed successfully!");
                 } else {
-                    System.err.println("Failed to rename folder.");
+                    System.out.println("Error with renaming folder");
                 }
 
                 for (int i = 0; i < accommodation.getImagePaths().size(); i++) {
                     String path = accommodation.getImagePaths().get(i);
                     String[] split = path.split("/");
-                    accommodation.getImagePaths().set(i, split[1] + "/" + accommodationRequest.getName() + "/" + split[3]);
+                    accommodation.getImagePaths().set(i, "/" + split[1] + "/" + accommodationRequest.getName() + "/" + split[3]);
+                }
+            }
+
+            for (String imagePath : accommodationRequest.getImagePathsNew()) {
+                System.out.println("NOVI PATHOVI");
+                System.out.println(imagePath);
+                if (!accommodation.getImagePaths().contains(imagePath)) {
+                    System.out.println(accommodation.getName());
+                    System.out.println(accommodationRequest.getName());
+                    if(!accommodation.getName().equals(accommodationRequest.getName())){
+                        System.out.println("USLI SMO U MENJANJE NAME = A ZA REKVEST XD");
+                        String[] split = imagePath.split("/");
+
+                        String newPath = "/" + split[1] + "/" + accommodationRequest.getName() + "/" + split[3];
+                        accommodation.getImagePaths().add(newPath);
+                        System.out.println(newPath);
+
+                    }else {accommodation.getImagePaths().add(imagePath); System.out.println("Usli smo u normalno sranje");}
                 }
             }
 
@@ -511,11 +533,7 @@ public class AccommodationRequestService {
 
 
 
-            for (String imagePath : accommodationRequest.getImagePathsNew()) {
-                if (!accommodation.getImagePaths().contains(imagePath)) {
-                    accommodation.getImagePaths().add(imagePath);
-                }
-            }
+
 
 //
 //            List<String> imagesToRemove = new ArrayList<>();
@@ -764,10 +782,12 @@ public class AccommodationRequestService {
             requestDifferences.setAccommodationInfo(requestDTOOld);
             requestDifferences.setAvailabilities(oldAvailabilities);
             requestDifferences.setCurrentImages(images);
+            requestDifferences.setStatus(request.getStatus());
+            requestDifferences.setReason(request.getReason());
         }
 
 
-
+        System.out.println();
         return requestDifferences;
     }
 

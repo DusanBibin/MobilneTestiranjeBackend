@@ -97,4 +97,16 @@ public class AvailabilityDTO {
         this.requestType = requestType;
     }
 
+    @Override
+    public String toString() {
+        return "AvailabilityDTO{" +
+                "id=" + id +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", cancellationDeadline=" + cancellationDeadline +
+                ", pricePerGuest=" + pricePerGuest +
+                ", price=" + price +
+                ", requestType=" + requestType +
+                '}';
+    }
 }

@@ -88,7 +88,7 @@ public class AccommodationRequestController {
 
     @PreAuthorize("hasAuthority('OWNER')")
     @GetMapping("/{accommodationRequestId}")
-    public ResponseEntity<?> getAccommodationRequests(@AuthenticationPrincipal Owner owner,
+    public ResponseEntity<?> getAccommodationRequest(@AuthenticationPrincipal Owner owner,
                                                       @PathVariable("accommodationRequestId") Long requestId){
 
         return ResponseEntity.ok().body(accommodationRequestService.getAccommodationRequest(owner,requestId));
@@ -145,26 +145,29 @@ public class AccommodationRequestController {
             }
         }
 
-        for(String imgPath: request.getImagePathsNew()){
-            String[] pathParts = imgPath.split("/");
-            String fileName = pathParts[3];
+        if(!request.getStatus().equals(RequestStatus.ACCEPTED)){
+            for(String imgPath: request.getImagePathsNew()){
+                String[] pathParts = imgPath.split("/");
+                String fileName = pathParts[3];
 
-            if(fileName.charAt(0) == String.valueOf(imageId).charAt(0)){
-                foundImgPath = imgPath;
+                if(fileName.charAt(0) == String.valueOf(imageId).charAt(0)){
+                    foundImgPath = imgPath;
 
-                int dotIndex = fileName.lastIndexOf('.');
+                    int dotIndex = fileName.lastIndexOf('.');
 
-                if (dotIndex == -1 || dotIndex == fileName.length() - 1) {
-                    throw new InvalidFileExtensionException("The file doesn't have extension");
+                    if (dotIndex == -1 || dotIndex == fileName.length() - 1) {
+                        throw new InvalidFileExtensionException("The file doesn't have extension");
+                    }
+
+                    String fileExtension = fileName.substring(dotIndex + 1).toLowerCase();
+                    if(fileExtension.equals("png")) foundImgType = MediaType.IMAGE_JPEG;
+                    if(fileExtension.equals("jpg") || fileExtension.equals("jpeg")) foundImgType = MediaType.IMAGE_PNG;
+
+                    break;
                 }
-
-                String fileExtension = fileName.substring(dotIndex + 1).toLowerCase();
-                if(fileExtension.equals("png")) foundImgType = MediaType.IMAGE_JPEG;
-                if(fileExtension.equals("jpg") || fileExtension.equals("jpeg")) foundImgType = MediaType.IMAGE_PNG;
-
-                break;
             }
         }
+
 
 
 

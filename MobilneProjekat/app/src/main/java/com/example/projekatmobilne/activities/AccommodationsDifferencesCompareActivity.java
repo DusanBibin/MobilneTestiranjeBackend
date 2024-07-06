@@ -18,6 +18,7 @@ import com.example.projekatmobilne.adapters.ImagesAddAdapter;
 import com.example.projekatmobilne.clients.ClientUtils;
 import com.example.projekatmobilne.databinding.ActivityAccomodationsDifferencesCompareBinding;
 import com.example.projekatmobilne.model.Enum.Amenity;
+import com.example.projekatmobilne.model.Enum.RequestStatus;
 import com.example.projekatmobilne.model.requestDTO.AvailabilityDTO;
 import com.example.projekatmobilne.model.responseDTO.AccommodationDTOEdit;
 import com.example.projekatmobilne.model.responseDTO.AccommodationDifferencesDTO;
@@ -88,9 +89,12 @@ public class AccommodationsDifferencesCompareActivity extends AppCompatActivity 
                             Long imageId = Long.parseLong(String.valueOf(str.charAt(0)));
                             getImage(imageId);
                         }
-                        for(String str: responseDTO.getImagesToAdd()){
-                            Long imageId = Long.valueOf(String.valueOf(str.charAt(0)));
-                            getImage(imageId);
+
+                        if(responseDTO.getStatus().equals(RequestStatus.PENDING)){
+                            for(String str: responseDTO.getImagesToAdd()){
+                                Long imageId = Long.valueOf(String.valueOf(str.charAt(0)));
+                                getImage(imageId);
+                            }
                         }
 
 
@@ -106,7 +110,9 @@ public class AccommodationsDifferencesCompareActivity extends AppCompatActivity 
                             if (requestInfo.getAmenities().size() != i + 1) {
                                 amenitiesBuilder.append(", ");
                             }
+
                         }
+                        if(amenitiesBuilder.length() == 0) amenitiesBuilder.append("No amenities");
                         String amenities = amenitiesBuilder.toString();
 
                         binding.txtAmenitiesValue.setText(amenities);
@@ -141,6 +147,8 @@ public class AccommodationsDifferencesCompareActivity extends AppCompatActivity 
                                         amenitiesBuilder.append(", ");
                                     }
                                 }
+
+
                                 fillOldTxtValue(binding.txtOldAmenitiesValue, binding.linearLayoutAmenities,
                                         binding.txtAmenitiesValue, amenitiesBuilder.toString());
                             }
@@ -155,15 +163,18 @@ public class AccommodationsDifferencesCompareActivity extends AppCompatActivity 
                                 fillOldTxtValue(binding.txtOldAutoAcceptValue, binding.linearLayoutAutoAccept,
                                         binding.txtAutoAcceptValue, oldInfo.getAutoAcceptEnabled().toString());
                             }
-                        } 
-
-
-                        for(AvailabilityDTO avail: responseDTO.getRequestAvailabilities()){
-                            availabilitiesAdapter.addAvailability(avail);
                         }
 
+
+                        System.out.println(responseDTO.getRequestAvailabilities().size());
+                        for(AvailabilityDTO avail: responseDTO.getRequestAvailabilities()){
+                            availabilitiesAdapter.addAvailability(avail);
+                            System.out.println(avail);
+                        }
+                        System.out.println(responseDTO.getAvailabilities().size());
                         for(AvailabilityDTO avail: responseDTO.getAvailabilities()){
                             availabilitiesAdapter.addExistingAvailability(avail);
+                            System.out.println(avail);
                         }
                     }
                 }

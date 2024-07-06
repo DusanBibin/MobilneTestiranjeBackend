@@ -55,6 +55,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.DateValidatorPointBackward;
@@ -112,6 +113,7 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
     private Long accommodationId = 0L;
     private AccommodationDTOResponse accommodationDTO;
     private Long newAvailabilityCreateId = 1L;
+    private Marker currentMarker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -173,20 +175,30 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
         binding.btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                binding.btnSearch.setVisibility(View.GONE);
+                binding.progressBarAddressSearch.setVisibility(View.VISIBLE);
                 try {
                     String addressStr = binding.searchView.getQuery().toString();
                     if(addressStr.equals("")){
                         Toast.makeText(CreateAccommodationActivity.this, "This field cannot be empty", Toast.LENGTH_SHORT).show();
                     }else{
                         List<Address> addresses = geocoder.getFromLocationName(addressStr, 1);
+                        binding.btnSearch.setVisibility(View.VISIBLE);
+                        binding.progressBarAddressSearch.setVisibility(View.GONE);
                         if(addresses.isEmpty()) {Toast.makeText(CreateAccommodationActivity.this, "There are no results", Toast.LENGTH_SHORT).show(); return;}
                         address = addresses.get(0);
 
                         String addressFull = address.getAddressLine(0) + " " + address.getLocality() + " " + address.getAdminArea() + " " + address.getCountryName();
                         binding.txtAddress.setText(addressFull);
                         LatLng location = new LatLng(address.getLatitude(), address.getLongitude());
-                        MarkerOptions markerOptions = new MarkerOptions().position(location);
-                        mMap.addMarker(markerOptions);
+
+                        if(currentMarker == null){
+                            MarkerOptions markerOptions = new MarkerOptions().position(location);
+                            currentMarker = mMap.addMarker(markerOptions);
+                        }else{
+                            currentMarker.setPosition(location);
+                        }
+
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 12.5f));
                     }
 
@@ -371,8 +383,15 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
                     binding.searchView.setQuery(accommodationDTO.getAddress(), false);
                     binding.txtAddress.setText(accommodationDTO.getAddress());
                     LatLng location = new LatLng(accommodationDTO.getLat(), accommodationDTO.getLon());
-                    MarkerOptions markerOptions = new MarkerOptions().position(location);
-                    mMap.addMarker(markerOptions);
+
+                    if(currentMarker == null){
+                        MarkerOptions markerOptions = new MarkerOptions().position(location);
+                        currentMarker = mMap.addMarker(markerOptions);
+                    }else{
+                        currentMarker.setPosition(location);
+                    }
+
+
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 12.5f));
 
                     for(AvailabilityDTO avail: accommodationDTO.getAvailabilityList()){
