@@ -44,8 +44,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:paddingBottom="5dp">
+            android:paddingEnd="10dp">
             <TextView
                 android:id="@+id/txtTypeOfRequest"
                 android:layout_width="wrap_content"
@@ -64,6 +63,15 @@
                 android:paddingStart="10dp" />
         </LinearLayout>
 
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/txtRejectReason"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Reason:"/>
 
 
         <TextView

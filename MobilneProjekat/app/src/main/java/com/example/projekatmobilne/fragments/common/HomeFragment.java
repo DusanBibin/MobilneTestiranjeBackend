@@ -1,4 +1,4 @@
-package com.example.projekatmobilne.fragments;
+package com.example.projekatmobilne.fragments.common;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -179,7 +179,7 @@ public class HomeFragment extends Fragment {
                 if(response.code() == 200){
                     AccommodationSearchDTOPagedResponse responseDTO = ResponseParser.parseResponse(response, AccommodationSearchDTOPagedResponse.class, false);
                     if(responseDTO.getContent().isEmpty()){
-                        Toast.makeText(getActivity(), "There are no accommodations that are available within this period", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "No accommodations were found", Toast.LENGTH_SHORT).show();
                         binding.txtNoResults.setVisibility(View.VISIBLE);
                     }
 

@@ -1,4 +1,4 @@
-package com.example.projekatmobilne.fragments.AccommodationsGuestTabs;
+package com.example.projekatmobilne.fragments.admin;
 
 import android.os.Bundle;
 
@@ -12,10 +12,10 @@ import com.example.projekatmobilne.R;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link FavoritesTabFragment#newInstance} factory method to
+ * Use the {@link ReportedCommentsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FavoritesTabFragment extends Fragment {
+public class ReportedCommentsFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -26,7 +26,7 @@ public class FavoritesTabFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public FavoritesTabFragment() {
+    public ReportedCommentsFragment() {
         // Required empty public constructor
     }
 
@@ -36,11 +36,11 @@ public class FavoritesTabFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment FavoritesTabFragment.
+     * @return A new instance of fragment ReportedCommentsFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static FavoritesTabFragment newInstance(String param1, String param2) {
-        FavoritesTabFragment fragment = new FavoritesTabFragment();
+    public static ReportedCommentsFragment newInstance(String param1, String param2) {
+        ReportedCommentsFragment fragment = new ReportedCommentsFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -61,6 +61,6 @@ public class FavoritesTabFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_favorites_tab, container, false);
+        return inflater.inflate(R.layout.fragment_reported_comments, container, false);
     }
 }

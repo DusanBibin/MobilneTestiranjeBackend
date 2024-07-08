@@ -15,23 +15,24 @@
             android:orderInCategory="200"/>
         <!--            android:icon="@drawable/ic_new"-->
 
+        <item android:id="@+id/nav_notifications"
+            android:title="Notifications"
+            android:orderInCategory="300"/>
+        <!--            android:icon="@drawable/ic_new"-->
 
         <item android:id="@+id/nav_accommodations_host"
             android:title="Accommodations"
-            android:orderInCategory="300"/>
+            android:orderInCategory="400"/>
         <!--            android:icon="@drawable/ic_new"-->
 
 
         <item android:id="@+id/nav_reservations_host"
             android:title="Reservations"
-            android:orderInCategory="400"/>
-        <!--            android:icon="@drawable/ic_new"-->
-
-
-        <item android:id="@+id/nav_notifications"
-            android:title="Notifications"
             android:orderInCategory="500"/>
         <!--            android:icon="@drawable/ic_new"-->
+
+
+
 
     </group>
 </menu>

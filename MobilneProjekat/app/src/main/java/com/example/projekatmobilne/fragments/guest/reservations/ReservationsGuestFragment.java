@@ -1,4 +1,4 @@
-package com.example.projekatmobilne.fragments;
+package com.example.projekatmobilne.fragments.guest.reservations;
 
 import android.os.Bundle;
 
@@ -14,19 +14,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.projekatmobilne.R;
-import com.example.projekatmobilne.databinding.FragmentAccommodationsHostBinding;
+import com.example.projekatmobilne.databinding.FragmentReservationsGuestBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 
-public class AccommodationsHostFragment extends Fragment {
+public class ReservationsGuestFragment extends Fragment {
 
-    private FragmentAccommodationsHostBinding binding;
+    private FragmentReservationsGuestBinding binding;
 
-    public AccommodationsHostFragment() {
-        // Required empty public constructor
+    public ReservationsGuestFragment() {
     }
-
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,15 +34,15 @@ public class AccommodationsHostFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_accommodations_host, container, false);
+        return inflater.inflate(R.layout.fragment_reservations_guest, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        NavController navController = Navigation.findNavController(getActivity(), R.id.fragmentContainerViewAccommodations);
-        BottomNavigationView bottomNavigationView = view.findViewById(R.id.bottomNavigationViewAccommodations);
+        NavController navController = Navigation.findNavController(getActivity(), R.id.fragmentContainerView);
+        BottomNavigationView bottomNavigationView = view.findViewById(R.id.bottomNavigationView);
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
     }
 }

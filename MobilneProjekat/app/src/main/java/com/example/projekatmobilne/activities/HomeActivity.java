@@ -142,16 +142,10 @@ public class HomeActivity extends AppCompatActivity {
                 inflater.inflate(R.menu.host_nav_menu, navigationView.getMenu());
                 navController.setGraph(R.navigation.owner_navigation);
             }else if(role.equals(Role.ADMIN)){
-//                inflater.inflate(R.menu.host_nav_admin, navigationView.getMenu());
-//                navController.setGraph(R.navigation.admin_navigation);
+                inflater.inflate(R.menu.admin_nav_menu, navigationView.getMenu());
+                navController.setGraph(R.navigation.admin_navigation);
             }
         }
-
-
-
-
-
-
 
     }
 
@@ -167,9 +161,7 @@ public class HomeActivity extends AppCompatActivity {
                 menu.clear();
 
                 if(role.equals(Role.GUEST)) menuInflater.inflate(R.menu.guest_nav_menu, menu);
-                if(role.equals(Role.OWNER)){
-                    menuInflater.inflate(R.menu.host_nav_menu, menu);
-                }
+                if(role.equals(Role.OWNER)){menuInflater.inflate(R.menu.host_nav_menu, menu);}
                 //TODO dodati za admina isto
 
             }

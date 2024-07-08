@@ -19,10 +19,12 @@ import com.example.projekatmobilne.clients.ClientUtils;
 import com.example.projekatmobilne.databinding.ActivityAccomodationsDifferencesCompareBinding;
 import com.example.projekatmobilne.model.Enum.Amenity;
 import com.example.projekatmobilne.model.Enum.RequestStatus;
+import com.example.projekatmobilne.model.Enum.Role;
 import com.example.projekatmobilne.model.requestDTO.AvailabilityDTO;
 import com.example.projekatmobilne.model.responseDTO.AccommodationDTOEdit;
 import com.example.projekatmobilne.model.responseDTO.AccommodationDifferencesDTO;
 import com.example.projekatmobilne.model.responseDTO.innerDTO.AvailabilityDTOInner;
+import com.example.projekatmobilne.tools.JWTManager;
 import com.example.projekatmobilne.tools.ResponseParser;
 
 import java.io.File;
@@ -31,6 +33,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -71,10 +74,91 @@ public class AccommodationsDifferencesCompareActivity extends AppCompatActivity 
         availabilitiesAdapter = new AvailabilitiesAdapter(AccommodationsDifferencesCompareActivity.this, availabilitiesList, getSupportFragmentManager());
         binding.recyclerViewAvailabilitiesDifferences.setAdapter(availabilitiesAdapter);
 
+
+
+        if(JWTManager.getRoleEnum().equals(Role.ADMIN)) binding.linearLayoutButtons.setVisibility(View.VISIBLE);
+
+
+        binding.btnAcceptRequest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                binding.linearLayoutButtons.setVisibility(View.GONE);
+                binding.progressBar.setVisibility(View.VISIBLE);
+
+                Call<ResponseBody> call = ClientUtils.apiService.processAccommodationRequest(requestId, RequestStatus.ACCEPTED, "NO PROBLEMS");
+                call.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if(response.code() == 200){
+                            Toast.makeText(AccommodationsDifferencesCompareActivity.this, "Successfully accepted a request", Toast.LENGTH_SHORT).show();
+                            getOnBackPressedDispatcher().onBackPressed();
+                            finish();
+                        }
+
+                        if(response.code() == 400){
+                            Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
+                            if(map.containsKey("message")) Toast.makeText(AccommodationsDifferencesCompareActivity.this, map.get("message"), Toast.LENGTH_SHORT).show();
+
+                            binding.linearLayoutButtons.setVisibility(View.VISIBLE);
+                            binding.progressBar.setVisibility(View.GONE);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        Toast.makeText(AccommodationsDifferencesCompareActivity.this, "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                        t.printStackTrace();
+                    }
+                });
+            }
+        });
+
+        binding.btnDenyRequest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                binding.linearLayoutButtons.setVisibility(View.GONE);
+                binding.progressBar.setVisibility(View.VISIBLE);
+
+                if(binding.inputEditTextDenyReason.getText().toString().isEmpty()){
+                    binding.inputLayoutDenyReason.setError("Reason for denial must be provided");
+                    binding.linearLayoutButtons.setVisibility(View.VISIBLE);
+                    binding.progressBar.setVisibility(View.GONE);
+                    return;
+                }
+
+                Call<ResponseBody> call = ClientUtils.apiService.processAccommodationRequest(requestId, RequestStatus.REJECTED, binding.inputEditTextDenyReason.getText().toString());
+                call.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if(response.code() == 200) {
+                            Toast.makeText(AccommodationsDifferencesCompareActivity.this, "Successfully denied a request", Toast.LENGTH_SHORT).show();
+                            getOnBackPressedDispatcher().onBackPressed();
+                            finish();
+                        }
+
+                        if(response.code() == 400){
+                            Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
+                            if(map.containsKey("message")) Toast.makeText(AccommodationsDifferencesCompareActivity.this, map.get("message"), Toast.LENGTH_SHORT).show();
+
+                            binding.linearLayoutButtons.setVisibility(View.VISIBLE);
+                            binding.progressBar.setVisibility(View.GONE);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        Toast.makeText(AccommodationsDifferencesCompareActivity.this, "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                        t.printStackTrace();
+                    }
+                });
+            }
+        });
+
+
         Intent intent = getIntent();
         if(intent != null && intent.hasExtra("requestId")){
             requestId = (Long) intent.getSerializableExtra("requestId");
-
+            Toast.makeText(this, "usli smo ovdee", Toast.LENGTH_SHORT).show();
 
             Call<ResponseBody> call = ClientUtils.apiService.getOwnerAccommodationRequest(requestId);
             call.enqueue(new Callback<ResponseBody>() {

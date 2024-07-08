@@ -1,6 +1,7 @@
 package com.example.projekatmobilne.clients;
 
 
+import com.example.projekatmobilne.model.Enum.RequestStatus;
 import com.example.projekatmobilne.model.requestDTO.AccommodationDTO;
 import com.example.projekatmobilne.model.requestDTO.AuthenticationRequestDTO;
 import com.example.projekatmobilne.model.requestDTO.AvailabilityDTO;
@@ -188,5 +189,12 @@ public interface ApiService {
     @GET("accommodation-requests/{accommodationRequestId}")
     Call<ResponseBody> getOwnerAccommodationRequest(@Path("accommodationRequestId") Long accommodationRequestId);
 
-
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @PUT("accommodation-requests/{accommodationRequestId}/{status}")
+    Call<ResponseBody> processAccommodationRequest(@Path("accommodationRequestId") Long accommodationRequestId,
+                                                   @Path("status") RequestStatus status,
+                                                   @Body String reason);
 }

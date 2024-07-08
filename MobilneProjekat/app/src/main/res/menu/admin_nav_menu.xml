@@ -3,27 +3,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
+
     <group android:checkableBehavior="single">
         <item android:id=" @+id/nav_home"
             android:title="Home"
             android:orderInCategory="100" />
-<!--            android:icon="@drawable/ic_product"-->
+        <!--            android:icon="@drawable/ic_product"-->
 
 
         <item android:id="@+id/nav_account"
             android:title="Account"
             android:orderInCategory="200"/>
-<!--            android:icon="@drawable/ic_new"-->
+        <!--            android:icon="@drawable/ic_new"-->
 
-        <item android:id="@+id/nav_notifications"
-            android:title="Notifications"
+        <item android:id="@+id/nav_accommodation_requests"
+            android:title="Accommodation requests"
             android:orderInCategory="300"/>
         <!--            android:icon="@drawable/ic_new"-->
 
-        <item android:id="@+id/nav_reservations_guest"
-            android:title="Reservations"
+        <item android:id="@+id/nav_reported_users"
+            android:title="Reported users"
             android:orderInCategory="400"/>
         <!--            android:icon="@drawable/ic_new"-->
+
+
+        <item android:id="@+id/nav_reported_comments"
+            android:title="Reported comments"
+            android:orderInCategory="500"/>
+        <!--            android:icon="@drawable/ic_new"-->
+
+
+
 
     </group>
 </menu>

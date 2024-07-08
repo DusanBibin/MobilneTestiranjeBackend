@@ -1,4 +1,4 @@
-package com.example.projekatmobilne.fragments.AccommodationHostTabs;
+package com.example.projekatmobilne.fragments.host.requests.tabs;
 
 import android.os.Bundle;
 
@@ -12,13 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.projekatmobilne.R;
-import com.example.projekatmobilne.adapters.AccommodationHostViewAdapter;
 import com.example.projekatmobilne.adapters.AccommodationRequestPreviewAdapter;
 import com.example.projekatmobilne.clients.ClientUtils;
 import com.example.projekatmobilne.databinding.FragmentAccommodationRequestsTabBinding;
-import com.example.projekatmobilne.databinding.FragmentAccommodationsHostTabBinding;
-import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.AccommodationHostDTOPagedResponse;
 import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.AccommodationRequestPreviewDTOPagedResponse;
 import com.example.projekatmobilne.tools.ResponseParser;
 
@@ -77,11 +73,18 @@ public class AccommodationRequestsTabFragment extends Fragment {
                 }
             }
         });
-        loadPage();
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        adapter.clearData();
+        loadPage();
     }
 
     private void loadPage() {
+
         binding.txtNoItemsRequests.setVisibility(View.GONE);
         System.out.println("da li ulazimo ovdeeee ");
         Call<ResponseBody> call = ClientUtils.apiService.getOwnerAccommodationRequests(currentPage, 10);
@@ -106,7 +109,10 @@ public class AccommodationRequestsTabFragment extends Fragment {
             public void onFailure(Call<ResponseBody> call, Throwable t) {
 
             }
+
         });
 
     }
+
+
 }

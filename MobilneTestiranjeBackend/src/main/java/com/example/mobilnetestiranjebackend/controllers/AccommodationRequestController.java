@@ -1,7 +1,6 @@
 package com.example.mobilnetestiranjebackend.controllers;
 
 import com.example.mobilnetestiranjebackend.DTOs.AccommodationDTO;
-import com.example.mobilnetestiranjebackend.DTOs.AccommodationDTOEdit;
 import com.example.mobilnetestiranjebackend.enums.RequestStatus;
 import com.example.mobilnetestiranjebackend.exceptions.*;
 import com.example.mobilnetestiranjebackend.model.Admin;
@@ -27,7 +26,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -77,21 +75,21 @@ public class AccommodationRequestController {
     }
 
 
-    @PreAuthorize("hasAuthority('OWNER')")
+    @PreAuthorize("hasAuthority('OWNER') or hasAuthority('ADMIN')")
     @GetMapping()
-    public ResponseEntity<?> getAccommodationRequests(@AuthenticationPrincipal Owner owner,
+    public ResponseEntity<?> getAccommodationRequests(@AuthenticationPrincipal User user,
                                                       @RequestParam(defaultValue = "0") int pageNo,
                                                       @RequestParam(defaultValue = "10") int pageSize){
 
-        return ResponseEntity.ok().body(accommodationRequestService.getAccommodationRequests(pageNo, pageSize, owner));
+        return ResponseEntity.ok().body(accommodationRequestService.getAccommodationRequests(pageNo, pageSize, user));
     }
 
-    @PreAuthorize("hasAuthority('OWNER')")
+    @PreAuthorize("hasAuthority('OWNER') or hasAuthority('ADMIN')")
     @GetMapping("/{accommodationRequestId}")
-    public ResponseEntity<?> getAccommodationRequest(@AuthenticationPrincipal Owner owner,
+    public ResponseEntity<?> getAccommodationRequest(@AuthenticationPrincipal User user,
                                                       @PathVariable("accommodationRequestId") Long requestId){
 
-        return ResponseEntity.ok().body(accommodationRequestService.getAccommodationRequest(owner,requestId));
+        return ResponseEntity.ok().body(accommodationRequestService.getAccommodationRequest(user,requestId));
 
     }
 
@@ -104,7 +102,7 @@ public class AccommodationRequestController {
 
 
 
-        Optional<Admin> adminWrapper = adminRepository.findByAdminId(user.getId());
+        Optional<Admin> adminWrapper = adminRepository.findAdminById(user.getId());
         Optional<Owner> ownerWrapper = ownerRepository.findOwnerById(user.getId());
 
         if(ownerWrapper.isEmpty() && adminWrapper.isEmpty()) throw new InvalidAuthorizationException("You don't have authority for this action");

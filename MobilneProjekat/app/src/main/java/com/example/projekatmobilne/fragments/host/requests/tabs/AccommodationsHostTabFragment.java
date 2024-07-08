@@ -1,4 +1,4 @@
-package com.example.projekatmobilne.fragments.AccommodationHostTabs;
+package com.example.projekatmobilne.fragments.host.requests.tabs;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -87,12 +87,19 @@ public class AccommodationsHostTabFragment extends Fragment {
             }
         });
 
-        loadPage();
         binding.floatingActionButton.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), CreateAccommodationActivity.class);
             startActivity(intent);
         });
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        dataList.clear();
+        adapter.notifyDataSetChanged();
+        loadPage();
     }
 
     private void loadPage() {

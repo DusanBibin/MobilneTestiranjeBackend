@@ -36,6 +36,7 @@ public class AccommodationRequestService {
 
     private static final String UPLOAD_DIR = "uploads";
     private final ReservationRepository reservationRepository;
+    private final AdminRepository adminRepository;
 
 
     private void checkInputValues(AccommodationDTO accommodationDTO){
@@ -670,12 +671,27 @@ public class AccommodationRequestService {
         for(String imgPath: accommodationRequest.getImagePathsNew()){
             deleteImage(imgPath);
         }
-
+        accommodationRequestRepository.save(accommodationRequest);
     }
 
-    public Page<AccommodationRequestPreviewDTO> getAccommodationRequests(int pageNum, int pageSize, Owner owner) {
+    public Page<AccommodationRequestPreviewDTO> getAccommodationRequests(int pageNum, int pageSize, User user) {
 
-        List<AccommodationRequest> requests = accommodationRequestRepository.findAllByOwnerId(owner.getId());
+        Optional<Owner> ownerWrapper = ownerRepository.findOwnerById(user.getId());
+        Optional<Admin> adminWrapper = adminRepository.findAdminById(user.getId());
+
+        List<AccommodationRequest> requests = null;
+
+        if(ownerWrapper.isPresent()){
+            Owner owner = ownerWrapper.get();
+            requests = accommodationRequestRepository.findAllByOwnerId(owner.getId());
+
+
+        }
+
+        if(adminWrapper.isPresent()){
+            requests = accommodationRequestRepository.findAll();
+        }
+
         List<AccommodationRequestPreviewDTO> convertedList = new ArrayList<>(requests.stream().map(a -> {
             AccommodationRequestPreviewDTO ar = new AccommodationRequestPreviewDTO();
             ar.setRequestId(a.getId());
@@ -695,9 +711,20 @@ public class AccommodationRequestService {
         return PageConverter.convertListToPage(pageNum, pageSize, convertedList);
     }
 
-    public AccommodationDifferencesDTO getAccommodationRequest(Owner owner, Long requestId) {
+    public AccommodationDifferencesDTO getAccommodationRequest(User user, Long requestId) {
 
-        var requestWrapper = accommodationRequestRepository.findByOwnerIdAndId(requestId, owner.getId());
+        Optional<AccommodationRequest> requestWrapper = Optional.empty();
+
+        var ownerWrapper = ownerRepository.findOwnerById(user.getId());
+        if(ownerWrapper.isPresent()){
+            requestWrapper = accommodationRequestRepository.findByOwnerIdAndId(requestId, ownerWrapper.get().getId());
+        }
+
+        var adminWrapper = adminRepository.findAdminById(user.getId());
+        if(adminWrapper.isPresent()){
+            requestWrapper = accommodationRequestRepository.findById(requestId);
+        }
+
         if(requestWrapper.isEmpty()) throw new NonExistingEntityException("This request does not exist");
         AccommodationRequest request = requestWrapper.get();
         Accommodation accommodation = request.getAccommodation();

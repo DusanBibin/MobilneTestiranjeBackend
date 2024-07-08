@@ -1,4 +1,4 @@
-package com.example.projekatmobilne.fragments;
+package com.example.projekatmobilne.fragments.common;
 
 import android.app.Dialog;
 import android.content.Intent;

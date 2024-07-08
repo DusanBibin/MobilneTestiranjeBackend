@@ -45,6 +45,11 @@ public class AccommodationRequestPreviewAdapter extends RecyclerView.Adapter<Acc
         notifyDataSetChanged();
     }
 
+    public void clearData(){
+        this.dataList.clear();
+        notifyDataSetChanged();
+    }
+
     public void addItem(AccommodationRequestPreviewDTO item){
         this.dataList.add(item);
         notifyItemInserted(dataList.size() - 1);
@@ -77,13 +82,18 @@ public class AccommodationRequestPreviewAdapter extends RecyclerView.Adapter<Acc
             holder.txtExistingName.setText(preview.getExistingAccommodationName());
         }
 
+        if(preview.getStatus().equals(RequestStatus.REJECTED)){
+            holder.txtRejectReason.setVisibility(View.VISIBLE);
+            holder.txtRejectReason.setText("Reason: " + preview.getReason());
+        }
+
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 if(preview.getStatus().equals(RequestStatus.PENDING)){
                     AccommodationRequestPreviewDTO clickedRequest = dataList.get(holder.getAdapterPosition());
-
+                    Toast.makeText(context, "klik radi", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(context, AccommodationsDifferencesCompareActivity.class);
                     intent.putExtra("requestId", clickedRequest.getRequestId());
                     context.startActivity(intent);
@@ -104,7 +114,7 @@ public class AccommodationRequestPreviewAdapter extends RecyclerView.Adapter<Acc
 class AccommodationRequestPreviewViewHolder extends RecyclerView.ViewHolder{
 
     CardView cardView;
-    TextView txtName, txtAddress, txtExistingName, txtExistingAddress, txtStatus, txtType;
+    TextView txtName, txtAddress, txtExistingName, txtExistingAddress, txtStatus, txtType, txtRejectReason;
 
     public AccommodationRequestPreviewViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -115,5 +125,6 @@ class AccommodationRequestPreviewViewHolder extends RecyclerView.ViewHolder{
             txtStatus = itemView.findViewById(R.id.txtRequestStatus);
             txtType = itemView.findViewById(R.id.txtTypeOfRequest);
             cardView = itemView.findViewById(R.id.cardViewAccommodationRequestPreview);
+            txtRejectReason = itemView.findViewById(R.id.txtRejectReason);
     }
 }
