@@ -19,6 +19,10 @@ public class AccommodationDifferencesDTO {
     private List<String> imagesToRemove;
     private List<String> currentImages;
 
+
+    private String fullName;
+    private String email;
+
     private RequestStatus status;
     private String reason;
 
@@ -94,22 +98,35 @@ public class AccommodationDifferencesDTO {
         this.reason = reason;
     }
 
-    public AccommodationDifferencesDTO(AccommodationDTOEdit accommodationInfo,
-                                       AccommodationDTOEdit requestAccommodationInfo,
-                                       List<AvailabilityDTO> availabilities,
-                                       List<AvailabilityDTO> requestAvailabilities,
-                                       List<String> imagesToAdd, RequestStatus status,
-                                       String reason, List<String> imagesToRemove,
-                                       List<String> currentImages) {
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public AccommodationDifferencesDTO(AccommodationDTOEdit accommodationInfo, AccommodationDTOEdit requestAccommodationInfo, List<AvailabilityDTO> availabilities, List<AvailabilityDTO> requestAvailabilities, List<String> imagesToAdd, List<String> currentImages, String fullName, RequestStatus status, String reason, String email, List<String> imagesToRemove) {
         this.accommodationInfo = accommodationInfo;
         this.requestAccommodationInfo = requestAccommodationInfo;
         this.availabilities = availabilities;
         this.requestAvailabilities = requestAvailabilities;
         this.imagesToAdd = imagesToAdd;
+        this.currentImages = currentImages;
+        this.fullName = fullName;
         this.status = status;
         this.reason = reason;
+        this.email = email;
         this.imagesToRemove = imagesToRemove;
-        this.currentImages = currentImages;
     }
 
     @Override
@@ -122,6 +139,8 @@ public class AccommodationDifferencesDTO {
                 ", imagesToAdd=" + imagesToAdd +
                 ", imagesToRemove=" + imagesToRemove +
                 ", currentImages=" + currentImages +
+                ", fullName='" + fullName + '\'' +
+                ", email='" + email + '\'' +
                 ", status=" + status +
                 ", reason='" + reason + '\'' +
                 '}';

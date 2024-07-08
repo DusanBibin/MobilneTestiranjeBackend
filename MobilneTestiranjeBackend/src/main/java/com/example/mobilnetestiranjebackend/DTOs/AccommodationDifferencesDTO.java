@@ -25,6 +25,9 @@ public class AccommodationDifferencesDTO {
     private List<String> imagesToRemove;
     private List<String> currentImages;
 
+    private String fullName;
+    private String email;
+
     private RequestStatus status;
     private String reason;
 }

@@ -100,8 +100,6 @@ public class AccommodationRequestController {
                                                                         @AuthenticationPrincipal User user) throws IOException {
 
 
-
-
         Optional<Admin> adminWrapper = adminRepository.findAdminById(user.getId());
         Optional<Owner> ownerWrapper = ownerRepository.findOwnerById(user.getId());
 
@@ -165,9 +163,6 @@ public class AccommodationRequestController {
                 }
             }
         }
-
-
-
 
 
         if(foundImgPath.isEmpty()) throw new NonExistingEntityException("The image with this path does not exist");

@@ -771,7 +771,8 @@ public class AccommodationRequestService {
         requestDifferences.setRequestAvailabilities(newAvailabilities);
         requestDifferences.setImagesToAdd(imagesToAdd);
         requestDifferences.setImagesToRemove(request.getImagesToRemove());
-
+        requestDifferences.setEmail(accommodation.getOwner().getEmail());
+        requestDifferences.setFullName(accommodation.getOwner().getFirstName() + " " + accommodation.getOwner().getLastname());
 
         if(accommodation != null ) {
 

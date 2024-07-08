@@ -183,6 +183,8 @@ public class AccommodationsDifferencesCompareActivity extends AppCompatActivity 
 
 
                         AccommodationDTOEdit requestInfo = responseDTO.getRequestAccommodationInfo();
+                        binding.txtEmail.setText(responseDTO.getEmail());
+                        binding.txtFullName.setText(responseDTO.getFullName());
                         binding.txtAccommodationNameValue.setText(requestInfo.getName());
                         binding.txtDescriptionValue.setText(requestInfo.getDescription());
                         binding.txtGuestsValue.setText(requestInfo.getMinGuests() + "-" + requestInfo.getMaxGuests());
