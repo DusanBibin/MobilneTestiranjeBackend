@@ -314,7 +314,7 @@ public class HomeFragment extends Fragment {
 
 
         boolean isValid = true;
-        if (binding.guestNumberInputEditText.getText().toString().isEmpty()) {
+        if (binding.guestNumberInputEditText.getText().toString().isEmpty() || binding.guestNumberInputEditText.getText().toString().equals("0")) {
             binding.guestNumberInputLayout.setError("This field cannot be empty");
             isValid = false;
         }

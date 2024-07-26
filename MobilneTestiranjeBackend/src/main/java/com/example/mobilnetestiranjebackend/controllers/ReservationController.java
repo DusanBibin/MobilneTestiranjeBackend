@@ -1,24 +1,28 @@
 package com.example.mobilnetestiranjebackend.controllers;
 
+import com.example.mobilnetestiranjebackend.DTOs.AccommodationSearchDTO;
 import com.example.mobilnetestiranjebackend.DTOs.ReservationDTO;
+import com.example.mobilnetestiranjebackend.enums.AccommodationType;
+import com.example.mobilnetestiranjebackend.enums.Amenity;
 import com.example.mobilnetestiranjebackend.enums.ReservationStatus;
-import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthorizationException;
-import com.example.mobilnetestiranjebackend.exceptions.InvalidDateException;
-import com.example.mobilnetestiranjebackend.exceptions.InvalidEnumValueException;
-import com.example.mobilnetestiranjebackend.exceptions.NonExistingEntityException;
+import com.example.mobilnetestiranjebackend.exceptions.*;
 import com.example.mobilnetestiranjebackend.model.*;
 import com.example.mobilnetestiranjebackend.services.AccommodationService;
 import com.example.mobilnetestiranjebackend.services.AvailabilityService;
 import com.example.mobilnetestiranjebackend.services.ReservationService;
 import com.fasterxml.jackson.databind.node.TextNode;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -142,6 +146,40 @@ public class ReservationController {
 
         return ResponseEntity.ok().body("Successfully canceled a reservation");
     }
+
+
+    @PreAuthorize("hasAuthority('GUEST')")
+    @DeleteMapping("/{reservationId}")
+    public ResponseEntity<?> deletePendingReservationRequest(@AuthenticationPrincipal Guest guest,
+                                                             @PathVariable("reservationId") Long reservationId){
+        reservationService.deletePendingReservation(guest, reservationId);
+        return ResponseEntity.ok().body("Pending request successfully deleted");
+    }
+
+
+    @PreAuthorize("hasAuthority('GUEST') or hasAuthority('OWNER')")
+    @GetMapping("/reservation")
+    public ResponseEntity<?> getReservations(@RequestParam(defaultValue = "1") Long guestNum, @RequestParam @NotBlank(message = "Address must be present") String address,
+                                                     @RequestParam @FutureOrPresent(message = "Start date must be in the future") LocalDate startDate,
+                                                     @RequestParam @FutureOrPresent(message = "End date must be in the future") LocalDate endDate,
+                                                     @RequestParam(required = false) List<Amenity> amenities,
+                                                     @RequestParam(required = false) AccommodationType accommodationType,
+                                                     @RequestParam(required = false) Long minPrice,
+                                                     @RequestParam(required = false) Long maxPrice,
+                                                     @RequestParam(defaultValue = "price") String sortType,
+                                                     @RequestParam(defaultValue = "true") boolean isAscending,
+                                                     @RequestParam(defaultValue = "0") int pageNo,
+                                                     @RequestParam(defaultValue = "10") int pageSize){
+
+
+        return ResponseEntity.ok().body("kurac");
+    }
+
+
+
+
+
+
 
 
 

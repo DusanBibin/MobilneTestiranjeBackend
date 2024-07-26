@@ -9,6 +9,7 @@ import com.example.projekatmobilne.model.requestDTO.ChangePasswordDTO;
 import com.example.projekatmobilne.model.Enum.AccommodationType;
 import com.example.projekatmobilne.model.Enum.Amenity;
 import com.example.projekatmobilne.model.requestDTO.RegisterRequestDTO;
+import com.example.projekatmobilne.model.requestDTO.ReservationDTO;
 import com.example.projekatmobilne.model.requestDTO.UserDTO;
 
 import java.time.LocalDate;
@@ -197,4 +198,11 @@ public interface ApiService {
     Call<ResponseBody> processAccommodationRequest(@Path("accommodationRequestId") Long accommodationRequestId,
                                                    @Path("status") RequestStatus status,
                                                    @Body String reason);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @POST("accommodations/{accommodationId}/availability/{availabilityId}/reservation")
+    Call<ResponseBody> createNewReservation(@Body ReservationDTO request);
 }

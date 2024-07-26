@@ -45,6 +45,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            android:visibility="gone"
             />
 
 
@@ -56,7 +57,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:visibility="gone">
+
+            android:visibility="visible">
 
 
             <LinearLayout
@@ -247,7 +249,101 @@
                             app:mcv_selectionMode="none"
                             app:mcv_selectionColor="#00F"
                             />
+
+                        <ProgressBar
+                            android:id="@+id/progressBarCreateReservation"
+                            android:visibility="gone"
+                            android:layout_marginTop="10dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+
+                        <LinearLayout
+                            android:id="@+id/linearLayoutCreateReservation"
+                            android:orientation="vertical"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <LinearLayout
+                                android:layout_marginTop="10dp"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:baselineAligned="false"
+                                android:orientation="horizontal">
+
+                                <com.google.android.material.textfield.TextInputLayout
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                    android:id="@+id/inputLayoutDateRange"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_columnWeight="1"
+                                    android:layout_marginEnd="5dp"
+                                    android:layout_weight="1"
+                                    android:hint="Date range"
+                                    app:errorEnabled="true"
+                                    app:endIconMode="clear_text">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/inputEditTextDateRange"
+                                        android:inputType="none"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:focusable="false"
+                                        />
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <com.google.android.material.textfield.TextInputLayout
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                    android:id="@+id/inputLayoutDateNumberOfGuests"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_columnWeight="1"
+                                    android:layout_marginStart="5dp"
+                                    android:layout_weight="1"
+                                    android:hint="Number of guests"
+                                    app:errorEnabled="true"
+                                    app:endIconMode="clear_text">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/inputEditTextNumberOfGuests"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:inputType="number"
+                                        />
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/linearLayoutPriceInfo"
+                                android:visibility="gone"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:layout_marginBottom="10dp">
+                                <TextView
+                                    android:id="@+id/txtPricePerGuest"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Price per guest: " />
+                                <TextView
+
+                                    android:id="@+id/txtTotalPrice"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Total price: " />
+                            </LinearLayout>
+
+
+                            <Button
+                                android:id="@+id/btnCreateReservation"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Create reservation"/>
+                        </LinearLayout>
+
+
                     </LinearLayout>
+
+
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
             <Button
@@ -257,7 +353,7 @@
                 android:layout_marginBottom="16dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="  Create edit accomodation request"/>
+                android:text="Create edit accomodation request"/>
 
 
 

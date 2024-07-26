@@ -4,6 +4,7 @@ import com.example.mobilnetestiranjebackend.DTOs.AccommodationDTO;
 import com.example.mobilnetestiranjebackend.enums.RequestStatus;
 import com.example.mobilnetestiranjebackend.exceptions.*;
 import com.example.mobilnetestiranjebackend.model.Admin;
+import com.example.mobilnetestiranjebackend.model.Guest;
 import com.example.mobilnetestiranjebackend.model.Owner;
 import com.example.mobilnetestiranjebackend.model.User;
 import com.example.mobilnetestiranjebackend.repositories.AccommodationRequestRepository;
@@ -11,6 +12,7 @@ import com.example.mobilnetestiranjebackend.repositories.AdminRepository;
 import com.example.mobilnetestiranjebackend.repositories.OwnerRepository;
 import com.example.mobilnetestiranjebackend.services.AccommodationRequestService;
 import com.example.mobilnetestiranjebackend.services.AccommodationService;
+import com.sendgrid.Response;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ContentDisposition;
@@ -92,6 +94,8 @@ public class AccommodationRequestController {
         return ResponseEntity.ok().body(accommodationRequestService.getAccommodationRequest(user,requestId));
 
     }
+
+
 
     @GetMapping(value = "/{accommodationRequestId}/images/{imageId}")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('OWNER')")

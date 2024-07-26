@@ -547,6 +547,7 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
             materialDatePicker.show(getSupportFragmentManager(), "iksde");
         });
     }
+
     private void setupAddAvailabilityDialog(){
         addAvailabilityDialog = new Dialog(this);
         addAvailabilityDialog.setContentView(R.layout.custom_dialog_availability);

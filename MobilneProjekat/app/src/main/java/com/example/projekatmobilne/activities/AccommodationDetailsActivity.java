@@ -9,11 +9,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.util.Pair;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
@@ -39,14 +41,19 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.datepicker.CalendarConstraints;
+import com.google.android.material.datepicker.DateValidatorPointForward;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
-import org.threeten.bp.LocalDate;
+
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -66,7 +73,7 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
 
     private Toolbar toolbar;
     private ActivityAccommodationDetailsBinding binding;
-
+    private LocalDate dateStart, dateEnd;
     private ViewPager2 viewPager;
     private Long accommodationId = 0L;
     private AccommodationDTOResponse accommodationDTO;
@@ -104,12 +111,15 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
 
         binding.txtNoRatings.setVisibility(View.GONE);
         binding.btnEdit.setVisibility(View.GONE);
+        binding.linearLayoutCreateReservation.setVisibility(View.GONE);
 
 
         calendarView = findViewById(R.id.calendarView);
         calendarView.setShowOtherDates(MaterialCalendarView.SHOW_ALL);
-        final LocalDate min = getLocalDate(java.time.LocalDate.now().plusDays(1).format(formatter));
+        final org.threeten.bp.LocalDate min = getLocalDate(java.time.LocalDate.now().plusDays(1).format(formatter));
         calendarView.state().edit().setMinimumDate(min).commit();
+
+        setupDateRangePicker();
 
         binding.transparentImage.setOnTouchListener(new View.OnTouchListener() {
 
@@ -157,12 +167,40 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
             });
         }
 
+        if(Role.GUEST.equals(JWTManager.getRoleEnum()) && accommodationId != 0L){
+            binding.linearLayoutCreateReservation.setVisibility(View.VISIBLE);
+            binding.btnCreateReservation.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    binding.inputLayoutDateNumberOfGuests.setError(null);
+                    binding.inputLayoutDateRange.setError(null);
+
+                    boolean isValid = true;
+                    if(binding.inputEditTextDateRange.getText().toString().isEmpty()){
+                        binding.inputLayoutDateRange.setError("This field cannot be empty");
+                        isValid = false;
+                    }
+
+                    if(binding.inputEditTextNumberOfGuests.getText().toString().isEmpty() || binding.inputEditTextNumberOfGuests.getText().toString().equals("0")){
+                        binding.inputLayoutDateNumberOfGuests.setError("This field cannot be empty");
+                        isValid = false;
+                    }
+
+                    if(!isValid) return;
+
+
+                    binding.progressBarCreateReservation.setVisibility(View.VISIBLE);
+                    binding.linearLayoutCreateReservation.setVisibility(View.GONE);
+                }
+            });
+        }
+
+
+
         imageList = new ArrayList<>();
         imageAdapter = new ImageAdapter(this, imageList);
         binding.viewPager.setAdapter(imageAdapter);
-
-
-
 
         binding.scrollViewAccommodationDetails.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
@@ -215,6 +253,46 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
 
     }
 
+    private void setupDateRangePicker() {
+        binding.inputEditTextDateRange.setOnClickListener(v -> {
+
+            final Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+
+            CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder().setValidator(DateValidatorPointForward.from(calendar.getTimeInMillis()));
+            CalendarConstraints constraints = constraintsBuilder.build();
+
+            MaterialDatePicker<Pair<Long, Long>> materialDatePicker = MaterialDatePicker.Builder.dateRangePicker().setSelection(new Pair<>(
+                    null,
+                    null
+            )).setCalendarConstraints(constraints).build();
+
+
+            materialDatePicker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>>() {
+                @Override
+                public void onPositiveButtonClick(Pair<Long, Long> selection) {
+                    String start = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date(selection.first));
+                    String end = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date(selection.second));
+                    String display = start + "  " + end;
+
+
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
+                    dateStart = java.time.LocalDate.parse(start, formatter);
+                    if(dateStart.equals(java.time.LocalDate.now()) || dateStart.isBefore(java.time.LocalDate.now())){
+                        Toast.makeText(AccommodationDetailsActivity.this, "Start date needs to be in the future", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    dateEnd = java.time.LocalDate.parse(end,formatter);
+                    binding.inputEditTextDateRange.setText(display);
+                }
+            });
+
+            materialDatePicker.show(getSupportFragmentManager(), "iksde");
+        });
+    }
+
+
     private void setupSpinner() {
         options = new ArrayList<>();
         for(AvailabilityDTO a: accommodationDTO.getAvailabilityList()){
@@ -264,6 +342,7 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
             }
         });
     }
+
     private void setupImages() {
         for(Long imageId: accommodationDTO.getImageIds()){
             Call<ResponseBody> imageResponse = ClientUtils.apiService.getAccommodationImage(accommodationId, imageId);
@@ -302,6 +381,7 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
             });
         }
     }
+
     private void setupTextViews() {
         binding.txtName.setText(accommodationDTO.getName());
         binding.txtAddressDetails.setText(accommodationDTO.getAddress());
@@ -321,6 +401,7 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
         binding.txtGuests.setText(guests);
         binding.txtType.setText(type);
     }
+
     private void loadReviewPage() {
         binding.progressBarReviews.setVisibility(View.VISIBLE);
         binding.linearLayoutReviews.setVisibility(View.GONE);
@@ -361,11 +442,12 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
         }
         return super.onOptionsItemSelected(item);
     }
+
     void setEvent(List<String> dateList, int color) {
-        List<LocalDate> localDateList = new ArrayList<>();
+        List<org.threeten.bp.LocalDate> localDateList = new ArrayList<>();
 
         for (String string : dateList) {
-            LocalDate calendar = getLocalDate(string);
+            org.threeten.bp.LocalDate calendar = getLocalDate(string);
             if (calendar != null) {
                 localDateList.add(calendar);
             }
@@ -378,12 +460,12 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
         List<CalendarDay> datesIndependent = new ArrayList<>();
 
 
-        for (LocalDate localDate : localDateList) {
+        for (org.threeten.bp.LocalDate localDate : localDateList) {
 
             boolean right = false;
             boolean left = false;
 
-            for (LocalDate day1 : localDateList) {
+            for (org.threeten.bp.LocalDate day1 : localDateList) {
 
 
                 if (localDate.isEqual(day1.plusDays(1))) {
@@ -422,13 +504,14 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
                 , drawable
                 , calendarDayList));
     }
-    LocalDate getLocalDate(String date) {
+
+    private org.threeten.bp.LocalDate getLocalDate(String date) {
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.ENGLISH);
         try {
             Date input = sdf.parse(date);
             Calendar cal = Calendar.getInstance();
             cal.setTime(input);
-            return LocalDate.of(cal.get(Calendar.YEAR),
+            return org.threeten.bp.LocalDate.of(cal.get(Calendar.YEAR),
                     cal.get(Calendar.MONTH) + 1,
                     cal.get(Calendar.DAY_OF_MONTH));
 

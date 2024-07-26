@@ -2,7 +2,9 @@ package com.example.mobilnetestiranjebackend.services;
 
 import com.example.mobilnetestiranjebackend.DTOs.ReservationDTO;
 import com.example.mobilnetestiranjebackend.enums.ReservationStatus;
+import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthorizationException;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidEnumValueException;
+import com.example.mobilnetestiranjebackend.exceptions.NonExistingEntityException;
 import com.example.mobilnetestiranjebackend.model.Accommodation;
 import com.example.mobilnetestiranjebackend.model.Availability;
 import com.example.mobilnetestiranjebackend.model.Guest;
@@ -125,4 +127,16 @@ public class ReservationService {
         return !reservationsNotEnded.isEmpty();
     }
 
+    public void deletePendingReservation(Guest guest, Long reservationId) {
+        var reservationWrapper = reservationRepository.findById(reservationId);
+        if(reservationWrapper.isEmpty()) throw new NonExistingEntityException("Reservation with this id doesn't exist");
+
+        reservationWrapper = reservationRepository.findByIdAndGuest(reservationId, guest.getId());
+        if(reservationWrapper.isEmpty()) throw new InvalidAuthorizationException("You do not own this reservation");
+        var reservation = reservationWrapper.get();
+
+        if(!reservation.getStatus().equals(ReservationStatus.PENDING)) throw new InvalidAuthorizationException("You cannot delete non pending reservation");
+        reservationRepository.delete(reservation);
+
+    }
 }

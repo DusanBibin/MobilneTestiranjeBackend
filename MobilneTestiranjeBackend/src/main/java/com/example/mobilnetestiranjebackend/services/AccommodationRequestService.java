@@ -819,4 +819,5 @@ public class AccommodationRequestService {
         return requestDifferences;
     }
 
+
 }

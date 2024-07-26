@@ -26,7 +26,7 @@ public interface AccommodationRepository extends JpaRepository<Accommodation, Lo
     Optional<Accommodation> findFavoritesByAccommodationIdAndGuestId(Long accommodationId, Long guestId);
 
     @Query("select distinct a from Accommodation a join Availability av join a.amenities am where ((:guestNum between a.minGuests and a.maxGuests) and" +
-            " (lower(a.address) like LOWER(CONCAT('%', :address, '%'))) and" +
+            " ( (lower(a.address) like LOWER(CONCAT('%', :address, '%'))) or (lower(a.name) like LOWER(CONCAT('%', :address, '%')))) and" +
             " ((:startDate between av.startDate and av.endDate) or (:endDate between av.startDate and av.endDate)" +
             "  or (:startDate < av.startDate and :endDate > av.endDate)) and" +
             " (:accommodationType is null or a.accommodationType = :accommodationType) and" +
