@@ -23,6 +23,12 @@ public class ReservationDTO {
         this.reason = reason;
     }
 
+    public ReservationDTO(LocalDate reservationStartDate, LocalDate reservationEndDate, Long guestNum) {
+        this.reservationStartDate = reservationStartDate;
+        this.reservationEndDate = reservationEndDate;
+        this.guestNum = guestNum;
+    }
+
     public Long getAvailabilityId() {
         return availabilityId;
     }

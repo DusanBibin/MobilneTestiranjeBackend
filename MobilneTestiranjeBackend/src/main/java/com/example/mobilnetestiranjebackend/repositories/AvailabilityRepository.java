@@ -25,4 +25,7 @@ public interface AvailabilityRepository extends JpaRepository<Availability, Long
     Optional<Availability> findByIdAndAccommodationId(Long availId, Long accId);
     List<Availability> findAllByAccommodationId(Long accommodationId);
 
+
+    @Query("SELECT a FROM Availability a WHERE a.accommodation.id = :accId AND (:startDate BETWEEN a.startDate AND a.endDate) AND (:endDate BETWEEN a.startDate AND a.endDate) ")
+    Optional<Availability> findByAccommodationIdAndReservationDateRange(Long accId, LocalDate startDate, LocalDate endDate);
 }

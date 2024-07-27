@@ -38,9 +38,8 @@ public class ReservationController {
 
 
     @PreAuthorize("hasAuthority('GUEST')")
-    @PostMapping("/availability/{availabilityId}/reservation")
+    @PostMapping("/reservation")
     public ResponseEntity<?> createReservation(@PathVariable("accommodationId") Long accommodationId,
-                                               @PathVariable("availabilityId") Long availabilityId,
                                                @RequestBody ReservationDTO request, @AuthenticationPrincipal Guest guest){
 
         Optional<Accommodation> accommodationWrapper = accommodationService.findAccommodationById(accommodationId);
@@ -48,8 +47,7 @@ public class ReservationController {
         Accommodation accom = accommodationWrapper.get();
 
 
-        Optional<Availability> availabilityWrapper = availabilityService
-                .findAvailabilityByIdAndAccommodation(availabilityId, accommodationId);
+        Optional<Availability> availabilityWrapper = availabilityService.findAvailabilityForReservationRange(accommodationId, request.getReservationStartDate(), request.getReservationEndDate());
 
         if(availabilityWrapper.isEmpty())
             throw new NonExistingEntityException("Availability with this id for wanted accommodation doesn't exist");
@@ -63,11 +61,11 @@ public class ReservationController {
         var availStart = avail.getStartDate();
         var availEnd = avail.getEndDate();
 
-        if(!(startDate.isBefore(availEnd) && startDate.isAfter(availStart)))
-            throw new InvalidDateException("Start date is out of range for availability period");
-
-        if(!(endDate.isBefore(availEnd) && endDate.isAfter(availStart)))
-            throw new InvalidDateException("End date is out of range for availability period");
+//        if(!(startDate.isBefore(availEnd) && startDate.isAfter(availStart)))
+//            throw new InvalidDateException("Start date is out of range for availability period");
+//
+//        if(!(endDate.isBefore(availEnd) && endDate.isAfter(availStart)))
+//            throw new InvalidDateException("End date is out of range for availability period");
 
 
         if(reservationService.acceptedReservationRangeTaken(startDate, endDate, accom.getId(), avail.getId()))

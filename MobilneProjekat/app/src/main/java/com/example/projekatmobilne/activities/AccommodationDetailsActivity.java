@@ -27,6 +27,7 @@ import com.example.projekatmobilne.clients.ClientUtils;
 import com.example.projekatmobilne.databinding.ActivityAccommodationDetailsBinding;
 import com.example.projekatmobilne.model.Enum.Role;
 import com.example.projekatmobilne.model.requestDTO.AvailabilityDTO;
+import com.example.projekatmobilne.model.requestDTO.ReservationDTO;
 import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.ReviewsDTOPagedResponse;
 import com.example.projekatmobilne.model.responseDTO.AccommodationDTOResponse;
 import com.example.projekatmobilne.model.responseDTO.innerDTO.AvailabilityDTOInner;
@@ -182,6 +183,7 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
                         isValid = false;
                     }
 
+
                     if(binding.inputEditTextNumberOfGuests.getText().toString().isEmpty() || binding.inputEditTextNumberOfGuests.getText().toString().equals("0")){
                         binding.inputLayoutDateNumberOfGuests.setError("This field cannot be empty");
                         isValid = false;
@@ -189,7 +191,35 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
 
                     if(!isValid) return;
 
+                    Long guestNum = Long.valueOf(binding.inputEditTextNumberOfGuests.getText().toString());
+                    Call<ResponseBody> call = ClientUtils.apiService.createNewReservation(accommodationId, new ReservationDTO(dateStart, dateEnd, guestNum));
+                    call.enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
+
+                            if(response.code() == 200){
+                                String responseMessage = ResponseParser.parseResponse(response, String.class, false);
+                                Toast.makeText(AccommodationDetailsActivity.this, responseMessage, Toast.LENGTH_SHORT).show();
+                            }
+
+                            if(response.code() == 400){
+                                Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
+                                if(map.containsKey("message")) Toast.makeText(AccommodationDetailsActivity.this, map.get("message"), Toast.LENGTH_SHORT).show();
+                            }
+
+
+
+                            binding.progressBarCreateReservation.setVisibility(View.GONE);
+                            binding.linearLayoutCreateReservation.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+                            Toast.makeText(AccommodationDetailsActivity.this, "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                            t.printStackTrace();
+                        }
+                    });
                     binding.progressBarCreateReservation.setVisibility(View.VISIBLE);
                     binding.linearLayoutCreateReservation.setVisibility(View.GONE);
                 }

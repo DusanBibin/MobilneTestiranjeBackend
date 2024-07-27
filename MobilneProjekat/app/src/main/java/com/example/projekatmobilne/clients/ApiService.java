@@ -203,6 +203,6 @@ public interface ApiService {
             "User-Agent: Mobile-Android",
             "Content-Type:application/json"
     })
-    @POST("accommodations/{accommodationId}/availability/{availabilityId}/reservation")
-    Call<ResponseBody> createNewReservation(@Body ReservationDTO request);
+    @POST("accommodations/{accommodationId}/reservation")
+    Call<ResponseBody> createNewReservation(@Path("accommodationId") Long accommodationId, @Body ReservationDTO request);
 }

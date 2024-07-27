@@ -39,4 +39,8 @@ public class AvailabilityService {
 
         return availabilityRepository.findByIdAndAccommodationId(availabilityId, accommodationId);
     }
+
+    public Optional<Availability> findAvailabilityForReservationRange(Long accommodationId, LocalDate reservationStartDate, LocalDate reservationEndDate) {
+        return availabilityRepository.findByAccommodationIdAndReservationDateRange(accommodationId, reservationStartDate, reservationEndDate);
+    }
 }
