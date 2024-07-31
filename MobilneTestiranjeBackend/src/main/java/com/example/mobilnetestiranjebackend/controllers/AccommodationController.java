@@ -107,7 +107,6 @@ public class AccommodationController {
         return ResponseEntity.ok().body(accommodationDTO);
     }
 
-
     @GetMapping(value = "/{accommodationId}/images/{imageId}")
     public @ResponseBody ResponseEntity<?> getImageWithMediaType(@PathVariable("accommodationId") Long accommodationId,
                                                       @PathVariable("imageId") Long imageId) throws IOException {

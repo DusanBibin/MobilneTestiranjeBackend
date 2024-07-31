@@ -1,10 +1,14 @@
 package com.example.mobilnetestiranjebackend.services;
 
+import com.example.mobilnetestiranjebackend.DTOs.AccommodationRequestPreviewDTO;
+import com.example.mobilnetestiranjebackend.DTOs.AccommodationSearchDTO;
 import com.example.mobilnetestiranjebackend.DTOs.ReservationDTO;
+import com.example.mobilnetestiranjebackend.enums.RequestType;
 import com.example.mobilnetestiranjebackend.enums.ReservationStatus;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthorizationException;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidEnumValueException;
 import com.example.mobilnetestiranjebackend.exceptions.NonExistingEntityException;
+import com.example.mobilnetestiranjebackend.helpers.PageConverter;
 import com.example.mobilnetestiranjebackend.model.Accommodation;
 import com.example.mobilnetestiranjebackend.model.Availability;
 import com.example.mobilnetestiranjebackend.model.Guest;
@@ -12,9 +16,12 @@ import com.example.mobilnetestiranjebackend.model.Reservation;
 import com.example.mobilnetestiranjebackend.repositories.AccommodationRepository;
 import com.example.mobilnetestiranjebackend.repositories.ReservationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,6 +64,13 @@ public class ReservationService {
             reason = "ACCEPTED";
         }
 
+
+        Long days = ChronoUnit.DAYS.between(request.getReservationStartDate(), request.getReservationEndDate()) + 1;
+
+        Long totalPrice;
+        if (avail.getPricePerGuest()) totalPrice = days * avail.getPrice() * request.getGuestNum();
+        else totalPrice = days * avail.getPrice();
+
         var reservation = Reservation.builder()
                 .reservationStartDate(request.getReservationStartDate())
                 .reservationEndDate(request.getReservationEndDate())
@@ -66,6 +80,7 @@ public class ReservationService {
                 .guest(guest)
                 .accommodation(accom)
                 .availability(avail)
+                .price(totalPrice)
                 .build();
 
         reservationRepository.save(reservation);
@@ -137,6 +152,24 @@ public class ReservationService {
 
         if(!reservation.getStatus().equals(ReservationStatus.PENDING)) throw new InvalidAuthorizationException("You cannot delete non pending reservation");
         reservationRepository.delete(reservation);
-
     }
+
+    public Page<ReservationDTO> getReservations(String addressOrName, LocalDate minDate, LocalDate maxDate, ReservationStatus reservationStatus, int pageNo, int pageSize, Long ownerId) {
+
+        List<Reservation> reservations = reservationRepository.findHostReservations(minDate, maxDate, reservationStatus,addressOrName, ownerId);
+        System.out.println(reservations.size());
+        List<ReservationDTO> reservationsDTO = new ArrayList<>(reservations.stream().map(a -> {
+            ReservationDTO r = new ReservationDTO();
+            r.setPrice(a.getPrice());
+            r.setStatus(a.getStatus());
+            r.setReason(a.getReason());
+            r.setReservationEndDate(a.getReservationEndDate());
+            r.setReservationStartDate(a.getReservationStartDate());
+            r.setAccommodationName(a.getAccommodation().getName());
+            return r;
+        }).toList());
+
+        return PageConverter.convertListToPage(pageNo, pageSize, reservationsDTO);
+    }
+
 }

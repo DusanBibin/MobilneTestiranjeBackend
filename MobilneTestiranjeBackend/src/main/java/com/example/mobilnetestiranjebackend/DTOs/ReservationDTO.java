@@ -32,6 +32,8 @@ public class ReservationDTO {
     @Min(value = 1, message = "There must be at least one guest")
     private Long guestNum;
 
+    private String accommodationName;
+    private Long price;
     private ReservationStatus status;
     private String reason;
 

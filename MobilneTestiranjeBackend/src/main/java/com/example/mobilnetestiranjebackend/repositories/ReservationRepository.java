@@ -1,5 +1,6 @@
 package com.example.mobilnetestiranjebackend.repositories;
 
+import com.example.mobilnetestiranjebackend.enums.ReservationStatus;
 import com.example.mobilnetestiranjebackend.model.Availability;
 import com.example.mobilnetestiranjebackend.model.Reservation;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -81,4 +82,23 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
 
     List<Reservation> findByAvailability(Availability availability);
+
+
+
+
+//    @Query("select distinct r from Reservation r where r.accommodation.owner.id = :ownerId and " +
+//            "(:reservationStatus is null or :reservationStatus = r.status) and " +
+//            "(:minDate is null or :minDate >= r.reservationStartDate) and" +
+//            "(:maxDate is null or :maxDate >= r.reservationEndDate) and" +
+//            "((lower(r.accommodation.address) like LOWER(CONCAT('%', :addressOrName, '%'))) or (lower(r.accommodation.name) like LOWER(CONCAT('%', :addressOrName, '%'))))")
+//    List<Reservation> findHostReservations(String addressOrName, LocalDate minDate, LocalDate maxDate, ReservationStatus reservationStatus, Long ownerId);
+
+
+    @Query("select distinct r from Reservation r where r.accommodation.owner.id = :ownerId and " +
+            "(:minDate is null or r.reservationStartDate >= :minDate) and " +
+            "(:maxDate is null or r.reservationEndDate <= :maxDate) and " +
+            "(:reservationStatus is null or :reservationStatus = r.status) and " +
+            "(:addressOrName is null or ((lower(r.accommodation.address) like LOWER(CONCAT('%', :addressOrName, '%'))) or (lower(r.accommodation.name) like LOWER(CONCAT('%', :addressOrName, '%')))))")
+    List<Reservation> findHostReservations(LocalDate minDate, LocalDate maxDate, ReservationStatus reservationStatus,String addressOrName, Long ownerId);
+
 }

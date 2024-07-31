@@ -21,6 +21,7 @@ public class Reservation {
     private LocalDate reservationStartDate;
     private LocalDate reservationEndDate;
     private Long guestNum;
+    private Long price;
     private ReservationStatus status;
     private String reason;
 

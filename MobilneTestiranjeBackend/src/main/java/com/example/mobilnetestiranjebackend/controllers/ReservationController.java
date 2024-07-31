@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1/accommodations/{accommodationId}")
+@RequestMapping("/api/v1/accommodations")
 @RequiredArgsConstructor
 public class ReservationController {
 
@@ -38,14 +38,15 @@ public class ReservationController {
 
 
     @PreAuthorize("hasAuthority('GUEST')")
-    @PostMapping("/reservation")
+    @PostMapping("/{accommodationId}/reservation")
     public ResponseEntity<?> createReservation(@PathVariable("accommodationId") Long accommodationId,
                                                @RequestBody ReservationDTO request, @AuthenticationPrincipal Guest guest){
 
         Optional<Accommodation> accommodationWrapper = accommodationService.findAccommodationById(accommodationId);
         if(accommodationWrapper.isEmpty()) throw new NonExistingEntityException("Accommodation with this id doesn't exist");
-        Accommodation accom = accommodationWrapper.get();
-
+        Accommodation accommodation = accommodationWrapper.get();
+        if(request.getGuestNum() > accommodation.getMaxGuests() || request.getGuestNum() < accommodation.getMinGuests())
+            throw new InvalidInputException("The minimum number of guests is " + accommodation.getMinGuests() + " and maximum is " + accommodation.getMaxGuests());
 
         Optional<Availability> availabilityWrapper = availabilityService.findAvailabilityForReservationRange(accommodationId, request.getReservationStartDate(), request.getReservationEndDate());
 
@@ -68,14 +69,14 @@ public class ReservationController {
 //            throw new InvalidDateException("End date is out of range for availability period");
 
 
-        if(reservationService.acceptedReservationRangeTaken(startDate, endDate, accom.getId(), avail.getId()))
+        if(reservationService.acceptedReservationRangeTaken(startDate, endDate, accommodation.getId(), avail.getId()))
             throw new InvalidDateException("There is already an accepted reservation for this date range");
 
         if(reservationService.acceptedReservationRangeTakenGuest(startDate, endDate, guest.getId()))
             throw new InvalidDateException("You already have an active reservation within this date range");
 
 
-        reservationService.createNewReservation(request, guest, accom, avail);
+        reservationService.createNewReservation(request, guest, accommodation, avail);
 
 
         return ResponseEntity.ok().body("Successfully created new reservation request");
@@ -83,13 +84,14 @@ public class ReservationController {
 
 
     @PreAuthorize("hasAuthority('OWNER')")
-    @PutMapping(value = "/reservations/{reservationId}/{status}")
-    public ResponseEntity<?> declineReservationRequest(@RequestBody TextNode reason,
+    @PutMapping(value = "/{accommodationId}/reservations/{reservationId}/{status}")
+    public ResponseEntity<?> processReservationRequest(@RequestBody String reason,
                                                        @PathVariable("reservationId") Long reservationId,
                                                        @PathVariable("accommodationId") Long accommodationId,
                                                        @PathVariable("status") ReservationStatus status,
                                                        @AuthenticationPrincipal Owner owner){
 
+        if(status.equals(ReservationStatus.DECLINED) && reason.isEmpty()) throw new InvalidInputException("Reason must be provided");
 
         Optional<Accommodation> accommodationWrapper = accommodationService.findAccommodationById(accommodationId);
         if(accommodationWrapper.isEmpty()) throw new NonExistingEntityException("Accommodation with this id doesn't exist");
@@ -104,21 +106,21 @@ public class ReservationController {
             throw new InvalidAuthorizationException("You cannot do action for a accommodation you don't own");
 
 
-
         if(!reservation.getStatus().equals(ReservationStatus.PENDING))
             throw new InvalidEnumValueException("You can only do this action for a pending request reservation");
 
-        if(status.equals(ReservationStatus.DECLINED)) reservationService.declineRequest(reason.asText(), reservation);
-        else if(status.equals(ReservationStatus.ACCEPTED))reservationService.acceptRequest(reservation);
+        String response = "";
+        if(status.equals(ReservationStatus.DECLINED)){ response = "Successfully declined reservation"; reservationService.declineRequest(reason, reservation);}
+        else if(status.equals(ReservationStatus.ACCEPTED)) { response = "Successfully accepted reservation"; reservationService.acceptRequest(reservation);}
         else throw new InvalidEnumValueException("Unsupported action");
 
 
-        return ResponseEntity.ok().body("Successfully declined a reservation request");
+        return ResponseEntity.ok().body(response);
     }
 
 
     @PreAuthorize("hasAuthority('GUEST')")
-    @PutMapping(value = "/reservations/{reservationId}/cancel")
+    @PutMapping(value = "/{accommodationId}/reservations/{reservationId}/cancel")
     public ResponseEntity<?> cancelReservation(@PathVariable("accommodationId") Long accommodationId,
                                                @PathVariable("reservationId") Long reservationId,
                                                @AuthenticationPrincipal Guest guest){
@@ -156,21 +158,19 @@ public class ReservationController {
 
 
     @PreAuthorize("hasAuthority('GUEST') or hasAuthority('OWNER')")
-    @GetMapping("/reservation")
-    public ResponseEntity<?> getReservations(@RequestParam(defaultValue = "1") Long guestNum, @RequestParam @NotBlank(message = "Address must be present") String address,
-                                                     @RequestParam @FutureOrPresent(message = "Start date must be in the future") LocalDate startDate,
-                                                     @RequestParam @FutureOrPresent(message = "End date must be in the future") LocalDate endDate,
-                                                     @RequestParam(required = false) List<Amenity> amenities,
-                                                     @RequestParam(required = false) AccommodationType accommodationType,
-                                                     @RequestParam(required = false) Long minPrice,
-                                                     @RequestParam(required = false) Long maxPrice,
-                                                     @RequestParam(defaultValue = "price") String sortType,
-                                                     @RequestParam(defaultValue = "true") boolean isAscending,
+    @GetMapping("/reservations")
+    public ResponseEntity<?> getReservations(@RequestParam(required = false) String addressOrName,
+                                                     @RequestParam(required = false) LocalDate minDate,
+                                                     @RequestParam(required = false) LocalDate maxDate,
+                                                     @RequestParam(required = false) ReservationStatus reservationStatus,
                                                      @RequestParam(defaultValue = "0") int pageNo,
-                                                     @RequestParam(defaultValue = "10") int pageSize){
+                                                     @RequestParam(defaultValue = "10") int pageSize,
+                                                     @AuthenticationPrincipal Owner owner){
+
+        Page<ReservationDTO> reservations = reservationService.getReservations(addressOrName, minDate, maxDate, reservationStatus, pageNo, pageSize, owner.getId());
 
 
-        return ResponseEntity.ok().body("kurac");
+        return ResponseEntity.ok().body(reservations);
     }
 
 

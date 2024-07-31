@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@Data
+@Getter
+@Setter
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder
 @NoArgsConstructor

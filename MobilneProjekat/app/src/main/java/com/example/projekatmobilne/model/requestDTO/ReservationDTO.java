@@ -11,22 +11,41 @@ public class ReservationDTO {
     private LocalDate reservationStartDate;
     private LocalDate reservationEndDate;
     private Long guestNum;
+    private Long price;
     private ReservationStatus status;
     private String reason;
+    private String accommodationName;
 
-    public ReservationDTO(Long availabilityId, LocalDate reservationStartDate, LocalDate reservationEndDate, Long guestNum, ReservationStatus status, String reason) {
+    public ReservationDTO(Long availabilityId, LocalDate reservationStartDate, LocalDate reservationEndDate, Long guestNum, ReservationStatus status, String reason, String accommodationName) {
         this.availabilityId = availabilityId;
         this.reservationStartDate = reservationStartDate;
         this.reservationEndDate = reservationEndDate;
         this.guestNum = guestNum;
         this.status = status;
         this.reason = reason;
+        this.accommodationName = accommodationName;
     }
 
     public ReservationDTO(LocalDate reservationStartDate, LocalDate reservationEndDate, Long guestNum) {
         this.reservationStartDate = reservationStartDate;
         this.reservationEndDate = reservationEndDate;
         this.guestNum = guestNum;
+    }
+
+    public Long getPrice() {
+        return price;
+    }
+
+    public void setPrice(Long price) {
+        this.price = price;
+    }
+
+    public String getAccommodationName() {
+        return accommodationName;
+    }
+
+    public void setAccommodationName(String accommodationName) {
+        this.accommodationName = accommodationName;
     }
 
     public Long getAvailabilityId() {
@@ -84,8 +103,10 @@ public class ReservationDTO {
                 ", reservationStartDate=" + reservationStartDate +
                 ", reservationEndDate=" + reservationEndDate +
                 ", guestNum=" + guestNum +
+                ", price=" + price +
                 ", status=" + status +
                 ", reason='" + reason + '\'' +
+                ", accommodationName='" + accommodationName + '\'' +
                 '}';
     }
 }

@@ -283,7 +283,7 @@ public class AccommodationRequestService {
                 var availabilityWrappper = availabilityRepository.findByIdAndAccommodationId(availDTO.getId(), accommodationId);
                 System.out.println(availDTO.getId());
                 System.out.println(accommodationDTO.getId());
-                if(availabilityWrappper.isEmpty()) throw new InvalidInputException("Availability with this id doesn't exist");
+                if(availabilityWrappper.isEmpty()) throw new InvalidInputException("This date range isn't available");
                 availability = availabilityWrappper.get();
             }
 

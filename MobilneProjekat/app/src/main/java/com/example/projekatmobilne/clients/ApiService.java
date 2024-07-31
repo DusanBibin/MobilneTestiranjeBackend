@@ -2,6 +2,7 @@ package com.example.projekatmobilne.clients;
 
 
 import com.example.projekatmobilne.model.Enum.RequestStatus;
+import com.example.projekatmobilne.model.Enum.ReservationStatus;
 import com.example.projekatmobilne.model.requestDTO.AccommodationDTO;
 import com.example.projekatmobilne.model.requestDTO.AuthenticationRequestDTO;
 import com.example.projekatmobilne.model.requestDTO.AvailabilityDTO;
@@ -205,4 +206,17 @@ public interface ApiService {
     })
     @POST("accommodations/{accommodationId}/reservation")
     Call<ResponseBody> createNewReservation(@Path("accommodationId") Long accommodationId, @Body ReservationDTO request);
+
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @GET("accommodations/reservations")
+    Call<ResponseBody> getReservations(@Query("addressOrName") String addressOrName,
+                                       @Query("minDate") LocalDate minDate,
+                                       @Query("maxDate") LocalDate maxDate,
+                                       @Query("reservationStatus") ReservationStatus reservationStatus,
+                                       @Query("pageNo") int pageNo,
+                                       @Query("pageSize") int pageSize);
 }
