@@ -40,6 +40,16 @@
             android:paddingEnd="10dp"/>
 
         <TextView
+            android:id="@+id/txtCancelDeadline"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_columnWeight="1"
+            android:text="Cancel deadline: "
+            android:textSize="15sp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"/>
+
+        <TextView
             android:id="@+id/txtPrice"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"

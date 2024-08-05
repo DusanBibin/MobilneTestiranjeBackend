@@ -56,10 +56,10 @@ public class ReservationHostViewAdapter extends RecyclerView.Adapter<Reservation
     public void onBindViewHolder(@NonNull ReservationHostViewHolder holder, int position) {
         ReservationDTO reservation = dataList.get(position);
 
-        System.out.println(reservation);
         holder.txtAccommodationName.setText(reservation.getAccommodationName());
         holder.txtPrice.setText("Price: " + reservation.getPrice().toString());
         holder.txtDateRange.setText("Date range: " + reservation.getReservationStartDate() + " - " + reservation.getReservationEndDate());
+        holder.txtCancelDeadline.setText("Cancel deadline: " + reservation.getCancelDeadline());
         holder.txtRequestStatus.setText("Status: " + reservation.getStatus().toString());
         holder.txtUserEmail.setText("User email: " + reservation.getUserEmail());
         if(ReservationStatus.DECLINED.equals(reservation.getStatus())){
@@ -90,7 +90,8 @@ public class ReservationHostViewAdapter extends RecyclerView.Adapter<Reservation
 
 
 class ReservationHostViewHolder extends RecyclerView.ViewHolder{
-    TextView txtAccommodationName, txtDateRange, txtPrice, txtRequestStatus, txtRejectReason, txtUserEmail;
+    TextView txtAccommodationName, txtDateRange, txtPrice, txtRequestStatus, txtRejectReason,
+            txtUserEmail, txtCancelDeadline;
     LinearLayout linearLayoutReservationsHost;
 
     public ReservationHostViewHolder(@NonNull View itemView) {
@@ -102,5 +103,6 @@ class ReservationHostViewHolder extends RecyclerView.ViewHolder{
         txtRequestStatus = itemView.findViewById(R.id.txtRequestStatus);
         txtRejectReason = itemView.findViewById(R.id.txtRejectReason);
         linearLayoutReservationsHost = itemView.findViewById(R.id.linearLayoutReservationHostView);
+        txtCancelDeadline = itemView.findViewById(R.id.txtCancelDeadline);
     }
 }

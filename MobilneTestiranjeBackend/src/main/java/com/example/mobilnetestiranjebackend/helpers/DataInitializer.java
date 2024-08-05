@@ -173,7 +173,7 @@ private final UserRepository userRepository;
                 .minGuests(1L)
                 .maxGuests(4L)
                 .accommodationType(AccommodationType.valueOf("STUDIO"))
-                .autoAcceptEnabled(false)
+                .autoAcceptEnabled(true)
                 .owner(ownerDusan)
                 .availabilityList(new ArrayList<>())
                 .reservations(new ArrayList<>())
@@ -183,6 +183,15 @@ private final UserRepository userRepository;
 
         ownerDusan.getAccommodations().add(accommodation);
         ownerDusan = ownerRepository.save(ownerDusan);
+
+        var availabilityOld = Availability.builder()
+                .startDate(LocalDate.now().minusDays(20))
+                .endDate(LocalDate.now().minusDays(5))
+                .cancelDeadline(LocalDate.now().minusDays(25))
+                .price(50L)
+                .pricePerGuest(false)
+                .accommodation(accommodation)
+                .build();
 
         var availabilityEditTest = Availability.builder()
                 .startDate(LocalDate.now().plusDays(5))
@@ -215,6 +224,7 @@ private final UserRepository userRepository;
         availabilityEditTest = availabilityRepository.save(availabilityEditTest);
         availabilityDeleteTest = availabilityRepository.save(availabilityDeleteTest);
         availabilityNew = availabilityRepository.save(availabilityNew);
+        availabilityOld = availabilityRepository.save(availabilityOld);
 
         accommodation.getAvailabilityList().add(availabilityEditTest);
         accommodation.getAvailabilityList().add(availabilityDeleteTest);
@@ -228,6 +238,7 @@ private final UserRepository userRepository;
                 .accommodation(accommodation)
                 .reservationEndDate(LocalDate.now().plusDays(11))
                 .reservationStartDate(LocalDate.now().plusDays(7))
+                .cancelDeadline(availabilityEditTest.getCancelDeadline())
                 .price((ChronoUnit.DAYS.between(LocalDate.now().minusDays(11), LocalDate.now().minusDays(7)) + 1) * availabilityEditTest.getPrice())
                 .unitPrice(availabilityEditTest.getPrice())
                 .guestNum(1L)
@@ -241,6 +252,7 @@ private final UserRepository userRepository;
                 .accommodation(accommodation)
                 .reservationEndDate(LocalDate.now().plusDays(11))
                 .reservationStartDate(LocalDate.now().plusDays(7))
+                .cancelDeadline(availabilityEditTest.getCancelDeadline())
                 .price((ChronoUnit.DAYS.between(LocalDate.now().minusDays(11), LocalDate.now().minusDays(7)) + 1) * availabilityEditTest.getPrice())
                 .unitPrice(availabilityEditTest.getPrice())
                 .perGuest(false)
@@ -250,54 +262,46 @@ private final UserRepository userRepository;
         reservationRepository.save(reservation1);
         reservationRepository.save(reservation2);
          //enddate 10 startdate 8 ako je u buducnsti stavi plus days
-//        var reservationOlder = Reservation.builder()
-//                .availability(null)
-//                .guest(guestDusan2)
-//                .status(ReservationStatus.ACCEPTED)
-//                .accommodation(accommodation)
-//                .reservationEndDate(LocalDate.now().minusDays(20))
-//                .reservationStartDate(LocalDate.now().minusDays(18))
-//                .guestNum(1L)
-//                .build();
-//
-//        var reservationOld = Reservation.builder()
-//                .availability(null)
-//                .guest(guestDusan1)
-//                .status(ReservationStatus.ACCEPTED)
-//                .accommodation(accommodation)
-//                .reservationEndDate(LocalDate.now().minusDays(10))
-//                .reservationStartDate(LocalDate.now().minusDays(8))
-//                .guestNum(1L)
-//                .build();
-//
-//        var reservationNew = Reservation.builder()
-//                .availability(availabilityEditTest)
-//                .guest(guestDusan1)
-//                .status(ReservationStatus.ACCEPTED)
-//                .accommodation(accommodation)
-//                .reservationEndDate(LocalDate.now().plusDays(10))
-//                .reservationStartDate(LocalDate.now().plusDays(8))
-//                .guestNum(1L)
-//                .build();
-//
-//
-//        reservationOlder = reservationRepository.save(reservationOlder);
-//        reservationNew = reservationRepository.save(reservationNew);
-//        reservationOld = reservationRepository.save(reservationOld);
-//
-//        guestDusan1.getReservations().add(reservationOld);
-//        guestDusan1.getReservations().add(reservationNew);
-//        guestDusan2.getReservations().add(reservationOlder);
-//        guestDusan1 = guestRepository.save(guestDusan1);
-//        guestDusan2 = guestRepository.save(guestDusan2);
-//
-//        accommodation.getReservations().add(reservationOlder);
-//        accommodation.getReservations().add(reservationOld);
-//        accommodation.getReservations().add(reservationNew);
-//        accommodation = accommodationRepository.save(accommodation);
-//
-//
-//
+
+        var reservationOld1 = Reservation.builder()
+                .availability(availabilityOld)
+                .guest(guestDusan2)
+                .status(ReservationStatus.ACCEPTED)
+                .accommodation(accommodation)
+                .reservationEndDate(LocalDate.now().minusDays(17))
+                .reservationStartDate(LocalDate.now().minusDays(18))
+                .cancelDeadline(availabilityOld.getCancelDeadline())
+                .price((ChronoUnit.DAYS.between(LocalDate.now().minusDays(11), LocalDate.now().minusDays(7)) + 1) * availabilityOld.getPrice())
+                .unitPrice(availabilityOld.getPrice())
+                .perGuest(false)
+                .guestNum(1L)
+                .build();
+
+        var reservationOld2 = Reservation.builder()
+                .availability(availabilityOld)
+                .guest(guestDusan1)
+                .status(ReservationStatus.ACCEPTED)
+                .accommodation(accommodation)
+                .reservationEndDate(LocalDate.now().minusDays(15))
+                .reservationStartDate(LocalDate.now().minusDays(16))
+                .cancelDeadline(availabilityOld.getCancelDeadline())
+                .price((ChronoUnit.DAYS.between(LocalDate.now().minusDays(11), LocalDate.now().minusDays(7)) + 1) * availabilityOld.getPrice())
+                .unitPrice(availabilityOld.getPrice())
+                .perGuest(false)
+                .guestNum(1L)
+                .build();
+
+
+
+        reservationOld1 = reservationRepository.save(reservationOld1);
+        reservationOld2 = reservationRepository.save(reservationOld2);
+
+        guestDusan1.getReservations().add(reservationOld2);
+        guestDusan2.getReservations().add(reservationOld1);
+        guestDusan1 = guestRepository.save(guestDusan1);
+        guestDusan2 = guestRepository.save(guestDusan2);
+
+
 //        var ownerReview = OwnerReview.builder()
 //                .rating(5L)
 //                .comment("owner Review")

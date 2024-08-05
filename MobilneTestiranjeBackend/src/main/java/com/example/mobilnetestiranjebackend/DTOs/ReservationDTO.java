@@ -34,6 +34,7 @@ public class ReservationDTO {
     private Long guestNum;
 
 
+    private LocalDate cancelDeadline;
     private String accommodationAddress;
     private Long unitPrice;
     private Boolean perGuest;

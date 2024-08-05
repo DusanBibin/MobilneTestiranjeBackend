@@ -62,6 +62,7 @@ public class AccommodationController {
         }
 
         var accommodationDTO = AccommodationDTOResponse.builder()
+                .ownerId(accommodation.getOwner().getId())
                 .id(accommodation.getId())
                 .name(accommodation.getName())
                 .description(accommodation.getDescription())
@@ -223,6 +224,16 @@ public class AccommodationController {
         accommodationService.removeFromFavorites(accommodationId, guest.getId());
 
         return new ResponseEntity<>(("Successfully removed accommodation from favorites"), HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('OWNER')")
+    @PutMapping(path = "/{accommodationId}/reservation-auto-accept/{status}")
+    public ResponseEntity<?> toggleAutoAccept(@PathVariable("accommodationId") Long accommodationId,
+                                              @PathVariable("status") Boolean status,
+                                              @AuthenticationPrincipal Owner owner){
+        accommodationService.toggleAutoAccept(accommodationId, status, owner.getId());
+
+        return new ResponseEntity<>(("Auto accept is now " + (status ? "ON" : "OFF")), HttpStatus.OK);
     }
 
 

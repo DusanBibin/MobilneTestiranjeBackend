@@ -253,6 +253,7 @@ public class HomeFragment extends Fragment {
                 binding.btnSearch.setVisibility(View.VISIBLE);
                 binding.progressBarSearch.setVisibility(View.GONE);
                 binding.progressBarRecyclerView.setVisibility(View.GONE);
+                binding.recyclerView.setVisibility(ViewGroup.VISIBLE);
             }
 
             @Override

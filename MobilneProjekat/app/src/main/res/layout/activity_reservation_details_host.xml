@@ -96,6 +96,11 @@
                                 android:layout_height="wrap_content"
                                 android:text="Date range: " />
                             <TextView
+                                android:id="@+id/txtCancelDeadline"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Cancel deadline: " />
+                            <TextView
                                 android:id="@+id/txtGuestNumber"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"

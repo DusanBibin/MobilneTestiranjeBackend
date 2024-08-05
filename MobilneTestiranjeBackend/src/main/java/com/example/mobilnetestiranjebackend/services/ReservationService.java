@@ -71,6 +71,7 @@ public class ReservationService {
         var reservation = Reservation.builder()
                 .reservationStartDate(request.getReservationStartDate())
                 .reservationEndDate(request.getReservationEndDate())
+                .cancelDeadline(avail.getCancelDeadline())
                 .perGuest(avail.getPricePerGuest())
                 .unitPrice(avail.getPrice())
                 .guestNum(request.getGuestNum())
@@ -172,6 +173,7 @@ public class ReservationService {
             r.setReason(a.getReason());
             r.setReservationEndDate(a.getReservationEndDate());
             r.setReservationStartDate(a.getReservationStartDate());
+            r.setCancelDeadline(a.getCancelDeadline());
             r.setAccommodationName(a.getAccommodation().getName());
             r.setAccommodationId(a.getAccommodation().getId());
             r.setUserEmail(a.getGuest().getEmail());
@@ -201,6 +203,7 @@ public class ReservationService {
             r.setReason(a.getReason());
             r.setReservationEndDate(a.getReservationEndDate());
             r.setReservationStartDate(a.getReservationStartDate());
+            r.setCancelDeadline(a.getCancelDeadline());
             r.setAccommodationName(a.getAccommodation().getName());
             r.setAccommodationId(a.getAccommodation().getId());
             r.setUserEmail(a.getGuest().getEmail());
@@ -237,6 +240,7 @@ public class ReservationService {
         reservationDTO.setAccommodationAddress(reservation.getAccommodation().getAddress());
         reservationDTO.setReservationStartDate(reservation.getReservationStartDate());
         reservationDTO.setReservationEndDate(reservation.getReservationEndDate());
+        reservationDTO.setCancelDeadline(reservation.getCancelDeadline());
         reservationDTO.setGuestNum(reservation.getGuestNum());
         reservationDTO.setUnitPrice(reservation.getUnitPrice());
         reservationDTO.setPerGuest(reservation.getPerGuest());

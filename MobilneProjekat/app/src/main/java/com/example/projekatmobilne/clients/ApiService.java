@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import okhttp3.MultipartBody;
+import okhttp3.Response;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -249,4 +250,12 @@ public interface ApiService {
                                                @Path("reservationId") Long reservationId,
                                                @Query("pageNo") int pageNo,
                                                @Query("pageSize") int pageSize);
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @PUT("accommodations/{accommodationId}/reservation-auto-accept/{status}")
+    Call<ResponseBody> toggleAutoAccept(@Path("accommodationId") Long accommodationId,
+                                        @Path("status") Boolean status);
+
 }

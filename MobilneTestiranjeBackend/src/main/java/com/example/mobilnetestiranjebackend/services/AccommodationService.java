@@ -6,6 +6,7 @@ import com.example.mobilnetestiranjebackend.DTOs.AccommodationViewDTO;
 import com.example.mobilnetestiranjebackend.enums.AccommodationType;
 import com.example.mobilnetestiranjebackend.enums.Amenity;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthorizationException;
+import com.example.mobilnetestiranjebackend.exceptions.InvalidInputException;
 import com.example.mobilnetestiranjebackend.exceptions.NonExistingEntityException;
 import com.example.mobilnetestiranjebackend.helpers.PageConverter;
 import com.example.mobilnetestiranjebackend.model.*;
@@ -26,6 +27,7 @@ public class AccommodationService {
     private final AvailabilityRepository availabilityRepository;
     private final ReservationRepository reservationRepository;
     private final AccommodationReviewRepository accommodationReviewRepository;
+    private final OwnerRepository ownerRepository;
 
     public Optional<Accommodation> findAccommodationById(Long accommodationId) {
         return accommodationRepository.findAccommodationById(accommodationId);
@@ -225,5 +227,23 @@ public class AccommodationService {
 
         return PageConverter.convertListToPage(pageNo, pageSize, convertedList);
     }
+
+    public void toggleAutoAccept(Long accommodationId, Boolean status, Long ownerId) {
+        if(ownerRepository.findOwnerById(ownerId).isEmpty()) throw new InvalidAuthorizationException("User with this id doesn't exist");
+
+
+        Optional<Accommodation> accommodationWrapper = accommodationRepository.findAccommodationById(accommodationId);
+        if(accommodationWrapper.isEmpty()) throw new InvalidInputException("Accommodation with this id doesn't exist");
+
+        accommodationWrapper = accommodationRepository.findByIdAndOwnerId(accommodationId, ownerId);
+        if(accommodationWrapper.isEmpty()) throw new InvalidAuthorizationException("You do not own this accommodation");
+        var accommodation = accommodationWrapper.get();
+
+        if(status.equals(accommodation.getAutoAcceptEnabled())) throw new InvalidInputException("Auto accept is already " + (status ? "ON" : "OFF"));
+
+        accommodation.setAutoAcceptEnabled(status);
+        accommodationRepository.save(accommodation);
+    }
+
 }
 

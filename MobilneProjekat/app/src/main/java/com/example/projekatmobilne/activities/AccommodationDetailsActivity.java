@@ -9,6 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -23,6 +24,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.projekatmobilne.R;
 import com.example.projekatmobilne.adapters.ImageAdapter;
 import com.example.projekatmobilne.adapters.ReviewsAdapter;
+import com.example.projekatmobilne.clients.ApiService;
 import com.example.projekatmobilne.clients.ClientUtils;
 import com.example.projekatmobilne.databinding.ActivityAccommodationDetailsBinding;
 import com.example.projekatmobilne.model.Enum.Role;
@@ -46,6 +48,7 @@ import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.DateValidatorPointForward;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
@@ -111,7 +114,12 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
 
         binding.txtNoRatings.setVisibility(View.GONE);
         binding.btnEdit.setVisibility(View.GONE);
+        binding.toggleBtnAutoAccept.setVisibility(View.GONE);
         binding.linearLayoutCreateReservation.setVisibility(View.GONE);
+
+
+        binding.progressBar.setVisibility(View.VISIBLE);
+        binding.scrollViewAccommodationDetails.setVisibility(View.GONE);
 
 
         calendarView = findViewById(R.id.calendarView);
@@ -155,21 +163,6 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
             accommodationId = (Long) intent.getSerializableExtra("accommodationId");
         }
 
-        if(Role.OWNER.equals(JWTManager.getRoleEnum()) && accommodationId != 0L){
-            binding.btnEdit.setVisibility(View.VISIBLE);
-            binding.btnEdit.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(!accommodationDTO.getFutureReservations().isEmpty()){
-                        Toast.makeText(AccommodationDetailsActivity.this, "You cannot change reservation while there are future reservations", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    Intent intent = new Intent(AccommodationDetailsActivity.this, CreateAccommodationActivity.class);
-                    intent.putExtra("accommodationId", accommodationId);
-                    startActivity(intent);
-                }
-            });
-        }
 
         if(Role.GUEST.equals(JWTManager.getRoleEnum()) && accommodationId != 0L){
             binding.linearLayoutCreateReservation.setVisibility(View.VISIBLE);
@@ -274,6 +267,57 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
                     loadReviewPage();
                     accommodationDTO = ResponseParser.parseResponse(response, AccommodationDTOResponse.class, false);
 
+                    if(Role.OWNER.equals(JWTManager.getRoleEnum()) && accommodationId != 0L && accommodationDTO.getOwnerId().equals(JWTManager.getUserIdLong())){
+                        binding.btnEdit.setVisibility(View.VISIBLE);
+                        binding.btnEdit.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if(!accommodationDTO.getFutureReservations().isEmpty()){
+                                    Toast.makeText(AccommodationDetailsActivity.this, "You cannot change reservation while there are future reservations", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                                Intent intent = new Intent(AccommodationDetailsActivity.this, CreateAccommodationActivity.class);
+                                intent.putExtra("accommodationId", accommodationId);
+                                startActivity(intent);
+                            }
+                        });
+
+
+                        binding.toggleBtnAutoAccept.setVisibility(View.VISIBLE);
+                        binding.toggleBtnAutoAccept.setChecked(accommodationDTO.getAutoAcceptEnabled());
+
+                        binding.toggleBtnAutoAccept.setOnCheckedChangeListener(new SwitchMaterial.OnCheckedChangeListener() {
+                            @Override
+                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                                if (isChecked) {
+                                } else {
+                                }
+
+                                Call<ResponseBody> call = ClientUtils.apiService.toggleAutoAccept(accommodationId, isChecked);
+                                call.enqueue(new Callback<ResponseBody>() {
+                                    @Override
+                                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                        if(response.code() == 200){
+                                            String responseMessage = ResponseParser.parseResponse(response, String.class, false);
+                                            Toast.makeText(AccommodationDetailsActivity.this, responseMessage, Toast.LENGTH_SHORT).show();
+                                        }
+
+                                        if(response.code() == 400){
+                                            Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
+                                            if(map.containsKey("message")) Toast.makeText(AccommodationDetailsActivity.this, map.get("message"), Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                        Toast.makeText(AccommodationDetailsActivity.this, "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                                        t.printStackTrace();
+                                    }
+                                });
+
+                            }
+                        });
+                    }
                     SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                             .findFragmentById(R.id.mapview);
                     mapFragment.getMapAsync(AccommodationDetailsActivity.this);
@@ -338,7 +382,9 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
     private void setupSpinner() {
         options = new ArrayList<>();
         for(AvailabilityDTO a: accommodationDTO.getAvailabilityList()){
-            options.add(a.getPrice().toString());
+            if(!a.getStartDate().isBefore(LocalDate.now())){
+                options.add(a.getPrice().toString());
+            }
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(AccommodationDetailsActivity.this, android.R.layout.simple_spinner_item, options);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -360,9 +406,12 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
                     if(selectedOption.equals(a.getPrice().toString())){
 
                         long numDays = ChronoUnit.DAYS.between(a.getStartDate(), a.getEndDate()) + 1;
-                        for(int i = 0; i < numDays; i++){
-                            pinkDateList.add(a.getStartDate().plusDays(i).format(formatter));
+                        if(!a.getStartDate().isBefore(LocalDate.now())){
+                            for(int i = 0; i < numDays; i++){
+                                pinkDateList.add(a.getStartDate().plusDays(i).format(formatter));
+                            }
                         }
+
 
                         for(ReservationDTOInner r: accommodationDTO.getFutureReservations()){
                             if(Objects.equals(r.getAvailabilityId(), a.getId())){

@@ -20,6 +20,7 @@ public class Reservation {
 
     private LocalDate reservationStartDate;
     private LocalDate reservationEndDate;
+    private LocalDate cancelDeadline;
     private Long guestNum;
     private Long price;
     private Long unitPrice;

@@ -200,6 +200,7 @@ public class ReservationDetailsHostActivity extends AppCompatActivity {
                     binding.txtName.setText(r.getAccommodationName());
                     binding.txtAddress.setText("Accommodation address: " + r.getAccommodationAddress());
                     binding.txtDateRange.setText("Date range: " + r.getReservationStartDate() + " - " + r.getReservationEndDate());
+                    binding.txtCancelDeadline.setText("Cancel deadline: " + r.getCancelDeadline());
                     binding.txtGuestNumber.setText("Number of guests: " + r.getGuestNum());
                     binding.txtUnitPrice.setText("Unit price: " + r.getUnitPrice());
                     binding.txtIsPricePerGuest.setText("Is price per guest: " + r.getPerGuest());

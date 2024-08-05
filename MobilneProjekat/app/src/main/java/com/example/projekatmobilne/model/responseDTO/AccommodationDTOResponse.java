@@ -9,6 +9,8 @@ import com.example.projekatmobilne.model.responseDTO.innerDTO.ReservationDTOInne
 import java.util.List;
 
 public class AccommodationDTOResponse {
+    private Long ownerId;
+
     private String name;
 
     private String description;
@@ -39,7 +41,9 @@ public class AccommodationDTOResponse {
                                     Long maxGuests, AccommodationType accommodationType,
                                     Boolean autoAcceptEnabled,
                                     List<AvailabilityDTO> availabilityList,
-                                    List<Long> imagePaths, List<ReservationDTOInner> futureReservations) {
+                                    List<Long> imagePaths,
+                                    List<ReservationDTOInner> futureReservations,
+                                    Long ownerId) {
         this.name = name;
         this.description = description;
         this.address = address;
@@ -53,6 +57,7 @@ public class AccommodationDTOResponse {
         this.availabilityList = availabilityList;
         this.imageIds = imagePaths;
         this.futureReservations = futureReservations;
+        this.ownerId = ownerId;
     }
 
     public List<ReservationDTOInner> getFutureReservations() {
@@ -159,10 +164,19 @@ public class AccommodationDTOResponse {
         this.imageIds = imageIds;
     }
 
+    public Long getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(Long ownerId) {
+        this.ownerId = ownerId;
+    }
+
     @Override
     public String toString() {
         return "AccommodationDTOResponse{" +
-                "name='" + name + '\'' +
+                "ownerId=" + ownerId +
+                ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", address='" + address + '\'' +
                 ", lat=" + lat +

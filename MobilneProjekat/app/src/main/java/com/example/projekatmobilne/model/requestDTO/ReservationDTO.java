@@ -12,6 +12,7 @@ public class ReservationDTO {
     private String accommodationAddress;
     private LocalDate reservationStartDate;
     private LocalDate reservationEndDate;
+    private LocalDate cancelDeadline;
     private Long guestNum;
     private Long unitPrice;
     private Boolean perGuest;
@@ -38,7 +39,8 @@ public class ReservationDTO {
                           LocalDate reservationEndDate, Long guestNum, ReservationStatus status,
                           String reason, String accommodationName, String accommodationAddress,
                           Long unitPrice, Boolean perGuest, String nameAndSurname, String userEmail,
-                          Long timesUserCancel, Long accommodationId, Boolean conflictReservations) {
+                          Long timesUserCancel, Long accommodationId, Boolean conflictReservations,
+                          LocalDate cancelDeadline) {
         this.availabilityId = availabilityId;
         this.reservationId = reservationId;
         this.reservationStartDate = reservationStartDate;
@@ -55,6 +57,7 @@ public class ReservationDTO {
         this.timesUserCancel = timesUserCancel;
         this.accommodationId = accommodationId;
         this.conflictReservations = conflictReservations;
+        this.cancelDeadline = cancelDeadline;
     }
 
     public ReservationDTO(LocalDate reservationStartDate, LocalDate reservationEndDate, Long guestNum) {
@@ -191,6 +194,14 @@ public class ReservationDTO {
         this.accommodationId = accommodationId;
     }
 
+    public LocalDate getCancelDeadline() {
+        return cancelDeadline;
+    }
+
+    public void setCancelDeadline(LocalDate cancelDeadline) {
+        this.cancelDeadline = cancelDeadline;
+    }
+
     @Override
     public String toString() {
         return "ReservationDTO{" +
@@ -198,6 +209,7 @@ public class ReservationDTO {
                 ", accommodationAddress='" + accommodationAddress + '\'' +
                 ", reservationStartDate=" + reservationStartDate +
                 ", reservationEndDate=" + reservationEndDate +
+                ", cancelDeadline=" + cancelDeadline +
                 ", guestNum=" + guestNum +
                 ", unitPrice=" + unitPrice +
                 ", perGuest=" + perGuest +

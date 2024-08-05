@@ -76,6 +76,11 @@ public class JWTManager {
         return sharedPreferences.getString("id", null);
     }
 
+    public static Long getUserIdLong(){
+        if(getUserId() != null) return Long.valueOf(getUserId());
+        else return null;
+    }
+
     public static String getEmail() {
         return sharedPreferences.getString("email", null);
     }

@@ -144,7 +144,7 @@ public class ReservationController {
             throw new InvalidAuthorizationException("You don't own this reservation");
 
 
-        if(LocalDate.now().isBefore(reservation.getAvailability().getCancelDeadline()))
+        if(LocalDate.now().isBefore(reservation.getCancelDeadline()))
             reservationService.cancelReservation(reservation);
         else throw new InvalidDateException("The cancellation deadline has passed");
 

@@ -16,6 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AccommodationDTOResponse {
+    private Long ownerId;
     private Long id;
     private String name;
 
