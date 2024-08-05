@@ -19,7 +19,8 @@ import java.time.LocalDate;
 public class ReservationDTO {
 
     private Long availabilityId;
-
+    private Long reservationId;
+    private Long accommodationId;
     @FutureOrPresent(message = "Start date must be in the future")
     @NotNull(message = "Start date must be provided")
     private LocalDate reservationStartDate;
@@ -31,6 +32,15 @@ public class ReservationDTO {
     @NotNull(message = "Accommodation price for this period must be provided")
     @Min(value = 1, message = "There must be at least one guest")
     private Long guestNum;
+
+
+    private String accommodationAddress;
+    private Long unitPrice;
+    private Boolean perGuest;
+    private String nameAndSurname;
+    private String userEmail;
+    private Long timesUserCancel;
+    private Boolean conflictReservations;
 
     private String accommodationName;
     private Long price;

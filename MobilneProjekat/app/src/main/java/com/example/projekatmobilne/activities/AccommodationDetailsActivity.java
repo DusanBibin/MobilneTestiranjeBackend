@@ -75,7 +75,6 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
     private Toolbar toolbar;
     private ActivityAccommodationDetailsBinding binding;
     private LocalDate dateStart, dateEnd;
-    private ViewPager2 viewPager;
     private Long accommodationId = 0L;
     private AccommodationDTOResponse accommodationDTO;
     private ReviewsDTOPagedResponse reviewsDTOPagedResponse;
@@ -93,7 +92,7 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
     private List<Bitmap> imageList;
     private List<String> options;
     private ImageAdapter imageAdapter;
-
+    private Boolean mapReady = false, imagesReady = false;
     MaterialCalendarView calendarView;
 
 
@@ -161,6 +160,10 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
             binding.btnEdit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if(!accommodationDTO.getFutureReservations().isEmpty()){
+                        Toast.makeText(AccommodationDetailsActivity.this, "You cannot change reservation while there are future reservations", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     Intent intent = new Intent(AccommodationDetailsActivity.this, CreateAccommodationActivity.class);
                     intent.putExtra("accommodationId", accommodationId);
                     startActivity(intent);
@@ -231,6 +234,15 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
         imageList = new ArrayList<>();
         imageAdapter = new ImageAdapter(this, imageList);
         binding.viewPager.setAdapter(imageAdapter);
+
+        binding.viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                binding.txtImagesNumber.setText((position + 1) + "/" + imageList.size());
+            }
+        });
+
 
         binding.scrollViewAccommodationDetails.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
@@ -391,8 +403,12 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
 
                                 if(accommodationDTO.getImageIds().size() == imageList.size()){
                                     runOnUiThread(() -> {
-                                        binding.progressBar.setVisibility(View.GONE);
-                                        binding.scrollViewAccommodationDetails.setVisibility(View.VISIBLE);
+                                        binding.txtImagesNumber.setText("1/" + imageList.size());
+                                        imagesReady = true;
+                                        if(mapReady && imagesReady){
+                                            binding.progressBar.setVisibility(View.GONE);
+                                            binding.scrollViewAccommodationDetails.setVisibility(View.VISIBLE);
+                                        }
                                     });
                                 }
                             }
@@ -552,11 +568,17 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
             return null;
         }
     }
+
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         LatLng accommodationLocation = new LatLng(accommodationDTO.getLat(), accommodationDTO.getLon());
         googleMap.addMarker(new MarkerOptions()
                 .position(accommodationLocation));
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(accommodationLocation, 12.5f));
+        mapReady = true;
+        if(mapReady && imagesReady){
+            binding.progressBar.setVisibility(View.GONE);
+            binding.scrollViewAccommodationDetails.setVisibility(View.VISIBLE);
+        }
     }
 }

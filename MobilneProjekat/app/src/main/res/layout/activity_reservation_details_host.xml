@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.AccommodationDetailsActivity">
+
+
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        >
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|enterAlways">
+
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/app_bar">
+
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:visibility="gone"
+            />
+
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollViewReservationDetails"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:visibility="visible">
+
+                <LinearLayout
+                    android:id="@+id/linearLayoutMain"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardElevation="8dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardUseCompatPadding="true">
+
+                        <LinearLayout
+                            android:padding="10dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <TextView
+                                android:id="@+id/txtName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="25sp"
+                                android:text="Ime akomodacije"/>
+                            <TextView
+                                android:id="@+id/txtAddress"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Address: " />
+                            <TextView
+                                android:id="@+id/txtDateRange"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Date range: " />
+                            <TextView
+                                android:id="@+id/txtGuestNumber"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Guest number: " />
+
+                            <TextView
+                                android:id="@+id/txtUnitPrice"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Unit price: " />
+                            <TextView
+                                android:id="@+id/txtIsPricePerGuest"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Is price per guest: " />
+                            <TextView
+                                android:id="@+id/txtTotalPrice"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Total price: " />
+                            <TextView
+                                android:id="@+id/txtStatus"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Reservation status: " />
+                            <TextView
+                                android:id="@+id/txtRejectReason"
+                                android:visibility="gone"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Reject reason: " />
+
+                            <Button
+                                android:id="@+id/btnAccommodationRedirect"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="View accommodation"/>
+
+                            <TextView
+                                android:id="@+id/txtUserInfo"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="15dp"
+                                android:textSize="19sp"
+                                android:text="User"/>
+                            <TextView
+                                android:id="@+id/txtNameSurname"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Name: " />
+                            <TextView
+                                android:id="@+id/txtEmail"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Email: " />
+                            <TextView
+                                android:id="@+id/txtTimeCanceled"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Times canceled reservations: " />
+
+                            <LinearLayout
+                                android:id="@+id/linearLayoutButtons"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+                                <Button
+                                    android:id="@+id/btnAccept"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Accept"
+                                    android:layout_marginEnd="5dp"/>
+                                <Button
+                                    android:id="@+id/btnReject"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Reject"/>
+
+                                <com.google.android.material.textfield.TextInputLayout
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                    android:id="@+id/inputLayoutDateRejectReason"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Reject reason"
+                                    app:errorEnabled="true"
+                                    app:endIconMode="clear_text">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/inputEditTextRejectReason"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:inputType="text"
+                                        />
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                            </LinearLayout>
+                            <ProgressBar
+                                android:visibility="gone"
+                                android:id="@+id/progressBarButton"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                />
+                             
+
+                        </LinearLayout>
+
+
+                    </androidx.cardview.widget.CardView>
+
+
+                        <LinearLayout
+                            android:visibility="gone"
+                            android:id="@+id/linearLayoutConflictReservations"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:textSize="25sp"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingTop="10dp"
+                                android:text="Conflicting reservations"
+                                android:layout_marginStart="20dp"/>
+                            <ProgressBar
+                                android:id="@+id/progressBarConflictReservations"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                />
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:visibility="gone"
+                                android:id="@+id/recyclerViewReservationConflicts"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scrollbars="vertical"/>
+
+
+
+                        </LinearLayout>
+
+
+                </LinearLayout>
+
+
+
+        </androidx.core.widget.NestedScrollView>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

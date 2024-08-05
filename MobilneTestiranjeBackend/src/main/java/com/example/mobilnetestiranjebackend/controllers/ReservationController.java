@@ -35,7 +35,14 @@ public class ReservationController {
     private final AvailabilityService availabilityService;
     private final ReservationService reservationService;
 
+    @PreAuthorize("hasAuthority('GUEST') or hasAuthority('OWNER')")
+    @GetMapping("/{accommodationId}/reservations/{reservationId}")
+    public ResponseEntity<?> getReservationDetails(@PathVariable("accommodationId") Long accommodationId,
+                                                   @PathVariable("reservationId") Long reservationId,
+                                                   @AuthenticationPrincipal User user){
 
+        return ResponseEntity.ok().body(reservationService.getReservationDetails(accommodationId, reservationId, user.getId()));
+    }
 
     @PreAuthorize("hasAuthority('GUEST')")
     @PostMapping("/{accommodationId}/reservation")
@@ -53,8 +60,6 @@ public class ReservationController {
         if(availabilityWrapper.isEmpty())
             throw new NonExistingEntityException("Availability with this id for wanted accommodation doesn't exist");
         Availability avail = availabilityWrapper.get();
-
-
 
 
         var startDate = request.getReservationStartDate();
@@ -85,13 +90,13 @@ public class ReservationController {
 
     @PreAuthorize("hasAuthority('OWNER')")
     @PutMapping(value = "/{accommodationId}/reservations/{reservationId}/{status}")
-    public ResponseEntity<?> processReservationRequest(@RequestBody String reason,
+    public ResponseEntity<?> processReservationRequest(@RequestBody(required = false) String reason,
                                                        @PathVariable("reservationId") Long reservationId,
                                                        @PathVariable("accommodationId") Long accommodationId,
                                                        @PathVariable("status") ReservationStatus status,
                                                        @AuthenticationPrincipal Owner owner){
 
-        if(status.equals(ReservationStatus.DECLINED) && reason.isEmpty()) throw new InvalidInputException("Reason must be provided");
+        if(status.equals(ReservationStatus.DECLINED) && (reason == null || reason.equals(""))) throw new InvalidInputException("Reason must be provided");
 
         Optional<Accommodation> accommodationWrapper = accommodationService.findAccommodationById(accommodationId);
         if(accommodationWrapper.isEmpty()) throw new NonExistingEntityException("Accommodation with this id doesn't exist");
@@ -120,7 +125,7 @@ public class ReservationController {
 
 
     @PreAuthorize("hasAuthority('GUEST')")
-    @PutMapping(value = "/{accommodationId}/reservations/{reservationId}/cancel")
+    @PutMapping(value = "/{accommodationId}/reservation/{reservationId}/cancel")
     public ResponseEntity<?> cancelReservation(@PathVariable("accommodationId") Long accommodationId,
                                                @PathVariable("reservationId") Long reservationId,
                                                @AuthenticationPrincipal Guest guest){
@@ -157,7 +162,7 @@ public class ReservationController {
     }
 
 
-    @PreAuthorize("hasAuthority('GUEST') or hasAuthority('OWNER')")
+    @PreAuthorize("hasAuthority('OWNER')")
     @GetMapping("/reservations")
     public ResponseEntity<?> getReservations(@RequestParam(required = false) String addressOrName,
                                                      @RequestParam(required = false) LocalDate minDate,
@@ -165,13 +170,26 @@ public class ReservationController {
                                                      @RequestParam(required = false) ReservationStatus reservationStatus,
                                                      @RequestParam(defaultValue = "0") int pageNo,
                                                      @RequestParam(defaultValue = "10") int pageSize,
-                                                     @AuthenticationPrincipal Owner owner){
+                                                     @AuthenticationPrincipal User user){
 
-        Page<ReservationDTO> reservations = reservationService.getReservations(addressOrName, minDate, maxDate, reservationStatus, pageNo, pageSize, owner.getId());
-
+        Page<ReservationDTO> reservations = reservationService.getReservations(addressOrName, minDate, maxDate, reservationStatus, pageNo, pageSize, user.getId());
 
         return ResponseEntity.ok().body(reservations);
     }
+
+
+    @PreAuthorize("hasAuthority('OWNER')")
+    @GetMapping("/{accommodationId}/reservations/{reservationId}/conflict-reservations")
+    public ResponseEntity<?> getConflictedReservations(@PathVariable("accommodationId") Long accommodationId,
+                                                       @PathVariable("reservationId") Long reservationId,
+                                                       @RequestParam(defaultValue = "0") int pageNo,
+                                                       @RequestParam(defaultValue = "10") int pageSize,
+                                                       @AuthenticationPrincipal Owner owner){
+
+        Page<ReservationDTO> conflictReservations = reservationService.getConflictReservations(accommodationId, reservationId, owner, pageNo, pageSize);
+        return ResponseEntity.ok().body(conflictReservations);
+    }
+
 
 
 

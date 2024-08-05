@@ -45,7 +45,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:visibility="gone"
+            android:visibility="visible"
             />
 
 
@@ -57,8 +57,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-
-            android:visibility="visible">
+            android:visibility="gone">
 
 
             <LinearLayout
@@ -164,6 +163,7 @@
                                 android:layout_height="match_parent"
                                 android:src="@color/transparent" />
 
+
                         </RelativeLayout>
                     </LinearLayout>
 
@@ -196,6 +196,11 @@
                                 android:id="@+id/viewPager"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"/>
+                            <TextView
+                                android:id="@+id/txtImagesNumber"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="1/5" />
                         </LinearLayout>
 
                     </LinearLayout>

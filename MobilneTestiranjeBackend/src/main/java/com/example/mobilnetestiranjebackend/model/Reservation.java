@@ -22,6 +22,8 @@ public class Reservation {
     private LocalDate reservationEndDate;
     private Long guestNum;
     private Long price;
+    private Long unitPrice;
+    private Boolean perGuest;
     private ReservationStatus status;
     private String reason;
 

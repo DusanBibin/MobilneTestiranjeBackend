@@ -36,4 +36,8 @@ public interface AccommodationRepository extends JpaRepository<Accommodation, Lo
             "     (case when av.pricePerGuest = true then :daysBetween * av.price * :guestNum else :daysBetween * av.price end) <= :maxPrice))")
     List<Accommodation> searchAccommodations(Long guestNum, String address, LocalDate startDate, LocalDate endDate,
                                              AccommodationType accommodationType, Long minPrice, Long maxPrice, Long daysBetween);
+
+
+    @Query("select a from Accommodation a where a.owner.id = :userId and a.id = :accommodationId")
+    Optional<Accommodation> findByIdAndOwnerId(Long accommodationId, Long userId);
 }

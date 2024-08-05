@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.Array;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +58,7 @@ private final UserRepository userRepository;
         Owner ownerSomeoneElse = Owner.builder()
                 .firstName("Dusan")
                 .lastname("Bibin")
-                .email("probamejl3@gmail.com")
+                .email(" ")
                 .password(passwordEncoder.encode("123"))
                 .phoneNumber("654653")
                 .address("Neka ulica 123")
@@ -113,9 +114,31 @@ private final UserRepository userRepository;
                 .verification(new Verification())
                 .build();
 
+
+
+        Guest guestDusan3 = Guest.builder()
+                .firstName("Dusan3")
+                .lastname("Bibin3")
+                .email("probamejl3@gmail.com")
+                .password(passwordEncoder.encode("123"))
+                .phoneNumber("75436534654")
+                .address("Neka ulica 123")
+                .reservations(new ArrayList<>())
+                .ownerReviews(new ArrayList<>())
+                .accommodationReviews(new ArrayList<>())
+                .favorites(new ArrayList<>())
+                .reviewComplaints(new ArrayList<>())
+                .emailConfirmed(true)
+                .blocked(false)
+                .role(Role.GUEST)
+                .emailChangeVerification(null)
+                .verification(new Verification())
+                .build();
+
         ownerDusan = ownerRepository.save(ownerDusan);
         guestDusan1 = guestRepository.save(guestDusan1);
         guestDusan2 = guestRepository.save(guestDusan2);
+        guestDusan3 = guestRepository.save(guestDusan3);
 
 
         Admin admin = Admin.builder()
@@ -166,7 +189,7 @@ private final UserRepository userRepository;
                 .endDate(LocalDate.now().plusDays(15))
                 .cancelDeadline(LocalDate.now().plusDays(4))
                 .price(200L)
-                .pricePerGuest(true)
+                .pricePerGuest(false)
                 .accommodation(accommodation)
                 .build();
 
@@ -198,9 +221,34 @@ private final UserRepository userRepository;
 
         accommodation = accommodationRepository.save(accommodation);
 
+        var reservation1 = Reservation.builder()
+                .availability(availabilityEditTest)
+                .guest(guestDusan1)
+                .status(ReservationStatus.PENDING)
+                .accommodation(accommodation)
+                .reservationEndDate(LocalDate.now().plusDays(11))
+                .reservationStartDate(LocalDate.now().plusDays(7))
+                .price((ChronoUnit.DAYS.between(LocalDate.now().minusDays(11), LocalDate.now().minusDays(7)) + 1) * availabilityEditTest.getPrice())
+                .unitPrice(availabilityEditTest.getPrice())
+                .guestNum(1L)
+                .perGuest(false)
+                .build();
 
+        var reservation2 = Reservation.builder()
+                .availability(availabilityEditTest)
+                .guest(guestDusan2)
+                .status(ReservationStatus.PENDING)
+                .accommodation(accommodation)
+                .reservationEndDate(LocalDate.now().plusDays(11))
+                .reservationStartDate(LocalDate.now().plusDays(7))
+                .price((ChronoUnit.DAYS.between(LocalDate.now().minusDays(11), LocalDate.now().minusDays(7)) + 1) * availabilityEditTest.getPrice())
+                .unitPrice(availabilityEditTest.getPrice())
+                .perGuest(false)
+                .guestNum(1L)
+                .build();
 
-
+        reservationRepository.save(reservation1);
+        reservationRepository.save(reservation2);
          //enddate 10 startdate 8 ako je u buducnsti stavi plus days
 //        var reservationOlder = Reservation.builder()
 //                .availability(null)

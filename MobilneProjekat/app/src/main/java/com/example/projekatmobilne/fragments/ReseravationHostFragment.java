@@ -99,8 +99,6 @@ public class ReseravationHostFragment extends Fragment {
                 adapter.notifyDataSetChanged();
                 binding.recyclerViewReservationsHost.setVisibility(View.VISIBLE);
                 binding.progressBar.setVisibility(View.GONE);
-                //binding.progressBarSearch.setVisibility(View.GONE);
-                //binding.btnSearch.setVisibility(View.VISIBLE);
                 if(dataList.isEmpty()) binding.txtNoItemsReservations.setVisibility(View.VISIBLE);
             }
 

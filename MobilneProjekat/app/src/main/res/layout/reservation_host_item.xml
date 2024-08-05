@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/cardViewAccommodationRequestPreview"
+    android:id="@+id/cardViewReservationPreview"
     app:cardElevation="4dp"
     app:cardCornerRadius="16dp"
     android:layout_marginBottom="10dp"
@@ -11,14 +11,14 @@
     android:layout_marginEnd="10dp"
     android:layout_marginTop="10dp"
     >
-
     <LinearLayout
-        android:id="@+id/linearLayoutAccommodationRequestHostView"
+        android:id="@+id/linearLayoutReservationHostView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="?android:attr/selectableItemBackground"
-        android:layout_marginBottom="10dp">
+        android:paddingBottom="10dp"
+        >
         <TextView
             android:id="@+id/txtNameAccommodationItem"
             android:layout_height="wrap_content"
@@ -50,6 +50,16 @@
             android:paddingEnd="10dp"/>
 
         <TextView
+            android:id="@+id/txtUserEmail"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_columnWeight="1"
+            android:text="UserEmail: "
+            android:textSize="15sp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"/>
+
+        <TextView
             android:id="@+id/txtRequestStatus"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
@@ -68,11 +78,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Reason:"/>
-
-
-
-        
-
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

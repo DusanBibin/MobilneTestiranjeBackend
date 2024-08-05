@@ -9,11 +9,10 @@ import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthorizationExcep
 import com.example.mobilnetestiranjebackend.exceptions.InvalidEnumValueException;
 import com.example.mobilnetestiranjebackend.exceptions.NonExistingEntityException;
 import com.example.mobilnetestiranjebackend.helpers.PageConverter;
-import com.example.mobilnetestiranjebackend.model.Accommodation;
-import com.example.mobilnetestiranjebackend.model.Availability;
-import com.example.mobilnetestiranjebackend.model.Guest;
-import com.example.mobilnetestiranjebackend.model.Reservation;
+import com.example.mobilnetestiranjebackend.model.*;
 import com.example.mobilnetestiranjebackend.repositories.AccommodationRepository;
+import com.example.mobilnetestiranjebackend.repositories.GuestRepository;
+import com.example.mobilnetestiranjebackend.repositories.OwnerRepository;
 import com.example.mobilnetestiranjebackend.repositories.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,10 +29,8 @@ import java.util.Optional;
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final AccommodationRepository accommodationRepository;
-
-
-
-
+    private final OwnerRepository ownerRepository;
+    private final GuestRepository guestRepository;
 
 
     public Optional<Reservation> findReservationByIdAccommodation(Long accommodationId, Long reservationId) {
@@ -74,6 +71,8 @@ public class ReservationService {
         var reservation = Reservation.builder()
                 .reservationStartDate(request.getReservationStartDate())
                 .reservationEndDate(request.getReservationEndDate())
+                .perGuest(avail.getPricePerGuest())
+                .unitPrice(avail.getPrice())
                 .guestNum(request.getGuestNum())
                 .status(status)
                 .reason(reason)
@@ -154,22 +153,105 @@ public class ReservationService {
         reservationRepository.delete(reservation);
     }
 
-    public Page<ReservationDTO> getReservations(String addressOrName, LocalDate minDate, LocalDate maxDate, ReservationStatus reservationStatus, int pageNo, int pageSize, Long ownerId) {
+    public Page<ReservationDTO> getReservations(String addressOrName, LocalDate minDate, LocalDate maxDate,
+                                                ReservationStatus reservationStatus, int pageNo, int pageSize,
+                                                Long userId) {
 
-        List<Reservation> reservations = reservationRepository.findHostReservations(minDate, maxDate, reservationStatus,addressOrName, ownerId);
-        System.out.println(reservations.size());
+
+        List<Reservation> reservations;
+
+        if(ownerRepository.findOwnerById(userId).isPresent()) reservations = reservationRepository.findHostReservations(minDate, maxDate, reservationStatus, addressOrName, userId);
+        else if(guestRepository.findGuestById(userId).isPresent()) reservations = reservationRepository.findGuestReservations(minDate, maxDate, reservationStatus, addressOrName, userId);
+        else throw new NonExistingEntityException("User with this id doesn't exist");
+
         List<ReservationDTO> reservationsDTO = new ArrayList<>(reservations.stream().map(a -> {
             ReservationDTO r = new ReservationDTO();
+            r.setReservationId(a.getId());
             r.setPrice(a.getPrice());
             r.setStatus(a.getStatus());
             r.setReason(a.getReason());
             r.setReservationEndDate(a.getReservationEndDate());
             r.setReservationStartDate(a.getReservationStartDate());
             r.setAccommodationName(a.getAccommodation().getName());
+            r.setAccommodationId(a.getAccommodation().getId());
+            r.setUserEmail(a.getGuest().getEmail());
             return r;
         }).toList());
 
         return PageConverter.convertListToPage(pageNo, pageSize, reservationsDTO);
     }
+
+    public Page<ReservationDTO> getConflictReservations(Long accommodationId, Long reservationId, Owner owner, int pageNo, int pageSize) {
+
+        Optional<Accommodation> accommodationWrapper = accommodationRepository.findByIdAndOwnerId(accommodationId, owner.getId());
+        if(accommodationWrapper.isEmpty()) throw new InvalidAuthorizationException("You do not own this accommodation");
+
+        Optional<Reservation> reservationWrapper = reservationRepository.findByIdAndAccommodation(accommodationId, reservationId);
+        if(reservationWrapper.isEmpty()) throw new NonExistingEntityException("This reservation does not exist");
+        var reservation = reservationWrapper.get();
+//        if(!reservation.getStatus().equals(ReservationStatus.PENDING)) throw new InvalidAuthorizationException("Only pending reservations can be selected");
+
+        List<Reservation> conflictReservations = reservationRepository.findPendingConflictedReservations(accommodationId, reservationId);
+        System.out.println(conflictReservations.size());
+        List<ReservationDTO> reservationsDTO = new ArrayList<>(conflictReservations.stream().map(a -> {
+            ReservationDTO r = new ReservationDTO();
+            r.setReservationId(a.getId());
+            r.setPrice(a.getPrice());
+            r.setStatus(a.getStatus());
+            r.setReason(a.getReason());
+            r.setReservationEndDate(a.getReservationEndDate());
+            r.setReservationStartDate(a.getReservationStartDate());
+            r.setAccommodationName(a.getAccommodation().getName());
+            r.setAccommodationId(a.getAccommodation().getId());
+            r.setUserEmail(a.getGuest().getEmail());
+            return r;
+        }).toList());
+
+        return PageConverter.convertListToPage(pageNo, pageSize, reservationsDTO);
+    }
+
+    public ReservationDTO getReservationDetails(Long accommodationId, Long reservationId, Long userId) {
+
+
+        Reservation reservation = null;
+        var reservationWrapper = reservationRepository.findByIdAndAccommodation(accommodationId, reservationId);
+        if(reservationWrapper.isEmpty()) throw new NonExistingEntityException("Reservation with this id doesn't exist");
+        reservation = reservationWrapper.get();
+
+        if(ownerRepository.findOwnerById(userId).isPresent()) {
+            if(accommodationRepository.findByIdAndOwnerId(accommodationId, userId).isEmpty()) throw new InvalidAuthorizationException("You do not own this accommodation");
+        }
+        else if(guestRepository.findGuestById(userId).isPresent()) {
+            if(reservationRepository.findByIdAndGuest(reservationId, userId).isEmpty()) throw new InvalidAuthorizationException("You do not own this reservation");
+        }
+        else throw new NonExistingEntityException("User with this id doesn't exist");
+
+        List<Reservation> canceledReservations = reservationRepository.findGuestCanceledReservations(reservationId, userId);
+        List<Reservation> conflictReservations = reservationRepository.findPendingConflictedReservations(accommodationId, reservationId);
+        System.out.println(conflictReservations.size());
+
+        ReservationDTO reservationDTO = new ReservationDTO();
+        reservationDTO.setReservationId(reservation.getId());
+        reservationDTO.setAccommodationId(reservation.getAccommodation().getId());
+        reservationDTO.setAccommodationName(reservation.getAccommodation().getName());
+        reservationDTO.setAccommodationAddress(reservation.getAccommodation().getAddress());
+        reservationDTO.setReservationStartDate(reservation.getReservationStartDate());
+        reservationDTO.setReservationEndDate(reservation.getReservationEndDate());
+        reservationDTO.setGuestNum(reservation.getGuestNum());
+        reservationDTO.setUnitPrice(reservation.getUnitPrice());
+        reservationDTO.setPerGuest(reservation.getPerGuest());
+        reservationDTO.setPrice(reservation.getPrice());
+        reservationDTO.setStatus(reservation.getStatus());
+        reservationDTO.setConflictReservations(!conflictReservations.isEmpty());
+        reservationDTO.setReason(reservation.getReason());
+        reservationDTO.setNameAndSurname(reservation.getGuest().getFirstName() + " " + reservation.getGuest().getLastname());
+        reservationDTO.setUserEmail(reservation.getGuest().getEmail());
+        reservationDTO.setTimesUserCancel((long) canceledReservations.size());
+        return reservationDTO;
+
+    }
+
+
+
 
 }

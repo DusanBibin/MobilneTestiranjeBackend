@@ -219,4 +219,34 @@ public interface ApiService {
                                        @Query("reservationStatus") ReservationStatus reservationStatus,
                                        @Query("pageNo") int pageNo,
                                        @Query("pageSize") int pageSize);
+
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @GET("accommodations/{accommodationId}/reservations/{reservationId}")
+    Call<ResponseBody> getReservationDetails(@Path("accommodationId") Long accommodationId,
+                                             @Path("reservationId") Long reservationId);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @PUT(value = "accommodations/{accommodationId}/reservations/{reservationId}/{status}")
+    Call<ResponseBody> processReservation(@Path("accommodationId") Long accommodationId,
+                                          @Path("reservationId") Long reservationId,
+                                          @Path("status") ReservationStatus status,
+                                          @Body String reason);
+
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @GET("accommodations/{accommodationId}/reservations/{reservationId}/conflict-reservations")
+    Call<ResponseBody> getConflictReservations(@Path("accommodationId") Long accommodationId,
+                                               @Path("reservationId") Long reservationId,
+                                               @Query("pageNo") int pageNo,
+                                               @Query("pageSize") int pageSize);
 }

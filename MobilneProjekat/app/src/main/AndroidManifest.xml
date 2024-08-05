@@ -21,6 +21,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".activities.ReservationDetailsHostActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.AccommodationsDifferencesCompareActivity"
             android:exported="false" />
         <activity

@@ -71,6 +71,19 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     )
     List<Reservation> findPendingConflictedReservations(Long accommodationId, Long reservationId, LocalDate startDate, LocalDate endDate);
 
+
+    @Query("SELECT r2 FROM Reservation r1, Reservation r2 " +
+            "WHERE r1.status = 3 AND r2.status = 3"+
+            "AND r1.accommodation.id = :accommodationId AND r2.accommodation.id = :accommodationId " +
+            "AND r2.id != :reservationId AND r1.id = :reservationId " +
+            "AND ((" +
+            "   r2.reservationStartDate BETWEEN r1.reservationStartDate AND r1.reservationEndDate " +
+            "   OR r2.reservationEndDate BETWEEN r1.reservationStartDate AND r1.reservationEndDate " +
+            "   OR r2.reservationStartDate <= r1.reservationStartDate AND r2.reservationEndDate >= r1.reservationEndDate" +
+            "))"
+    )
+    List<Reservation> findPendingConflictedReservations(Long accommodationId, Long reservationId);
+
     @Query("SELECT r FROM Reservation r " +
             "WHERE r.id = :reservationId AND r.guest.id = :guestId")
     Optional<Reservation> findByIdAndGuest(Long reservationId, Long guestId);
@@ -101,4 +114,17 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             "(:addressOrName is null or ((lower(r.accommodation.address) like LOWER(CONCAT('%', :addressOrName, '%'))) or (lower(r.accommodation.name) like LOWER(CONCAT('%', :addressOrName, '%')))))")
     List<Reservation> findHostReservations(LocalDate minDate, LocalDate maxDate, ReservationStatus reservationStatus,String addressOrName, Long ownerId);
 
+
+
+    @Query("select distinct r from Reservation r where r.guest.id = :userId and " +
+            "(:minDate is null or r.reservationStartDate >= :minDate) and " +
+            "(:maxDate is null or r.reservationEndDate <= :maxDate) and " +
+            "(:reservationStatus is null or :reservationStatus = r.status) and " +
+            "(:addressOrName is null or ((lower(r.accommodation.address) like LOWER(CONCAT('%', :addressOrName, '%'))) or (lower(r.accommodation.name) like LOWER(CONCAT('%', :addressOrName, '%')))))")
+    List<Reservation> findGuestReservations(LocalDate minDate, LocalDate maxDate, ReservationStatus reservationStatus, String addressOrName, Long userId);
+
+
+
+    @Query("select r from Reservation r where r.id = :reservationId and r.guest.id = :userId and r.status = 0")
+    List<Reservation> findGuestCanceledReservations(Long reservationId, Long userId);
 }

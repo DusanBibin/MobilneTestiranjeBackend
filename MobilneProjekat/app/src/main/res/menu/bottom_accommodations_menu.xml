@@ -2,12 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/accommodationsHostTabFragment"
         android:title="Accommodations"
+        android:icon="@drawable/baseline_home_24"
         android:orderInCategory="100" />
     <!--            android:icon="@drawable/ic_product"-->
 
 
     <item android:id="@+id/accommodationRequestsTabFragment"
         android:title="Accommodation Requests"
+        android:icon="@drawable/baseline_arrow_downward_24"
         android:orderInCategory="200"/>
     <!--            android:icon="@drawable/ic_new"-->
 </menu>
