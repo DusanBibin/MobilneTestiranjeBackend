@@ -17,6 +17,10 @@ import java.util.List;
 @NoArgsConstructor
 public class AccommodationDTOResponse {
     private Long ownerId;
+
+    private String ownerNameAndSurname;
+    private String ownerEmail;
+
     private Long id;
     private String name;
 

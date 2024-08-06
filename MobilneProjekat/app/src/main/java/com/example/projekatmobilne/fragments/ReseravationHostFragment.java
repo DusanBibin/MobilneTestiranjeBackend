@@ -23,7 +23,7 @@ import com.example.projekatmobilne.adapters.AccommodationHostViewAdapter;
 import com.example.projekatmobilne.adapters.AccommodationSearchAdapter;
 import com.example.projekatmobilne.adapters.ReservationHostViewAdapter;
 import com.example.projekatmobilne.clients.ClientUtils;
-import com.example.projekatmobilne.databinding.FragmentReseravationHostBinding;
+import com.example.projekatmobilne.databinding.FragmentReservationsHostBinding;
 import com.example.projekatmobilne.model.Enum.ReservationStatus;
 import com.example.projekatmobilne.model.requestDTO.AvailabilityDTO;
 import com.example.projekatmobilne.model.requestDTO.ReservationDTO;
@@ -45,7 +45,7 @@ import retrofit2.Response;
 
 public class ReseravationHostFragment extends Fragment {
 
-    private FragmentReseravationHostBinding binding;
+    private FragmentReservationsHostBinding binding;
 
     private Integer currentPage = 0;
     private Boolean isLastPage = false;
@@ -67,7 +67,7 @@ public class ReseravationHostFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = FragmentReseravationHostBinding.inflate(inflater, container, false);
+        binding = FragmentReservationsHostBinding.inflate(inflater, container, false);
          return binding.getRoot();
     }
 
@@ -91,7 +91,7 @@ public class ReseravationHostFragment extends Fragment {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                ReservationHostDTOPagedResponse responseDTO = ResponseParser.parseResponse(response, ReservationHostDTOPagedResponse.class, false);
+                 ReservationHostDTOPagedResponse responseDTO = ResponseParser.parseResponse(response, ReservationHostDTOPagedResponse.class, false);
 
 
                 dataList.addAll(responseDTO.getContent());

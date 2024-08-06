@@ -3,16 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/reservations_host_navigation"
-    app:startDestination="@id/reservationsGuestTabFragment">
+    app:startDestination="@id/reservationHostFragment">
 
-    <fragment
-        android:id="@+id/reservationsGuestTabFragment"
-        android:name="com.example.projekatmobilne.fragments.guest.reservations.tabs.ReservationsGuestTabFragment"
-        android:label="fragment_reservations_guest_tab"
-        tools:layout="@layout/fragment_reservations_guest_tab" />
     <fragment
         android:id="@+id/favoritesTabFragment"
         android:name="com.example.projekatmobilne.fragments.guest.reservations.tabs.FavoritesTabFragment"
         android:label="fragment_favorites_tab"
         tools:layout="@layout/fragment_favorites_tab" />
+    <fragment
+        android:id="@+id/reservationHostFragment"
+        android:name="com.example.projekatmobilne.fragments.ReseravationHostFragment"
+        android:label="ReseravationHostFragment" />
 </navigation>

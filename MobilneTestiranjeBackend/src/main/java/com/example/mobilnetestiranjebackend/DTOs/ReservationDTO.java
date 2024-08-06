@@ -38,6 +38,13 @@ public class ReservationDTO {
     private String accommodationAddress;
     private Long unitPrice;
     private Boolean perGuest;
+
+    private Long ownerId;
+    private String ownerNameAndSurname;
+    private String ownerEmail;
+
+
+    private Long guestId;
     private String nameAndSurname;
     private String userEmail;
     private Long timesUserCancel;

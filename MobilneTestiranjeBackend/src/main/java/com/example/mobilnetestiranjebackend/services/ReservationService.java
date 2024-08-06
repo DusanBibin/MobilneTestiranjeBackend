@@ -232,9 +232,13 @@ public class ReservationService {
         List<Reservation> canceledReservations = reservationRepository.findGuestCanceledReservations(reservationId, userId);
         List<Reservation> conflictReservations = reservationRepository.findPendingConflictedReservations(accommodationId, reservationId);
         System.out.println(conflictReservations.size());
+        Owner owner = reservation.getAccommodation().getOwner();
 
         ReservationDTO reservationDTO = new ReservationDTO();
         reservationDTO.setReservationId(reservation.getId());
+        reservationDTO.setOwnerId(owner.getId());
+        reservationDTO.setOwnerNameAndSurname(owner.getFirstName() + " " + owner.getLastname());
+        reservationDTO.setOwnerEmail(owner.getEmail());
         reservationDTO.setAccommodationId(reservation.getAccommodation().getId());
         reservationDTO.setAccommodationName(reservation.getAccommodation().getName());
         reservationDTO.setAccommodationAddress(reservation.getAccommodation().getAddress());
@@ -248,6 +252,7 @@ public class ReservationService {
         reservationDTO.setStatus(reservation.getStatus());
         reservationDTO.setConflictReservations(!conflictReservations.isEmpty());
         reservationDTO.setReason(reservation.getReason());
+        reservationDTO.setGuestId(reservation.getGuest().getId());
         reservationDTO.setNameAndSurname(reservation.getGuest().getFirstName() + " " + reservation.getGuest().getLastname());
         reservationDTO.setUserEmail(reservation.getGuest().getEmail());
         reservationDTO.setTimesUserCancel((long) canceledReservations.size());

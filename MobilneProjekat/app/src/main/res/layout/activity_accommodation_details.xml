@@ -109,15 +109,40 @@
                             android:layout_height="wrap_content"
                             android:text="Type" />
 
+                        <TextView
+                            android:id="@+id/txtOwner"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="20sp"
+                            android:layout_marginTop="10dp"
+                            android:text="Owner"/>
+                        <TextView
+                            android:id="@+id/txtOwnerNameAndSurname"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Name: " />
+                        <TextView
+                            android:id="@+id/txtOwnerEmail"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Email: " />
+
                         <com.google.android.material.switchmaterial.SwitchMaterial
                             android:id="@+id/toggleBtnAutoAccept"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="15sp"
+
                             android:text="Auto accept reservation"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"/>
+
+                        <TextView
+                            android:id="@+id/txtAutoAcceptMessage"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Auto accept only affects newly received reservation requests, not already received requests"
+                            android:textSize="10sp" />
 
                     </LinearLayout>
 

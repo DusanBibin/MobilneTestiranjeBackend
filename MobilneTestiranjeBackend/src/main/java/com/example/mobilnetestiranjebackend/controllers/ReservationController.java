@@ -162,7 +162,7 @@ public class ReservationController {
     }
 
 
-    @PreAuthorize("hasAuthority('OWNER')")
+    @PreAuthorize("hasAuthority('OWNER') or hasAuthority('GUEST')")
     @GetMapping("/reservations")
     public ResponseEntity<?> getReservations(@RequestParam(required = false) String addressOrName,
                                                      @RequestParam(required = false) LocalDate minDate,

@@ -294,7 +294,6 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
                 accommodation.setMinGuests(Long.valueOf(binding.inputEditTextMinGuests.getText().toString()));
                 accommodation.setMaxGuests(Long.valueOf(binding.inputEditTextMaxGuests.getText().toString()));
                 accommodation.setAccommodationType(accommodationType);
-                accommodation.setAutoAcceptEnabled(binding.checkBoxAutoAccept.isChecked());
                 accommodation.setAvailabilityList(availabilitiesAdapter.getEditList());
                 accommodation.setImagesToDelete(imagesAddAdapter.getImagesToDelete());
 
@@ -379,7 +378,8 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
                         if(amenity.equals(Amenity.POOL)) binding.checkBoxPool.setChecked(true);
                         if(amenity.equals(Amenity.WIFI)) binding.checkBoxWifi.setChecked(true);
                     }
-                    binding.checkBoxAutoAccept.setChecked(accommodationDTO.getAutoAcceptEnabled());
+
+
                     binding.searchView.setQuery(accommodationDTO.getAddress(), false);
                     binding.txtAddress.setText(accommodationDTO.getAddress());
                     LatLng location = new LatLng(accommodationDTO.getLat(), accommodationDTO.getLon());

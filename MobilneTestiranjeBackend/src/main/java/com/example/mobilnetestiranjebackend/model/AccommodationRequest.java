@@ -33,8 +33,6 @@ public class AccommodationRequest {
 
     private AccommodationType accommodationType;
 
-    private Boolean autoAcceptEnabled;
-
     @ElementCollection
     private List<Amenity> amenities;
 

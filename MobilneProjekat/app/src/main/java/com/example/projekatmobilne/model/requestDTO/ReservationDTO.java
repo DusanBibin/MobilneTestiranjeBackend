@@ -7,7 +7,6 @@ import java.time.LocalDate;
 
 public class ReservationDTO {
 
-
     private String accommodationName;
     private String accommodationAddress;
     private LocalDate reservationStartDate;
@@ -19,6 +18,12 @@ public class ReservationDTO {
     private Long price;
     private ReservationStatus status;
     private String reason;
+
+    private Long ownerId;
+    private String ownerNameAndSurname;
+    private String ownerEmail;
+
+    private Long guestId;
     private String nameAndSurname;
     private String userEmail;
     private Long timesUserCancel;
@@ -38,7 +43,8 @@ public class ReservationDTO {
     public ReservationDTO(Long reservationId, Long availabilityId, LocalDate reservationStartDate,
                           LocalDate reservationEndDate, Long guestNum, ReservationStatus status,
                           String reason, String accommodationName, String accommodationAddress,
-                          Long unitPrice, Boolean perGuest, String nameAndSurname, String userEmail,
+                          Long unitPrice, Boolean perGuest,Long ownerId, String ownerNameAndSurname,
+                          String ownerEmail, Long guestId, String nameAndSurname, String userEmail,
                           Long timesUserCancel, Long accommodationId, Boolean conflictReservations,
                           LocalDate cancelDeadline) {
         this.availabilityId = availabilityId;
@@ -52,6 +58,12 @@ public class ReservationDTO {
         this.accommodationAddress = accommodationAddress;
         this.unitPrice = unitPrice;
         this.perGuest = perGuest;
+
+        this.ownerId = ownerId;
+        this.ownerNameAndSurname = ownerNameAndSurname;
+        this.ownerEmail = ownerEmail;
+
+        this.guestId = guestId;
         this.nameAndSurname = nameAndSurname;
         this.userEmail = userEmail;
         this.timesUserCancel = timesUserCancel;
@@ -202,6 +214,38 @@ public class ReservationDTO {
         this.cancelDeadline = cancelDeadline;
     }
 
+    public Long getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(Long ownerId) {
+        this.ownerId = ownerId;
+    }
+
+    public String getOwnerNameAndSurname() {
+        return ownerNameAndSurname;
+    }
+
+    public void setOwnerNameAndSurname(String ownerNameAndSurname) {
+        this.ownerNameAndSurname = ownerNameAndSurname;
+    }
+
+    public String getOwnerEmail() {
+        return ownerEmail;
+    }
+
+    public void setOwnerEmail(String ownerEmail) {
+        this.ownerEmail = ownerEmail;
+    }
+
+    public Long getGuestId() {
+        return guestId;
+    }
+
+    public void setGuestId(Long guestId) {
+        this.guestId = guestId;
+    }
+
     @Override
     public String toString() {
         return "ReservationDTO{" +
@@ -216,6 +260,10 @@ public class ReservationDTO {
                 ", price=" + price +
                 ", status=" + status +
                 ", reason='" + reason + '\'' +
+                ", ownerId=" + ownerId +
+                ", ownerNameAndSurname='" + ownerNameAndSurname + '\'' +
+                ", ownerEmail='" + ownerEmail + '\'' +
+                ", guestId=" + guestId +
                 ", nameAndSurname='" + nameAndSurname + '\'' +
                 ", userEmail='" + userEmail + '\'' +
                 ", timesUserCancel=" + timesUserCancel +

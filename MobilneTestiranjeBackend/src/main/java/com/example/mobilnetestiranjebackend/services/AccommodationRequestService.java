@@ -112,7 +112,6 @@ public class AccommodationRequestService {
                 .minGuests(accommodationDTO.getMinGuests())
                 .maxGuests(accommodationDTO.getMaxGuests())
                 .accommodationType(accommodationDTO.getAccommodationType())
-                .autoAcceptEnabled(accommodationDTO.getAutoAcceptEnabled())
                 .availabilityRequests(new ArrayList<AvailabilityRequest>())
                 .owner(owner)
                 .status(RequestStatus.PENDING)
@@ -264,7 +263,6 @@ public class AccommodationRequestService {
                 .minGuests(accommodationDTO.getMinGuests())
                 .maxGuests(accommodationDTO.getMaxGuests())
                 .accommodationType(accommodationDTO.getAccommodationType())
-                .autoAcceptEnabled(accommodationDTO.getAutoAcceptEnabled())
                 .availabilityRequests(new ArrayList<AvailabilityRequest>())
                 .owner(owner)
                 .accommodation(accommodation)
@@ -449,8 +447,7 @@ public class AccommodationRequestService {
                     .minGuests(accommodationRequest.getMinGuests())
                     .maxGuests(accommodationRequest.getMaxGuests())
                     .accommodationType(accommodationRequest.getAccommodationType())
-                    .autoAcceptEnabled(accommodationRequest.getAutoAcceptEnabled())
-
+                    .autoAcceptEnabled(false)
                     .availabilityList(new ArrayList<>())
 
                     .owner(accommodationRequest.getOwner())
@@ -529,7 +526,6 @@ public class AccommodationRequestService {
             accommodation.setMinGuests(accommodationRequest.getMinGuests());
             accommodation.setMaxGuests(accommodationRequest.getMaxGuests());
             accommodation.setAccommodationType(accommodationRequest.getAccommodationType());
-            accommodation.setAutoAcceptEnabled(accommodationRequest.getAutoAcceptEnabled());
 
 
 
@@ -737,7 +733,6 @@ public class AccommodationRequestService {
         requestDTONew.setLat(request.getLat());
         requestDTONew.setLon(request.getLon());
         requestDTONew.setAccommodationType(request.getAccommodationType());
-        requestDTONew.setAutoAcceptEnabled(request.getAutoAcceptEnabled());
         requestDTONew.setMinGuests(request.getMinGuests());
         requestDTONew.setMaxGuests(request.getMaxGuests());
 

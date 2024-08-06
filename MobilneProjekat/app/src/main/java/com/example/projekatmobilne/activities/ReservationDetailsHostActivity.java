@@ -6,26 +6,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.projekatmobilne.R;
-import com.example.projekatmobilne.adapters.AccommodationRequestPreviewAdapter;
 import com.example.projekatmobilne.adapters.ReservationHostViewAdapter;
 import com.example.projekatmobilne.clients.ClientUtils;
-import com.example.projekatmobilne.databinding.ActivityAccommodationDetailsBinding;
 import com.example.projekatmobilne.databinding.ActivityReservationDetailsHostBinding;
 import com.example.projekatmobilne.model.Enum.ReservationStatus;
+import com.example.projekatmobilne.model.Enum.Role;
 import com.example.projekatmobilne.model.requestDTO.ReservationDTO;
-import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.AccommodationRequestPreviewDTOPagedResponse;
 import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.ReservationHostDTOPagedResponse;
+import com.example.projekatmobilne.tools.JWTManager;
 import com.example.projekatmobilne.tools.ResponseParser;
 
 import java.util.ArrayList;
@@ -95,7 +89,7 @@ public class ReservationDetailsHostActivity extends AppCompatActivity {
                         }
 
                         binding.progressBarButton.setVisibility(View.GONE);
-                        reloadPage();
+                        loadReservationDetails();
                     }
 
                     @Override
@@ -132,7 +126,7 @@ public class ReservationDetailsHostActivity extends AppCompatActivity {
                         }
 
                         binding.progressBarButton.setVisibility(View.GONE);
-                        reloadPage();
+                        loadReservationDetails();
                     }
 
                     @Override
@@ -147,12 +141,6 @@ public class ReservationDetailsHostActivity extends AppCompatActivity {
 
 
 
-
-
-
-
-
-
         binding.recyclerViewReservationConflicts.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -161,7 +149,7 @@ public class ReservationDetailsHostActivity extends AppCompatActivity {
                 LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
                 if (!isLastPage && layoutManager != null && layoutManager.findLastCompletelyVisibleItemPosition() == adapter.getItemCount() - 1) {
                     currentPage++;
-                    loadPage();
+                    loadConflictedReservationsPage();
                 }
             }
         });
@@ -171,11 +159,11 @@ public class ReservationDetailsHostActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        reloadPage();
+        loadReservationDetails();
 
     }
 
-    private void reloadPage(){
+    private void loadReservationDetails(){
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ReservationDetailsHostActivity.this);
         binding.recyclerViewReservationConflicts.setLayoutManager(linearLayoutManager);
 
@@ -207,14 +195,16 @@ public class ReservationDetailsHostActivity extends AppCompatActivity {
                     binding.txtTotalPrice.setText("Total price: " + r.getPrice());
                     binding.txtStatus.setText("Reservation status: " + r.getStatus());
                     binding.txtRejectReason.setText("Reject reason: " + r.getReason());
-                    binding.txtNameSurname.setText("Guest name and surname: " + r.getNameAndSurname());
-                    binding.txtEmail.setText("Guest email: " + r.getUserEmail());
+                    binding.txtOwnerNameSurname.setText("Name and surname: " + r.getOwnerNameAndSurname());
+                    binding.txtOwnerEmail.setText("Email: " + r.getOwnerEmail());
+                    binding.txtNameSurname.setText("Name and surname: " + r.getNameAndSurname());
+                    binding.txtEmail.setText("Email: " + r.getUserEmail());
                     binding.txtTimeCanceled.setText("Times user canceled past reservations: " + r.getTimesUserCancel());
                     if(r.getStatus().equals(ReservationStatus.DECLINED)) binding.txtRejectReason.setVisibility(View.VISIBLE);
-                    if(!r.getStatus().equals(ReservationStatus.PENDING)) binding.linearLayoutButtons.setVisibility(View.GONE);
-                    if(r.getConflictReservations()) {
+                    if(!(r.getStatus().equals(ReservationStatus.PENDING) && JWTManager.getRoleEnum().equals(Role.OWNER))) binding.linearLayoutButtons.setVisibility(View.GONE);
+                    if(r.getConflictReservations() && JWTManager.getUserIdLong().equals(r.getOwnerId())) {
                         binding.linearLayoutConflictReservations.setVisibility(View.VISIBLE);
-                        loadPage();
+                        loadConflictedReservationsPage();
                     }
                 }
             }
@@ -227,22 +217,31 @@ public class ReservationDetailsHostActivity extends AppCompatActivity {
         });
     }
 
-    private void loadPage() {
+    private void loadConflictedReservationsPage() {
         binding.recyclerViewReservationConflicts.setVisibility(View.GONE);
         binding.progressBarConflictReservations.setVisibility(View.VISIBLE);
         Call<ResponseBody> call = ClientUtils.apiService.getConflictReservations(accommodationId, reservationId, currentPage, 10);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                ReservationHostDTOPagedResponse responseDTO = ResponseParser.parseResponse(response, ReservationHostDTOPagedResponse.class, false);
+
+                if(response.code() == 200){
+                    ReservationHostDTOPagedResponse responseDTO = ResponseParser.parseResponse(response, ReservationHostDTOPagedResponse.class, false);
 
 
-                System.out.println("IKSDEBRO");
-                System.out.println(responseDTO.getContent().size());
-                adapter.addMoreData(responseDTO.getContent());
-                isLastPage = responseDTO.isLast();
-                binding.recyclerViewReservationConflicts.setVisibility(View.VISIBLE);
-                binding.progressBarConflictReservations.setVisibility(View.GONE);
+                    System.out.println("IKSDEBRO");
+                    System.out.println(responseDTO.getContent().size());
+                    adapter.addMoreData(responseDTO.getContent());
+                    isLastPage = responseDTO.isLast();
+                    binding.recyclerViewReservationConflicts.setVisibility(View.VISIBLE);
+                    binding.progressBarConflictReservations.setVisibility(View.GONE);
+                }
+
+                if(response.code() == 400){
+                    Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
+                    if(map.containsKey("message")) Toast.makeText(ReservationDetailsHostActivity.this, map.get("message"), Toast.LENGTH_SHORT).show();
+                }
+
             }
 
             @Override

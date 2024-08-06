@@ -24,7 +24,7 @@
         android:id="@+id/nav_reservations_host"
         android:name="com.example.projekatmobilne.fragments.ReseravationHostFragment"
         android:label="fragment_reseravation_host"
-        tools:layout="@layout/fragment_reseravation_host" />
+        tools:layout="@layout/fragment_reservations_host" />
     <fragment
         android:id="@+id/nav_accommodations_host"
         android:name="com.example.projekatmobilne.fragments.host.requests.AccommodationsHostFragment"

@@ -9,6 +9,9 @@ import com.example.projekatmobilne.model.responseDTO.innerDTO.ReservationDTOInne
 import java.util.List;
 
 public class AccommodationDTOResponse {
+    private String ownerNameAndSurname;
+    private String ownerEmail;
+
     private Long ownerId;
 
     private String name;
@@ -43,7 +46,7 @@ public class AccommodationDTOResponse {
                                     List<AvailabilityDTO> availabilityList,
                                     List<Long> imagePaths,
                                     List<ReservationDTOInner> futureReservations,
-                                    Long ownerId) {
+                                    Long ownerId, String ownerEmail, String ownerNameAndSurname) {
         this.name = name;
         this.description = description;
         this.address = address;
@@ -58,6 +61,8 @@ public class AccommodationDTOResponse {
         this.imageIds = imagePaths;
         this.futureReservations = futureReservations;
         this.ownerId = ownerId;
+        this.ownerEmail = ownerEmail;
+        this.ownerNameAndSurname = ownerNameAndSurname;
     }
 
     public List<ReservationDTOInner> getFutureReservations() {
@@ -172,10 +177,28 @@ public class AccommodationDTOResponse {
         this.ownerId = ownerId;
     }
 
+    public String getOwnerNameAndSurname() {
+        return ownerNameAndSurname;
+    }
+
+    public void setOwnerNameAndSurname(String ownerNameAndSurname) {
+        this.ownerNameAndSurname = ownerNameAndSurname;
+    }
+
+    public String getOwnerEmail() {
+        return ownerEmail;
+    }
+
+    public void setOwnerEmail(String ownerEmail) {
+        this.ownerEmail = ownerEmail;
+    }
+
     @Override
     public String toString() {
         return "AccommodationDTOResponse{" +
-                "ownerId=" + ownerId +
+                "ownerNameAndSurname='" + ownerNameAndSurname + '\'' +
+                ", ownerEmail='" + ownerEmail + '\'' +
+                ", ownerId=" + ownerId +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", address='" + address + '\'' +

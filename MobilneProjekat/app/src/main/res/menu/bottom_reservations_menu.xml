@@ -9,5 +9,5 @@
     <item
         android:title="Reservations"
         android:icon="@drawable/baseline_home_24"
-        android:id="@+id/reservationsGuestTabFragment"/>
+        android:id="@+id/reservationHostFragment"/>
 </menu>

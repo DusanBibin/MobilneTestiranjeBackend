@@ -60,9 +60,11 @@ public class AccommodationController {
             Long imageId = Long.parseLong(String.valueOf(fileName.charAt(0)));
             imageIds.add(imageId);
         }
-
+        Owner owner = accommodation.getOwner();
         var accommodationDTO = AccommodationDTOResponse.builder()
-                .ownerId(accommodation.getOwner().getId())
+                .ownerId(owner.getId())
+                .ownerEmail(owner.getEmail())
+                .ownerNameAndSurname(owner.getFirstName() + " " + owner.getLastname())
                 .id(accommodation.getId())
                 .name(accommodation.getName())
                 .description(accommodation.getDescription())

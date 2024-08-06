@@ -132,6 +132,23 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="Reject reason: " />
+                            <TextView
+                                android:id="@+id/txtOwnerInfo"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="15dp"
+                                android:textSize="19sp"
+                                android:text="Host"/>
+                            <TextView
+                                android:id="@+id/txtOwnerNameSurname"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Name: " />
+                            <TextView
+                                android:id="@+id/txtOwnerEmail"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Email: " />
 
                             <Button
                                 android:id="@+id/btnAccommodationRedirect"
@@ -145,7 +162,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="15dp"
                                 android:textSize="19sp"
-                                android:text="User"/>
+                                android:text="Guest"/>
                             <TextView
                                 android:id="@+id/txtNameSurname"
                                 android:layout_width="match_parent"

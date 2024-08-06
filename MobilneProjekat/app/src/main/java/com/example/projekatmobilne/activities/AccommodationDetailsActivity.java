@@ -53,7 +53,8 @@ import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
 
-
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -75,6 +76,7 @@ import retrofit2.Response;
 
 public class AccommodationDetailsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
+    private int imagePosition = 1;
     private Toolbar toolbar;
     private ActivityAccommodationDetailsBinding binding;
     private LocalDate dateStart, dateEnd;
@@ -115,6 +117,7 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
         binding.txtNoRatings.setVisibility(View.GONE);
         binding.btnEdit.setVisibility(View.GONE);
         binding.toggleBtnAutoAccept.setVisibility(View.GONE);
+        binding.txtAutoAcceptMessage.setVisibility(View.GONE);
         binding.linearLayoutCreateReservation.setVisibility(View.GONE);
 
 
@@ -232,9 +235,12 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
+                imagePosition = position;
                 binding.txtImagesNumber.setText((position + 1) + "/" + imageList.size());
             }
         });
+
+
 
 
         binding.scrollViewAccommodationDetails.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
@@ -284,14 +290,12 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
 
 
                         binding.toggleBtnAutoAccept.setVisibility(View.VISIBLE);
+                        binding.txtAutoAcceptMessage.setVisibility(View.VISIBLE);
                         binding.toggleBtnAutoAccept.setChecked(accommodationDTO.getAutoAcceptEnabled());
 
                         binding.toggleBtnAutoAccept.setOnCheckedChangeListener(new SwitchMaterial.OnCheckedChangeListener() {
                             @Override
                             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                if (isChecked) {
-                                } else {
-                                }
 
                                 Call<ResponseBody> call = ClientUtils.apiService.toggleAutoAccept(accommodationId, isChecked);
                                 call.enqueue(new Callback<ResponseBody>() {
@@ -447,8 +451,22 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
                             Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
 
                             synchronized(imageList) {
-                                imageList.add(bitmap);
-                                imageAdapter.notifyItemInserted(imageList.size() - 1);
+
+                                String contentDisposition = response.headers().get("Content-Disposition");
+                                String filename = null;
+                                if (contentDisposition != null && contentDisposition.contains("filename=")) {
+                                    filename = contentDisposition.split("filename=")[1].replace(";", "").replace("\"", "");
+                                }
+                                System.out.println(filename);;
+                                File cacheDir = getApplicationContext().getCacheDir();
+                                File tempFile = new File(cacheDir, filename);
+                                FileOutputStream fos = new FileOutputStream(tempFile);
+                                fos.write(imageBytes);
+                                fos.close();
+
+
+                                imageAdapter.addImage(bitmap, tempFile);
+
 
                                 if(accommodationDTO.getImageIds().size() == imageList.size()){
                                     runOnUiThread(() -> {
@@ -481,6 +499,9 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
         binding.txtName.setText(accommodationDTO.getName());
         binding.txtAddressDetails.setText(accommodationDTO.getAddress());
         binding.txtDescription.setText(accommodationDTO.getDescription());
+
+        binding.txtOwnerEmail.setText("Email: " + accommodationDTO.getOwnerEmail());
+        binding.txtOwnerNameAndSurname.setText("Name: " + accommodationDTO.getOwnerNameAndSurname());
 
         StringBuilder amenities = new StringBuilder("Amenities: ");
         if(accommodationDTO.getAmenities().isEmpty()) amenities.append(" None");
