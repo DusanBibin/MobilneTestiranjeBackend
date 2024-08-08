@@ -22,6 +22,7 @@ import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.Reservati
 import com.example.projekatmobilne.tools.JWTManager;
 import com.example.projekatmobilne.tools.ResponseParser;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -101,6 +102,38 @@ public class ReservationDetailsHostActivity extends AppCompatActivity {
             }
         });
 
+        binding.btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                binding.btnCancel.setVisibility(View.GONE);
+                binding.progressBarButton.setVisibility(View.VISIBLE);
+
+                Call<ResponseBody> call = ClientUtils.apiService.cancelReservation(accommodationId, reservationId);
+                call.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if(response.code() == 200){
+                            String responseMessage = ResponseParser.parseResponse(response, String.class, false);
+                            Toast.makeText(ReservationDetailsHostActivity.this, responseMessage, Toast.LENGTH_SHORT).show();
+                        }
+
+                        if(response.code() == 400){
+                            Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
+                            if(map.containsKey("message")) Toast.makeText(ReservationDetailsHostActivity.this, map.get("message"), Toast.LENGTH_SHORT).show();
+                            binding.btnCancel.setVisibility(View.VISIBLE);
+                        }
+
+                        binding.progressBarButton.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        Toast.makeText(ReservationDetailsHostActivity.this, "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                        t.printStackTrace();
+                    }
+                });
+            }
+        });
 
         binding.btnReject.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -125,8 +158,52 @@ public class ReservationDetailsHostActivity extends AppCompatActivity {
                             Toast.makeText(ReservationDetailsHostActivity.this, responseMessage, Toast.LENGTH_SHORT).show();
                         }
 
+                        if(response.code() == 400){
+                            Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
+                            if(map.containsKey("message")) Toast.makeText(ReservationDetailsHostActivity.this, map.get("message"), Toast.LENGTH_SHORT).show();
+                        }
+
                         binding.progressBarButton.setVisibility(View.GONE);
                         loadReservationDetails();
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        Toast.makeText(ReservationDetailsHostActivity.this, "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                        t.printStackTrace();
+                    }
+                });
+
+            }
+        });
+
+
+        binding.btnDelete.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+
+                binding.btnDelete.setVisibility(View.GONE);
+                binding.progressBarButton.setVisibility(View.VISIBLE);
+
+                Call<ResponseBody> call = ClientUtils.apiService.deleteReservation(accommodationId, reservationId);
+                call.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if(response.code() == 200){
+                            String responseMessage = ResponseParser.parseResponse(response, String.class, false);
+                            Toast.makeText(ReservationDetailsHostActivity.this, responseMessage, Toast.LENGTH_SHORT).show();
+
+
+                            finish();
+                        }
+
+                        if(response.code() == 400){
+                            Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
+                            if(map.containsKey("message")) Toast.makeText(ReservationDetailsHostActivity.this, map.get("message"), Toast.LENGTH_SHORT).show();
+                            binding.btnCancel.setVisibility(View.VISIBLE);
+                        }
+
+                        binding.progressBarButton.setVisibility(View.GONE);
                     }
 
                     @Override
@@ -202,6 +279,11 @@ public class ReservationDetailsHostActivity extends AppCompatActivity {
                     binding.txtTimeCanceled.setText("Times user canceled past reservations: " + r.getTimesUserCancel());
                     if(r.getStatus().equals(ReservationStatus.DECLINED)) binding.txtRejectReason.setVisibility(View.VISIBLE);
                     if(!(r.getStatus().equals(ReservationStatus.PENDING) && JWTManager.getRoleEnum().equals(Role.OWNER))) binding.linearLayoutButtons.setVisibility(View.GONE);
+                    if(!(r.getStatus().equals(ReservationStatus.ACCEPTED) &&
+                            JWTManager.getRoleEnum().equals(Role.GUEST) && LocalDate.now().isBefore(r.getCancelDeadline())))
+                        binding.btnCancel.setVisibility(View.GONE);
+                    if(!(r.getStatus().equals(ReservationStatus.PENDING) && JWTManager.getRoleEnum().equals(Role.GUEST)))
+                        binding.btnDelete.setVisibility(View.GONE);
                     if(r.getConflictReservations() && JWTManager.getUserIdLong().equals(r.getOwnerId())) {
                         binding.linearLayoutConflictReservations.setVisibility(View.VISIBLE);
                         loadConflictedReservationsPage();

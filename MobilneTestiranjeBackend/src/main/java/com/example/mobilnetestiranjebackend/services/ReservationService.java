@@ -142,11 +142,13 @@ public class ReservationService {
         return !reservationsNotEnded.isEmpty();
     }
 
-    public void deletePendingReservation(Guest guest, Long reservationId) {
+    public void deletePendingReservation(Long accommodationId, Long reservationId, Long guestId) {
+
+
         var reservationWrapper = reservationRepository.findById(reservationId);
         if(reservationWrapper.isEmpty()) throw new NonExistingEntityException("Reservation with this id doesn't exist");
 
-        reservationWrapper = reservationRepository.findByIdAndGuest(reservationId, guest.getId());
+        reservationWrapper = reservationRepository.findByIdAndGuest(reservationId, guestId);
         if(reservationWrapper.isEmpty()) throw new InvalidAuthorizationException("You do not own this reservation");
         var reservation = reservationWrapper.get();
 

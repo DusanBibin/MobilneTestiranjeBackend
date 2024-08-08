@@ -137,12 +137,13 @@ public class ReservationController {
         if(reservationWrapper.isEmpty()) throw new NonExistingEntityException("Reservation with this id doesn't exist");
         Reservation reservation = reservationWrapper.get();
 
-        if(!reservation.getStatus().equals(ReservationStatus.ACCEPTED))
-            throw new InvalidEnumValueException("You can only cancel an accepted request reservation");
+
 
         if(!reservation.getGuest().getId().equals(guest.getId()))
             throw new InvalidAuthorizationException("You don't own this reservation");
 
+        if(!reservation.getStatus().equals(ReservationStatus.ACCEPTED))
+            throw new InvalidEnumValueException("You can only cancel an accepted request reservation");
 
         if(LocalDate.now().isBefore(reservation.getCancelDeadline()))
             reservationService.cancelReservation(reservation);
@@ -154,10 +155,11 @@ public class ReservationController {
 
 
     @PreAuthorize("hasAuthority('GUEST')")
-    @DeleteMapping("/{reservationId}")
+    @DeleteMapping("/{accommodationId}/reservation/{reservationId}")
     public ResponseEntity<?> deletePendingReservationRequest(@AuthenticationPrincipal Guest guest,
+                                                             @PathVariable("accommodationId") Long accommodationId,
                                                              @PathVariable("reservationId") Long reservationId){
-        reservationService.deletePendingReservation(guest, reservationId);
+        reservationService.deletePendingReservation(accommodationId, reservationId, guest.getId());
         return ResponseEntity.ok().body("Pending request successfully deleted");
     }
 

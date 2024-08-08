@@ -41,10 +41,12 @@ public class AccommodationController {
     private final UserRepository userRepository;
     private final AdminRepository adminRepository;
     private final AccommodationRequestRepository accommodationRequestRepository;
+    private final AccommodationRepository accommodationRepository;
 
 
     @GetMapping(path = "/{accommodationId}")
-    public ResponseEntity<?> getAccommodation(@PathVariable("accommodationId") Long accommodationId){
+    public ResponseEntity<?> getAccommodation(@PathVariable("accommodationId") Long accommodationId,
+                                              @AuthenticationPrincipal User user){
 
         var accommodationWrapper = accommodationService.findAccommodationById(accommodationId);
         if(accommodationWrapper.isEmpty()) throw new NonExistingEntityException("Accommodation with this id does not exist");
@@ -60,6 +62,16 @@ public class AccommodationController {
             Long imageId = Long.parseLong(String.valueOf(fileName.charAt(0)));
             imageIds.add(imageId);
         }
+
+        System.out.println("PROVERAA OVDEEE");
+
+        System.out.println(user instanceof Guest);
+        Boolean favorite = null;
+        if(user instanceof Guest) {
+            Optional<Accommodation> favoriteWrapper = accommodationRepository.findFavoritesByAccommodationIdAndGuestId(accommodationId, user.getId());
+            favorite = favoriteWrapper.isPresent();
+        }
+
         Owner owner = accommodation.getOwner();
         var accommodationDTO = AccommodationDTOResponse.builder()
                 .ownerId(owner.getId())
@@ -78,6 +90,7 @@ public class AccommodationController {
                 .autoAcceptEnabled(accommodation.getAutoAcceptEnabled())
                 .availabilityList(new ArrayList<>())
                 .futureReservations(new ArrayList<>())
+                .favorite(favorite)
                 .imageIds(imageIds)
                 .build();
 
@@ -163,14 +176,6 @@ public class AccommodationController {
         return new ResponseEntity<>(imageBytes, headers, 200);
     }
 
-
-
-
-
-
-
-
-
     @GetMapping("")
     public ResponseEntity<?> getAccommodationsSearch(@RequestParam(defaultValue = "1") Long guestNum, @RequestParam @NotBlank(message = "Address must be present") String address,
                                                      @RequestParam @FutureOrPresent(message = "Start date must be in the future") LocalDate startDate,
@@ -226,6 +231,17 @@ public class AccommodationController {
         accommodationService.removeFromFavorites(accommodationId, guest.getId());
 
         return new ResponseEntity<>(("Successfully removed accommodation from favorites"), HttpStatus.OK);
+    }
+
+
+    @PreAuthorize("hasAuthority('GUEST')")
+    @GetMapping(path = "/favorites")
+    public ResponseEntity<?> getFavorites(@AuthenticationPrincipal Guest guest,
+                                          @RequestParam(defaultValue = "0") int pageNo,
+                                          @RequestParam(defaultValue = "10") int pageSize){
+        Page<AccommodationViewDTO> favorites = accommodationService.getFavorites(guest.getId(), pageNo, pageSize);
+
+        return ResponseEntity.ok().body(favorites);
     }
 
     @PreAuthorize("hasAuthority('OWNER')")

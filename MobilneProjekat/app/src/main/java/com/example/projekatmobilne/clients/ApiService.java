@@ -23,6 +23,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -257,5 +258,50 @@ public interface ApiService {
     @PUT("accommodations/{accommodationId}/reservation-auto-accept/{status}")
     Call<ResponseBody> toggleAutoAccept(@Path("accommodationId") Long accommodationId,
                                         @Path("status") Boolean status);
+
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @PUT("accommodations/{accommodationId}/reservation/{reservationId}/cancel")
+    Call<ResponseBody> cancelReservation(@Path("accommodationId") Long accommodationId,
+                                         @Path("reservationId") Long reservationId);
+
+
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @DELETE("accommodations/{accommodationId}/reservation/{reservationId}")
+    Call<ResponseBody> deleteReservation(@Path("accommodationId") Long accommodationId,
+                                         @Path("reservationId") Long reservationId);
+
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @PUT("accommodations/{accommodationId}/add-favorites")
+    Call<ResponseBody> addFavorites(@Path("accommodationId") Long accommodationId);
+
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @PUT("accommodations/{accommodationId}/remove-favorites")
+    Call<ResponseBody> removeFavorites(@Path("accommodationId") Long accommodationId);
+
+
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @GET("accommodations/favorites")
+    Call<ResponseBody> getFavorites(@Query("pageNo") int pageNo,
+                                    @Query("pageSize") int pageSize);
 
 }

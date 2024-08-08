@@ -40,4 +40,8 @@ public interface AccommodationRepository extends JpaRepository<Accommodation, Lo
 
     @Query("select a from Accommodation a where a.owner.id = :userId and a.id = :accommodationId")
     Optional<Accommodation> findByIdAndOwnerId(Long accommodationId, Long userId);
+
+
+    @Query("select a from Guest g join g.favorites a where g.id = :guestId")
+    List<Accommodation> findFavoritesByGuestId(Long guestId);
 }

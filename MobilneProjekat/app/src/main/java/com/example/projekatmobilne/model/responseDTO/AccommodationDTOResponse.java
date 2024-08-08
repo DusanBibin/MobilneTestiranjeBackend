@@ -39,6 +39,8 @@ public class AccommodationDTOResponse {
     private List<ReservationDTOInner> futureReservations;
     private List<Long> imageIds;
 
+    private Boolean favorite;
+
     public AccommodationDTOResponse(String name, String description, String address, Double lat,
                                     Double lon, List<Amenity> amenities, Long minGuests,
                                     Long maxGuests, AccommodationType accommodationType,
@@ -46,7 +48,8 @@ public class AccommodationDTOResponse {
                                     List<AvailabilityDTO> availabilityList,
                                     List<Long> imagePaths,
                                     List<ReservationDTOInner> futureReservations,
-                                    Long ownerId, String ownerEmail, String ownerNameAndSurname) {
+                                    Long ownerId, String ownerEmail, String ownerNameAndSurname,
+                                    Boolean favorite) {
         this.name = name;
         this.description = description;
         this.address = address;
@@ -63,6 +66,7 @@ public class AccommodationDTOResponse {
         this.ownerId = ownerId;
         this.ownerEmail = ownerEmail;
         this.ownerNameAndSurname = ownerNameAndSurname;
+        this.favorite = favorite;
     }
 
     public List<ReservationDTOInner> getFutureReservations() {
@@ -193,6 +197,14 @@ public class AccommodationDTOResponse {
         this.ownerEmail = ownerEmail;
     }
 
+    public Boolean getFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(Boolean favorite) {
+        this.favorite = favorite;
+    }
+
     @Override
     public String toString() {
         return "AccommodationDTOResponse{" +
@@ -212,6 +224,7 @@ public class AccommodationDTOResponse {
                 ", availabilityList=" + availabilityList +
                 ", futureReservations=" + futureReservations +
                 ", imageIds=" + imageIds +
+                ", favorite=" + favorite +
                 '}';
     }
 }

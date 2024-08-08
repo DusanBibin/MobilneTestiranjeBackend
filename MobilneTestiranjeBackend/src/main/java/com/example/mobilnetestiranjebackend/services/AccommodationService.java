@@ -228,6 +228,21 @@ public class AccommodationService {
         return PageConverter.convertListToPage(pageNo, pageSize, convertedList);
     }
 
+    public Page<AccommodationViewDTO> getFavorites(Long guestId, int pageNo, int pageSize) {
+
+        List<Accommodation> favorites = accommodationRepository.findFavoritesByGuestId(guestId);
+        List<AccommodationViewDTO> convertedList = new ArrayList<>(favorites.stream().map(a -> {
+            AccommodationViewDTO accommodation = new AccommodationViewDTO();
+            accommodation.setId(a.getId());
+            accommodation.setName(a.getName());
+            accommodation.setAddress(a.getAddress());
+
+            return accommodation;
+        }).toList());
+
+        return PageConverter.convertListToPage(pageNo, pageSize, convertedList);
+    }
+
     public void toggleAutoAccept(Long accommodationId, Boolean status, Long ownerId) {
         if(ownerRepository.findOwnerById(ownerId).isEmpty()) throw new InvalidAuthorizationException("User with this id doesn't exist");
 
@@ -244,6 +259,7 @@ public class AccommodationService {
         accommodation.setAutoAcceptEnabled(status);
         accommodationRepository.save(accommodation);
     }
+
 
 }
 

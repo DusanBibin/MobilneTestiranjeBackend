@@ -119,7 +119,7 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
         binding.toggleBtnAutoAccept.setVisibility(View.GONE);
         binding.txtAutoAcceptMessage.setVisibility(View.GONE);
         binding.linearLayoutCreateReservation.setVisibility(View.GONE);
-
+        binding.linearLayoutFavorites.setVisibility(View.GONE);
 
         binding.progressBar.setVisibility(View.VISIBLE);
         binding.scrollViewAccommodationDetails.setVisibility(View.GONE);
@@ -167,63 +167,7 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
         }
 
 
-        if(Role.GUEST.equals(JWTManager.getRoleEnum()) && accommodationId != 0L){
-            binding.linearLayoutCreateReservation.setVisibility(View.VISIBLE);
-            binding.btnCreateReservation.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
 
-                    binding.inputLayoutDateNumberOfGuests.setError(null);
-                    binding.inputLayoutDateRange.setError(null);
-
-                    boolean isValid = true;
-                    if(binding.inputEditTextDateRange.getText().toString().isEmpty()){
-                        binding.inputLayoutDateRange.setError("This field cannot be empty");
-                        isValid = false;
-                    }
-
-
-                    if(binding.inputEditTextNumberOfGuests.getText().toString().isEmpty() || binding.inputEditTextNumberOfGuests.getText().toString().equals("0")){
-                        binding.inputLayoutDateNumberOfGuests.setError("This field cannot be empty");
-                        isValid = false;
-                    }
-
-                    if(!isValid) return;
-
-                    Long guestNum = Long.valueOf(binding.inputEditTextNumberOfGuests.getText().toString());
-                    Call<ResponseBody> call = ClientUtils.apiService.createNewReservation(accommodationId, new ReservationDTO(dateStart, dateEnd, guestNum));
-                    call.enqueue(new Callback<ResponseBody>() {
-                        @Override
-                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-
-
-                            if(response.code() == 200){
-                                String responseMessage = ResponseParser.parseResponse(response, String.class, false);
-                                Toast.makeText(AccommodationDetailsActivity.this, responseMessage, Toast.LENGTH_SHORT).show();
-                            }
-
-                            if(response.code() == 400){
-                                Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
-                                if(map.containsKey("message")) Toast.makeText(AccommodationDetailsActivity.this, map.get("message"), Toast.LENGTH_SHORT).show();
-                            }
-
-
-
-                            binding.progressBarCreateReservation.setVisibility(View.GONE);
-                            binding.linearLayoutCreateReservation.setVisibility(View.VISIBLE);
-                        }
-
-                        @Override
-                        public void onFailure(Call<ResponseBody> call, Throwable t) {
-                            Toast.makeText(AccommodationDetailsActivity.this, "There was a problem, try again later", Toast.LENGTH_SHORT).show();
-                            t.printStackTrace();
-                        }
-                    });
-                    binding.progressBarCreateReservation.setVisibility(View.VISIBLE);
-                    binding.linearLayoutCreateReservation.setVisibility(View.GONE);
-                }
-            });
-        }
 
 
 
@@ -273,6 +217,9 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
                     loadReviewPage();
                     accommodationDTO = ResponseParser.parseResponse(response, AccommodationDTOResponse.class, false);
 
+
+
+
                     if(Role.OWNER.equals(JWTManager.getRoleEnum()) && accommodationId != 0L && accommodationDTO.getOwnerId().equals(JWTManager.getUserIdLong())){
                         binding.btnEdit.setVisibility(View.VISIBLE);
                         binding.btnEdit.setOnClickListener(new View.OnClickListener() {
@@ -321,7 +268,152 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
 
                             }
                         });
+
+
                     }
+
+                    if(Role.GUEST.equals(JWTManager.getRoleEnum()) && accommodationId != 0L){
+
+                        if(accommodationDTO.getFavorite()){
+                            binding.btnRemoveFavorites.setVisibility(View.VISIBLE);
+                            binding.btnAddFavorites.setVisibility(View.GONE);
+                        }
+                        else{
+                            binding.btnAddFavorites.setVisibility(View.VISIBLE);
+                            binding.btnRemoveFavorites.setVisibility(View.GONE);
+                        }
+
+                        binding.linearLayoutCreateReservation.setVisibility(View.VISIBLE);
+                        binding.btnCreateReservation.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                                binding.inputLayoutDateNumberOfGuests.setError(null);
+                                binding.inputLayoutDateRange.setError(null);
+
+                                boolean isValid = true;
+                                if(binding.inputEditTextDateRange.getText().toString().isEmpty()){
+                                    binding.inputLayoutDateRange.setError("This field cannot be empty");
+                                    isValid = false;
+                                }
+
+
+                                if(binding.inputEditTextNumberOfGuests.getText().toString().isEmpty() || binding.inputEditTextNumberOfGuests.getText().toString().equals("0")){
+                                    binding.inputLayoutDateNumberOfGuests.setError("This field cannot be empty");
+                                    isValid = false;
+                                }
+
+                                if(!isValid) return;
+
+                                Long guestNum = Long.valueOf(binding.inputEditTextNumberOfGuests.getText().toString());
+                                Call<ResponseBody> call = ClientUtils.apiService.createNewReservation(accommodationId, new ReservationDTO(dateStart, dateEnd, guestNum));
+                                call.enqueue(new Callback<ResponseBody>() {
+                                    @Override
+                                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+
+                                        if(response.code() == 200){
+                                            String responseMessage = ResponseParser.parseResponse(response, String.class, false);
+                                            Toast.makeText(AccommodationDetailsActivity.this, responseMessage, Toast.LENGTH_SHORT).show();
+                                        }
+
+                                        if(response.code() == 400){
+                                            Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
+                                            if(map.containsKey("message")) Toast.makeText(AccommodationDetailsActivity.this, map.get("message"), Toast.LENGTH_SHORT).show();
+                                        }
+
+
+
+                                        binding.progressBarCreateReservation.setVisibility(View.GONE);
+                                        binding.linearLayoutCreateReservation.setVisibility(View.VISIBLE);
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                        Toast.makeText(AccommodationDetailsActivity.this, "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                                        t.printStackTrace();
+                                    }
+                                });
+                                binding.progressBarCreateReservation.setVisibility(View.VISIBLE);
+                                binding.linearLayoutCreateReservation.setVisibility(View.GONE);
+                            }
+                        });
+
+
+
+
+                        binding.linearLayoutFavorites.setVisibility(View.VISIBLE);
+                        binding.btnAddFavorites.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                binding.btnAddFavorites.setVisibility(View.GONE);
+                                binding.progressBarFavorites.setVisibility(View.VISIBLE);
+                                Call<ResponseBody> call = ClientUtils.apiService.addFavorites(accommodationId);
+                                call.enqueue(new Callback<ResponseBody>() {
+                                    @Override
+                                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+                                        if(response.code() == 200){
+                                            String responseMessage = ResponseParser.parseResponse(response, String.class, false);
+                                            Toast.makeText(AccommodationDetailsActivity.this, responseMessage, Toast.LENGTH_SHORT).show();
+                                            binding.btnRemoveFavorites.setVisibility(View.VISIBLE);
+                                        }
+                                        if(response.code() == 400) {
+                                            Map<String, String> map = ResponseParser.parseResponse(response, Map.class, true);
+                                            if (map.containsKey("message"))
+                                                Toast.makeText(AccommodationDetailsActivity.this, map.get("message"), Toast.LENGTH_SHORT).show();
+                                        }
+
+                                        binding.progressBarFavorites.setVisibility(View.GONE);
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                        Toast.makeText(AccommodationDetailsActivity.this, "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                                        t.printStackTrace();
+                                    }
+                                });
+                            }
+                        });
+
+                        binding.btnRemoveFavorites.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                binding.btnRemoveFavorites.setVisibility(View.GONE);
+                                binding.progressBarFavorites.setVisibility(View.VISIBLE);
+
+                                Call<ResponseBody> call = ClientUtils.apiService.removeFavorites(accommodationId);
+                                call.enqueue(new Callback<ResponseBody>() {
+                                    @Override
+                                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                        if(response.code() == 200){
+                                            String responseMessage = ResponseParser.parseResponse(response, String.class, false);
+                                            Toast.makeText(AccommodationDetailsActivity.this, responseMessage, Toast.LENGTH_SHORT).show();
+                                            binding.btnAddFavorites.setVisibility(View.VISIBLE);
+                                        }
+                                        if(response.code() == 400) {
+                                            Map<String, String> map = ResponseParser.parseResponse(response, Map.class, true);
+                                            if (map.containsKey("message"))
+                                                Toast.makeText(AccommodationDetailsActivity.this, map.get("message"), Toast.LENGTH_SHORT).show();
+                                        }
+
+                                        binding.progressBarFavorites.setVisibility(View.GONE);
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                        Toast.makeText(AccommodationDetailsActivity.this, "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                                        t.printStackTrace();
+                                    }
+                                });
+                            }
+                        });
+
+                    }
+
+
+
+
                     SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                             .findFragmentById(R.id.mapview);
                     mapFragment.getMapAsync(AccommodationDetailsActivity.this);
