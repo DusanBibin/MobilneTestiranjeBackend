@@ -246,8 +246,103 @@
 
                     </androidx.cardview.widget.CardView>
 
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardViewReview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardElevation="8dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardUseCompatPadding="true">
+
 
                         <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="10dp">
+
+
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textSize="25sp"
+                                    android:text="Review"
+                                    android:layout_marginBottom="15dp"/>
+                                <TextView
+                                    android:id="@+id/txtGuestName"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textSize="20sp"
+                                    android:text="Guest name"/>
+                                <LinearLayout
+                                    android:id="@+id/linearLayoutOwnerReview"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical">
+                                    <TextView
+                                        android:id="@+id/txtOwner"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:textSize="15sp"
+                                        android:text="Owner review"/>
+                                    <TextView
+                                        android:id="@+id/txtCommentOwner"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:textSize="12sp"
+                                        android:text="Insert owner review here"/>
+
+                                    <RatingBar
+                                        android:id="@+id/ratingBarOwner"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        style="@android:style/Widget.Material.RatingBar.Indicator"
+                                        android:isIndicator="true"
+                                        android:numStars="5"/>
+                                </LinearLayout>
+
+
+                                <LinearLayout
+                                    android:id="@+id/linearLayoutAccommodationReview"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical">
+                                    <TextView
+                                        android:id="@+id/txtAccommodation"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:textSize="15sp"
+                                        android:text="Accommodation review"/>
+
+                                    <TextView
+                                        android:id="@+id/txtCommentAccommodation"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:textSize="12sp"
+                                        android:text="insert accommodation review here"/>
+
+                                    <RatingBar
+                                        android:id="@+id/ratingBarAccommodation"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:isIndicator="true"
+                                        style="@android:style/Widget.Material.RatingBar.Indicator"
+                                        android:numStars="5"/>
+                                </LinearLayout>
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <ProgressBar
+                        android:visibility="gone"
+                        android:id="@+id/progressBarReview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+
+
+                    <LinearLayout
                             android:visibility="gone"
                             android:id="@+id/linearLayoutConflictReservations"
                             android:layout_width="match_parent"
@@ -280,7 +375,7 @@
 
 
 
-                        </LinearLayout>
+                    </LinearLayout>
 
 
                 </LinearLayout>

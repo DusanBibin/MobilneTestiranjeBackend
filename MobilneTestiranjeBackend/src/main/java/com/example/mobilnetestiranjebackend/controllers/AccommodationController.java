@@ -63,7 +63,6 @@ public class AccommodationController {
             imageIds.add(imageId);
         }
 
-        System.out.println("PROVERAA OVDEEE");
 
         System.out.println(user instanceof Guest);
         Boolean favorite = null;

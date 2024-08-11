@@ -10,10 +10,7 @@ import com.example.mobilnetestiranjebackend.exceptions.InvalidEnumValueException
 import com.example.mobilnetestiranjebackend.exceptions.NonExistingEntityException;
 import com.example.mobilnetestiranjebackend.helpers.PageConverter;
 import com.example.mobilnetestiranjebackend.model.*;
-import com.example.mobilnetestiranjebackend.repositories.AccommodationRepository;
-import com.example.mobilnetestiranjebackend.repositories.GuestRepository;
-import com.example.mobilnetestiranjebackend.repositories.OwnerRepository;
-import com.example.mobilnetestiranjebackend.repositories.ReservationRepository;
+import com.example.mobilnetestiranjebackend.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -31,6 +28,8 @@ public class ReservationService {
     private final AccommodationRepository accommodationRepository;
     private final OwnerRepository ownerRepository;
     private final GuestRepository guestRepository;
+    private final AccommodationReviewRepository accommodationReviewRepository;
+    private final OwnerReviewRepository ownerReviewRepository;
 
 
     public Optional<Reservation> findReservationByIdAccommodation(Long accommodationId, Long reservationId) {
@@ -223,16 +222,28 @@ public class ReservationService {
         if(reservationWrapper.isEmpty()) throw new NonExistingEntityException("Reservation with this id doesn't exist");
         reservation = reservationWrapper.get();
 
+        Optional<AccommodationReview> accommodationReviewWrapper = Optional.empty();
+        Optional<OwnerReview> ownerReviewWrapper = Optional.empty();
+
         if(ownerRepository.findOwnerById(userId).isPresent()) {
             if(accommodationRepository.findByIdAndOwnerId(accommodationId, userId).isEmpty()) throw new InvalidAuthorizationException("You do not own this accommodation");
         }
         else if(guestRepository.findGuestById(userId).isPresent()) {
             if(reservationRepository.findByIdAndGuest(reservationId, userId).isEmpty()) throw new InvalidAuthorizationException("You do not own this reservation");
+
+            Optional<Guest> guestWrapper = guestRepository.findGuestById(userId);
+            Guest guest = guestWrapper.get();
+
+            accommodationReviewWrapper = accommodationReviewRepository.findByReviewIdAndGuestId(reservationId, userId);
+            ownerReviewWrapper = ownerReviewRepository.findByOwnerIdAndGuestId(reservation.getAccommodation().getOwner().getId(), guest.getId());
         }
         else throw new NonExistingEntityException("User with this id doesn't exist");
 
         List<Reservation> canceledReservations = reservationRepository.findGuestCanceledReservations(reservationId, userId);
         List<Reservation> conflictReservations = reservationRepository.findPendingConflictedReservations(accommodationId, reservationId);
+
+
+
         System.out.println(conflictReservations.size());
         Owner owner = reservation.getAccommodation().getOwner();
 
@@ -255,6 +266,7 @@ public class ReservationService {
         reservationDTO.setConflictReservations(!conflictReservations.isEmpty());
         reservationDTO.setReason(reservation.getReason());
         reservationDTO.setGuestId(reservation.getGuest().getId());
+        reservationDTO.setReviewPresent(accommodationReviewWrapper.isPresent() || ownerReviewWrapper.isPresent());
         reservationDTO.setNameAndSurname(reservation.getGuest().getFirstName() + " " + reservation.getGuest().getLastname());
         reservationDTO.setUserEmail(reservation.getGuest().getEmail());
         reservationDTO.setTimesUserCancel((long) canceledReservations.size());

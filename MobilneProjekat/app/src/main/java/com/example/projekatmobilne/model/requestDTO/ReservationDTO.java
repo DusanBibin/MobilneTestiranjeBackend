@@ -31,6 +31,7 @@ public class ReservationDTO {
     private Long accommodationId;
     private Long availabilityId;
     private Long reservationId;
+    private Boolean reviewPresent;
 
     public Boolean getConflictReservations() {
         return conflictReservations;
@@ -46,7 +47,7 @@ public class ReservationDTO {
                           Long unitPrice, Boolean perGuest,Long ownerId, String ownerNameAndSurname,
                           String ownerEmail, Long guestId, String nameAndSurname, String userEmail,
                           Long timesUserCancel, Long accommodationId, Boolean conflictReservations,
-                          LocalDate cancelDeadline) {
+                          LocalDate cancelDeadline, Boolean reviewPresent) {
         this.availabilityId = availabilityId;
         this.reservationId = reservationId;
         this.reservationStartDate = reservationStartDate;
@@ -70,6 +71,7 @@ public class ReservationDTO {
         this.accommodationId = accommodationId;
         this.conflictReservations = conflictReservations;
         this.cancelDeadline = cancelDeadline;
+        this.reviewPresent = reviewPresent;
     }
 
     public ReservationDTO(LocalDate reservationStartDate, LocalDate reservationEndDate, Long guestNum) {
@@ -246,6 +248,14 @@ public class ReservationDTO {
         this.guestId = guestId;
     }
 
+    public Boolean getReviewPresent() {
+        return reviewPresent;
+    }
+
+    public void setReviewPresent(Boolean reviewPresent) {
+        this.reviewPresent = reviewPresent;
+    }
+
     @Override
     public String toString() {
         return "ReservationDTO{" +
@@ -271,6 +281,7 @@ public class ReservationDTO {
                 ", accommodationId=" + accommodationId +
                 ", availabilityId=" + availabilityId +
                 ", reservationId=" + reservationId +
+                ", reviewPresent=" + reviewPresent +
                 '}';
     }
 }

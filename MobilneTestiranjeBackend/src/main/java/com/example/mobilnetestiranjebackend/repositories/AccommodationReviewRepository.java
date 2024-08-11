@@ -25,4 +25,8 @@ public interface AccommodationReviewRepository extends JpaRepository<Accommodati
 
     @Query("select ar from AccommodationReview ar join Accommodation a where ar.guest.id = :guestId and a.id = :accommodationId")
     Optional<AccommodationReview> findByAccommodationAndGuest(Long accommodationId, Long guestId);
+
+
+    @Query("select ar from AccommodationReview ar where ar.accommodation.id = :accommodationId and ar.guest.id = :guestId")
+    Optional<AccommodationReview> findByAccommodationIdAndGuestId(Long accommodationId, Long guestId);
 }

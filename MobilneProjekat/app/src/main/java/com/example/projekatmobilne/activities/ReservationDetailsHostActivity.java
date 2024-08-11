@@ -18,6 +18,7 @@ import com.example.projekatmobilne.databinding.ActivityReservationDetailsHostBin
 import com.example.projekatmobilne.model.Enum.ReservationStatus;
 import com.example.projekatmobilne.model.Enum.Role;
 import com.example.projekatmobilne.model.requestDTO.ReservationDTO;
+import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.PageTypes.ReviewDTOPageItem;
 import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.ReservationHostDTOPagedResponse;
 import com.example.projekatmobilne.tools.JWTManager;
 import com.example.projekatmobilne.tools.ResponseParser;
@@ -54,7 +55,7 @@ public class ReservationDetailsHostActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-
+        binding.cardViewReview.setVisibility(View.GONE);
         Intent intent = getIntent();
         if(intent != null && intent.hasExtra("reservationId")){
             reservationId = (Long) intent.getSerializableExtra("reservationId");
@@ -262,6 +263,44 @@ public class ReservationDetailsHostActivity extends AppCompatActivity {
 
                 if(response.code() == 200){
                     ReservationDTO r = ResponseParser.parseResponse(response, ReservationDTO.class, false);
+
+                    if(r.getReviewPresent()){
+
+                        binding.progressBarReview.setVisibility(View.VISIBLE);
+                        Call<ResponseBody> reviewCall = ClientUtils.apiService.getReservationReview(accommodationId, reservationId);
+                        reviewCall.enqueue(new Callback<ResponseBody>() {
+                            @Override
+                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                if(response.code() == 200){
+                                    ReviewDTOPageItem re = ResponseParser.parseResponse(response, ReviewDTOPageItem.class, false);
+                                    if(re.getAccommodationReview() == null) binding.linearLayoutAccommodationReview.setVisibility(View.GONE);
+                                    if(re.getOwnerReview() == null) binding.linearLayoutOwnerReview.setVisibility(View.GONE);
+
+                                    binding.txtGuestName.setText(r.getNameAndSurname());
+                                    binding.txtCommentAccommodation.setText(re.getAccommodationReview().getComment());
+                                    binding.txtCommentOwner.setText(re.getOwnerReview().getComment());
+                                    binding.ratingBarAccommodation.setRating(re.getAccommodationReview().getRating());
+                                    binding.ratingBarOwner.setRating(re.getOwnerReview().getRating());
+
+                                    binding.cardViewReview.setVisibility(View.VISIBLE);
+                                    binding.progressBarReview.setVisibility(View.GONE);
+
+                                }
+
+                                if(response.code() == 400){
+                                    Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
+                                    if(map.containsKey("message")) Toast.makeText(ReservationDetailsHostActivity.this, map.get("message"), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                Toast.makeText(ReservationDetailsHostActivity.this, "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                                t.printStackTrace();
+                            }
+                        });
+                    }
+
                     binding.txtName.setText(r.getAccommodationName());
                     binding.txtAddress.setText("Accommodation address: " + r.getAccommodationAddress());
                     binding.txtDateRange.setText("Date range: " + r.getReservationStartDate() + " - " + r.getReservationEndDate());

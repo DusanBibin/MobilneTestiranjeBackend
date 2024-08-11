@@ -54,5 +54,6 @@ public class ReservationDTO {
     private Long price;
     private ReservationStatus status;
     private String reason;
+    private Boolean reviewPresent;
 
 }

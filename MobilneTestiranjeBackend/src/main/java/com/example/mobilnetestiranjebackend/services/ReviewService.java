@@ -5,6 +5,7 @@ import com.example.mobilnetestiranjebackend.DTOs.ReviewDTO;
 import com.example.mobilnetestiranjebackend.DTOs.ReviewDTOResponse;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthorizationException;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidDateException;
+import com.example.mobilnetestiranjebackend.exceptions.InvalidInputException;
 import com.example.mobilnetestiranjebackend.exceptions.NonExistingEntityException;
 import com.example.mobilnetestiranjebackend.model.*;
 import com.example.mobilnetestiranjebackend.repositories.*;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +31,7 @@ public class ReviewService {
     private final GuestRepository guestRepository;
     private final AccommodationReviewRepository accommodationReviewRepository;
     private final AccommodationRepository accommodationRepository;
+    private final UserRepository userRepository;
 
     public void createOwnerReview(ReviewDTO reviewDTO, Long ownerId, Long guestId) {
 
@@ -172,5 +175,53 @@ public class ReviewService {
         if(start > end) pageContent = new ArrayList<>();
         else pageContent = accommodationList.subList(start, end);
         return new PageImpl<>(pageContent, pageRequest, accommodationList.size());
+    }
+
+    public ReviewDTOResponse getReview(Long accommodationId, Long reservationId, Long userId) {
+
+        Optional<User> userWrapper = userRepository.findByUserId(userId);
+        if(userWrapper.isEmpty()) throw new InvalidAuthorizationException("This user doesn't exist");
+        User user = userWrapper.get();
+
+        Optional<Reservation> reservationWrapper = reservationRepository.findByIdAndAccommodation(accommodationId, reservationId);
+        if(reservationWrapper.isEmpty()) throw new InvalidInputException("This reservation does not exist");
+        Reservation reservation = reservationWrapper.get();
+
+        if(user instanceof Owner && !reservation.getAccommodation().getOwner().getId().equals(user.getId())) throw new InvalidAuthorizationException("You are not the owner in this reservation");
+        else if(user instanceof Guest && !reservation.getGuest().getId().equals(user.getId())) throw new InvalidAuthorizationException("You are not the guest in this reservation");
+
+
+        Guest guest = reservation.getGuest();
+
+        Optional<Accommodation> accommodationWrapper = accommodationRepository.findAccommodationById(accommodationId);
+        Accommodation accommodation = accommodationWrapper.get();
+        Owner owner = accommodation.getOwner();
+
+
+        Optional<OwnerReview> orWrapper;
+        Optional<AccommodationReview> arWrapper;
+
+        orWrapper = ownerReviewRepository.findByOwnerIdAndGuestId(owner.getId(), guest.getId());
+        arWrapper = accommodationReviewRepository.findByAccommodationIdAndGuestId(accommodationId, guest.getId());
+
+
+        ReviewDTO orDTO = null, arDTO = null;
+        if(orWrapper.isPresent()){
+            OwnerReview or = orWrapper.get();
+            orDTO = new ReviewDTO(or.getComment(), or.getRating());
+        }
+        if(arWrapper.isPresent()){
+            AccommodationReview ar = arWrapper.get();
+            arDTO = new ReviewDTO(ar.getComment(), ar.getRating());
+        }
+
+
+        ReviewDTOResponse review = new ReviewDTOResponse();
+        review.setOwnerReview(orDTO);
+        review.setAccommodationReview(arDTO);
+        review.setGuestName(guest.getFirstName() + " " + guest.getLastname());
+
+
+        return review;
     }
 }

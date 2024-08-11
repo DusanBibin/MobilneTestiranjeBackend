@@ -304,4 +304,13 @@ public interface ApiService {
     Call<ResponseBody> getFavorites(@Query("pageNo") int pageNo,
                                     @Query("pageSize") int pageSize);
 
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @GET("reviews/accommodations/{accommodationId}/reservations/{reservationId}")
+    Call<ResponseBody> getReservationReview(@Path("accommodationId") Long accommodationId,
+                                             @Path("reservationId") Long reservationId);
+
 }

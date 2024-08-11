@@ -61,21 +61,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("KURCINAAA IMAGE VIEWWWW ");
                 System.out.println(holder.getAdapterPosition());
 
-//                Bitmap imgBitmap = imageList.get(holder.getAdapterPosition());
-//
-//
-//                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-//                imgBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-//                byte[] byteArray = byteArrayOutputStream.toByteArray();
-//                String image =  Base64.encodeToString(byteArray, Base64.DEFAULT);
-//
-//
-//                Intent intent = new Intent(context, FullScreenImageActivity.class);
-//                intent.putExtra("picture", image);
-//                context.startActivity(intent);
 
                 String path = tempImages.get(holder.getAdapterPosition()).getAbsolutePath();
                 Intent intent = new Intent(context, FullScreenImageActivity.class);

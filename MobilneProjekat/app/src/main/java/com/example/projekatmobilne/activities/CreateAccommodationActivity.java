@@ -181,8 +181,11 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
                     String addressStr = binding.searchView.getQuery().toString();
                     if(addressStr.equals("")){
                         Toast.makeText(CreateAccommodationActivity.this, "This field cannot be empty", Toast.LENGTH_SHORT).show();
+                        binding.btnSearch.setVisibility(View.VISIBLE);
+                        binding.progressBarAddressSearch.setVisibility(View.GONE);
                     }else{
                         List<Address> addresses = geocoder.getFromLocationName(addressStr, 1);
+
                         binding.btnSearch.setVisibility(View.VISIBLE);
                         binding.progressBarAddressSearch.setVisibility(View.GONE);
                         if(addresses.isEmpty()) {Toast.makeText(CreateAccommodationActivity.this, "There are no results", Toast.LENGTH_SHORT).show(); return;}
@@ -200,9 +203,12 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
                         }
 
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 12.5f));
+
+
                     }
 
                 } catch (IOException e) {
+                    e.printStackTrace();
                     throw new RuntimeException(e);
                 }
             }
