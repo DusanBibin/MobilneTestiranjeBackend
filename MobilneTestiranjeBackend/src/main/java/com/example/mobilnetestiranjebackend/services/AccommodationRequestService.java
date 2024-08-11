@@ -56,22 +56,23 @@ public class AccommodationRequestService {
                 throw new InvalidDateException("Cancellation date cannot be after start date");
         }
 
-
         for(int i = 0; i < accommodationDTO.getAvailabilityList().size(); i++){
             for(int j = i + 1; j < accommodationDTO.getAvailabilityList().size(); j++){
-                var avail1 = accommodationDTO.getAvailabilityList().get(i);
-                var avail2 = accommodationDTO.getAvailabilityList().get(j);
+                if(i != j){
+                    var avail1 = accommodationDTO.getAvailabilityList().get(i);
+                    var avail2 = accommodationDTO.getAvailabilityList().get(j);
 
-                var startDate1 = avail1.getStartDate();
-                var endDate1 = avail1.getEndDate();
-                var startDate2 = avail2.getStartDate();
-                var endDate2 = avail2.getEndDate();
+                    var startDate1 = avail1.getStartDate();
+                    var endDate1 = avail1.getEndDate();
+                    var startDate2 = avail2.getStartDate();
+                    var endDate2 = avail2.getEndDate();
 
 
-                if(!(startDate1.isBefore(startDate2) && endDate1.isBefore(startDate2) ||
-                        startDate1.isAfter(endDate2) && endDate1.isAfter(endDate2))){
-                    throw new InvalidDateException("Availability with start date " + startDate1 + " and end date " + endDate1 + " interlaces with availability" +
-                            " with start date " + startDate2 + " and end date " + endDate2);
+                    if(!(startDate1.isBefore(startDate2) && endDate1.isBefore(startDate2) ||
+                            startDate1.isAfter(endDate2) && endDate1.isAfter(endDate2))){
+                        throw new InvalidDateException("Availability with start date " + startDate1 + " and end date " + endDate1 + " interferes with availability" +
+                                " with start date " + startDate2 + " and end date " + endDate2);
+                    }
                 }
             }
         }
@@ -140,6 +141,8 @@ public class AccommodationRequestService {
 
         boolean differencesPresent = true;
 
+
+
         var accommodationWrapper = accommodationRepository.findAccommodationsByOwnerAndName(owner, accommodationDTO.getName());
         if(accommodationWrapper.isPresent() && !Objects.equals(accommodationWrapper.get().getId(), accommodationId)) throw new EntityAlreadyExistsException("You already have accommodation with this name");
 
@@ -148,6 +151,9 @@ public class AccommodationRequestService {
         var accommodation = accommodationWrapper.get();
 
 
+
+        var accommodationRequestWrapper = accommodationRequestRepository.findPendingRequestByAccommodationId(owner.getId(), accommodationId);
+        if(accommodationRequestWrapper.isPresent()) throw new InvalidInputException("You already have pending request for this reservation");
 
         if(!accommodation.getOwner().getEmail().equals(owner.getEmail())) throw new InvalidAuthorizationException("You don't own this accommodation");
 
@@ -185,9 +191,7 @@ public class AccommodationRequestService {
                                 if(!((availReq.getStartDate().compareTo(reqPom.getStartDate()) < 0 && availReq.getEndDate().compareTo(reqPom.getStartDate()) < 0) ||
                                         (availReq.getStartDate().compareTo(reqPom.getEndDate()) > 0 && availReq.getEndDate().compareTo(reqPom.getEndDate()) > 0))){
 
-                                    System.out.println("REQ POM: " + reqPom.getId());
-                                    System.out.println("AVAIL REQ: " + availReq.getId());
-                                    throw new InvalidInputException("Some date ranges are in conflict");
+                                     throw new InvalidInputException("Some date ranges are in conflict");
                                 }
 
 
@@ -196,9 +200,7 @@ public class AccommodationRequestService {
                         }else{
                             if(!((availReq.getStartDate().compareTo(a.getStartDate()) < 0 && availReq.getEndDate().compareTo(a.getStartDate()) < 0) ||
                                     (availReq.getStartDate().compareTo(a.getEndDate()) > 0 && availReq.getEndDate().compareTo(a.getEndDate()) > 0))){
-                                System.out.println("A: " + a.getId());
-                                System.out.println("AVAIL REQ: " + availReq.getId());
-                                throw new InvalidInputException("Some date ranges are in conflict");
+                               throw new InvalidInputException("Some date ranges are in conflict");
                             }
                         }
 
@@ -224,16 +226,11 @@ public class AccommodationRequestService {
 
                 for(String imgPath: accommodation.getImagePaths()) {
                     String[] pathParts = imgPath.split("/");
-                    System.out.println("OVO JE INDEKS");
-                    System.out.println(pathParts);
+
                     String fileName = pathParts[3];
-                    System.out.println("===========");
-                    System.out.println(fileName);
-                    System.out.println(fileName.charAt(0));
-                    System.out.println(currentIndex);
-                    System.out.println("===========");
+
                     if (Character.getNumericValue(fileName.charAt(0)) == currentIndex) currentIndex += 1;
-                    System.out.println(currentIndex);
+
                 }
 
                 for(String imgPath: imagePathsNew) {
@@ -276,11 +273,10 @@ public class AccommodationRequestService {
             Availability availability = null;
 
             RequestType type = RequestType.valueOf(availDTO.getRequestType().toString());
-            System.out.println(type);
+
             if(type.equals(RequestType.EDIT) || type.equals(RequestType.DELETE)){
                 var availabilityWrappper = availabilityRepository.findByIdAndAccommodationId(availDTO.getId(), accommodationId);
-                System.out.println(availDTO.getId());
-                System.out.println(accommodationDTO.getId());
+
                 if(availabilityWrappper.isEmpty()) throw new InvalidInputException("This date range isn't available");
                 availability = availabilityWrappper.get();
             }
@@ -305,28 +301,25 @@ public class AccommodationRequestService {
     private boolean checkGeneralInfo(Accommodation accommodation, AccommodationDTO accommodationDTO, List<MultipartFile> images) {
 
         if(!accommodation.getName().equals(accommodationDTO.getName())) return true;
-        System.out.println("iksde1");
+
         if(!accommodation.getDescription().equals(accommodationDTO.getDescription())) return true;
-        System.out.println("iksde2");
+
         if(!accommodation.getAddress().equals(accommodationDTO.getAddress())) return true;
-        System.out.println("iksde3");
+
         if(!accommodation.getLat().equals(accommodationDTO.getLat())) return true;
-        System.out.println("iksde4");
+
         if(!accommodation.getLon().equals(accommodationDTO.getLon())) return true;
-        System.out.println("iksde5");
+
         if(!(new HashSet<>(accommodation.getAmenities())).equals(new HashSet<>(accommodationDTO.getAmenities()))) return true;
-        for(Amenity amenity: accommodation.getAmenities()) {System.out.println(amenity.toString());}
-        System.out.println(accommodationDTO.getAmenities());
-        for(Amenity amenity: accommodationDTO.getAmenities()) {System.out.println(amenity.toString());}
-        System.out.println("iksde6");
+
         if(!accommodation.getMinGuests().equals(accommodationDTO.getMinGuests())) return true;
-        System.out.println("iksde7");
+
         if(!accommodation.getMaxGuests().equals(accommodationDTO.getMaxGuests())) return true;
-        System.out.println("iksde8");
+
         if(!accommodation.getAccommodationType().equals(accommodationDTO.getAccommodationType())) return true;
-        System.out.println("iksde9");
+
         if(!accommodation.getAutoAcceptEnabled().equals(accommodationDTO.getAutoAcceptEnabled())) return true;
-        System.out.println("iksde10");
+
 
         for(AvailabilityDTO availDTO: accommodationDTO.getAvailabilityList()){
 
@@ -337,22 +330,22 @@ public class AccommodationRequestService {
                 var availability = availabilityWrapper.get();
 
                 if(!availability.getPricePerGuest().equals(availDTO.getPricePerGuest())) return true;
-                System.out.println("iksde11");
+
                 if(!availability.getStartDate().equals(availDTO.getStartDate())) return true;
-                System.out.println("iksde12");
+
                 if(!availability.getEndDate().equals(availDTO.getEndDate())) return true;
-                System.out.println("iksde13");
+
                 if(!availability.getCancelDeadline().equals(availDTO.getCancellationDeadline())) return true;
-                System.out.println("iksde14");
+
                 if(!availability.getPrice().equals(availDTO.getPrice())) return true;
-                System.out.println("iksde15");
+
             }
             
         }
 
 
         if(images == null && accommodationDTO.getImagesToDelete().isEmpty()) return true;
-        System.out.println("iksde16");
+
         return false;
     }
 
@@ -369,7 +362,7 @@ public class AccommodationRequestService {
         String fileName = currentIndex + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
 
         Path filePath = Paths.get(uploadPath.toString(), fileName);
-        System.out.println(filePath.getFileName());
+
         try {
             file.transferTo(filePath.toFile());
         } catch (IOException e) {
@@ -380,9 +373,9 @@ public class AccommodationRequestService {
     }
 
     public void deleteImage(String filePath) {
-        System.out.println("Brisi " + filePath);
+
         String directory = "uploads/" + filePath;
-        System.out.println(directory);
+
         Path path = Paths.get(directory);
 
         // Check if the file exists before attempting to delete
@@ -468,8 +461,7 @@ public class AccommodationRequestService {
                         .build();
 
                 availabilityRepository.save(availability);
-                System.out.println("jesmo li usli u if za kreiranje requeqesta novog");
-                accommdation.getAvailabilityList().add(availability);
+                 accommdation.getAvailabilityList().add(availability);
             }
 
             accommodationRepository.save(accommdation);
@@ -479,12 +471,11 @@ public class AccommodationRequestService {
 
             if(!accommodation.getName().equals(accommodationRequest.getName())){
                 String[] pathParts = accommodation.getImagePaths().get(0).split("/");
-                System.out.println(Arrays.toString(pathParts));
+
                 File oldFolder = new File("uploads/" + pathParts[1] + "/" + pathParts[2]);
                 File newFolder = new File("uploads/" + pathParts[1] + "/" + accommodationRequest.getName());
 
-                System.out.println(oldFolder.getAbsolutePath());
-                System.out.println(newFolder.getAbsolutePath());
+
                 if (oldFolder.renameTo(newFolder)) {
                     System.out.println("Folder renamed successfully!");
                 } else {
@@ -499,20 +490,17 @@ public class AccommodationRequestService {
             }
 
             for (String imagePath : accommodationRequest.getImagePathsNew()) {
-                System.out.println("NOVI PATHOVI");
-                System.out.println(imagePath);
+
                 if (!accommodation.getImagePaths().contains(imagePath)) {
-                    System.out.println(accommodation.getName());
-                    System.out.println(accommodationRequest.getName());
+
                     if(!accommodation.getName().equals(accommodationRequest.getName())){
-                        System.out.println("USLI SMO U MENJANJE NAME = A ZA REKVEST XD");
-                        String[] split = imagePath.split("/");
+                         String[] split = imagePath.split("/");
 
                         String newPath = "/" + split[1] + "/" + accommodationRequest.getName() + "/" + split[3];
                         accommodation.getImagePaths().add(newPath);
-                        System.out.println(newPath);
 
-                    }else {accommodation.getImagePaths().add(imagePath); System.out.println("Usli smo u normalno sranje");}
+
+                    }else {accommodation.getImagePaths().add(imagePath); }
                 }
             }
 
@@ -543,11 +531,8 @@ public class AccommodationRequestService {
 
             accommodation.getImagePaths().removeAll(accommodationRequest.getImagesToRemove());
             for(String imagePath: accommodationRequest.getImagesToRemove()){
-                System.out.println("DA LI OVDE ULAZIMO UOPSTE U PM");
-                System.out.println(imagePath);
                 accommodation.getImagePaths().remove("/" + accommodation.getOwner().getEmail() + "/" + accommodation.getName() + "/" + imagePath);
-                System.out.println(accommodation.getOwner().getEmail() + "/" + accommodation.getName() + "/" + imagePath);
-                accommodation = accommodationRepository.save(accommodation);
+                 accommodation = accommodationRepository.save(accommodation);
                 deleteImage(accommodation.getOwner().getEmail() + "/" + accommodation.getName() + "/" + imagePath);
             }
 
@@ -582,6 +567,10 @@ public class AccommodationRequestService {
 
 
             for(AvailabilityRequest ar: accommodationRequest.getAvailabilityRequests()){
+                System.out.println("--------");
+                System.out.println(ar.getId());
+                System.out.println(ar.getRequestType());
+                System.out.println("--------");
                 if (ar.getRequestType().equals(RequestType.CREATE)){
                      var availability = Availability.builder()
                              .accommodation(accommodation)
@@ -593,7 +582,6 @@ public class AccommodationRequestService {
                              .build();
 
                      availabilityRepository.save(availability);
-                     System.out.println("jesmo li usli u kreiranje create novog availabilitija");
                      accommodation.getAvailabilityList().add(availability);
                      accommodationRepository.save(accommodation);
                 }else if(ar.getRequestType().equals(RequestType.EDIT)){
@@ -608,8 +596,7 @@ public class AccommodationRequestService {
                     availability.setCancelDeadline(ar.getCancelDeadline());
                     availability.setPricePerGuest(ar.getPricePerGuest());
 
-                    System.out.println("jesmo li usli u kreiranje novog edit availabilitija");
-                    availabilityRepository.save(availability);
+                           availabilityRepository.save(availability);
                 }else{
 
                     var availabilityWrapper = availabilityRepository.findById(ar.getId());
@@ -618,21 +605,16 @@ public class AccommodationRequestService {
 
 //                    ar.setAvailability(null);
 //                    ar = availabilityRequestRepository.save(ar);
-                    System.out.println("AR JE: ");
-                    System.out.println(ar.getAvailability() == null);
+
 
 
 //                    availability.setAccommodation(null);
 //                    availability = availabilityRepository.save(availability);
-                    System.out.println("availability je ");
-                    System.out.println(availability.getAccommodation() == null);
+
 
                     accommodation.getAvailabilityList().remove(availability);
                     accommodation = accommodationRepository.save(accommodation);
-                    System.out.println("Avail za ovaj accom su sada: ");
-                    for(Availability a: accommodation.getAvailabilityList()){
-                        System.out.println(a.getId());
-                    }
+
                     List<AvailabilityRequest> availabilityRequests = availabilityRequestRepository.findByAvailability(availability);
                     for (AvailabilityRequest request : availabilityRequests) {
                         request.setAvailability(null);
@@ -644,8 +626,7 @@ public class AccommodationRequestService {
                         reservation.setAvailability(null);
                         reservationRepository.save(reservation);
                     }
-                    System.out.println("da li smo usli u brisanje availabilitija");
-                    availabilityRepository.delete(availability);
+                   availabilityRepository.delete(availability);
                 }
             }
         }
@@ -766,12 +747,13 @@ public class AccommodationRequestService {
         requestDifferences.setRequestAvailabilities(newAvailabilities);
         requestDifferences.setImagesToAdd(imagesToAdd);
         requestDifferences.setImagesToRemove(request.getImagesToRemove());
-        requestDifferences.setEmail(accommodation.getOwner().getEmail());
-        requestDifferences.setFullName(accommodation.getOwner().getFirstName() + " " + accommodation.getOwner().getLastname());
+        requestDifferences.setEmail(request.getOwner().getEmail());
+        requestDifferences.setFullName(request.getOwner().getFirstName() + " " + request.getOwner().getLastname());
+
+        List<AvailabilityDTO> oldAvailabilities = new ArrayList<>();
+        List<String> images = new ArrayList<>();
 
         if(accommodation != null ) {
-
-
             AccommodationDTOEdit requestDTOOld = new AccommodationDTOEdit();
             requestDTOOld.setAddress(accommodation.getAddress());
             requestDTOOld.setDescription(accommodation.getDescription());
@@ -784,7 +766,7 @@ public class AccommodationRequestService {
             requestDTOOld.setMinGuests(accommodation.getMinGuests());
             requestDTOOld.setMaxGuests(accommodation.getMaxGuests());
 
-            List<AvailabilityDTO> oldAvailabilities = new ArrayList<>();
+
             for (Availability a : accommodation.getAvailabilityList()) {
                 AvailabilityDTO avail = new AvailabilityDTO();
                 avail.setId(a.getId());
@@ -796,21 +778,19 @@ public class AccommodationRequestService {
                 oldAvailabilities.add(avail);
             }
 
-            List<String> images = new ArrayList<>();
+
             for (int i = 0; i < accommodation.getImagePaths().size(); i++) {
                 String[] split = accommodation.getImagePaths().get(i).split("/");
                 images.add(split[3]);
             }
-
             requestDifferences.setAccommodationInfo(requestDTOOld);
-            requestDifferences.setAvailabilities(oldAvailabilities);
-            requestDifferences.setCurrentImages(images);
-            requestDifferences.setStatus(request.getStatus());
-            requestDifferences.setReason(request.getReason());
         }
 
+        requestDifferences.setAvailabilities(oldAvailabilities);
+        requestDifferences.setCurrentImages(images);
+        requestDifferences.setStatus(request.getStatus());
+        requestDifferences.setReason(request.getReason());
 
-        System.out.println();
         return requestDifferences;
     }
 

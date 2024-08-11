@@ -270,18 +270,6 @@
                                 android:text="Novi tip"/>
                         </LinearLayout>
 
-                        <TextView
-                            android:layout_marginTop="15dp"
-                            android:id="@+id/txtAutoAccept"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Auto accept:" />
-                        <TextView
-                            android:id="@+id/txtAutoAcceptValue"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textSize="18sp"
-                            android:text="Auto prihvatanje"/>
 
                         <LinearLayout
                             android:visibility="gone"

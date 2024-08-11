@@ -195,7 +195,6 @@ public class ReservationService {
 //        if(!reservation.getStatus().equals(ReservationStatus.PENDING)) throw new InvalidAuthorizationException("Only pending reservations can be selected");
 
         List<Reservation> conflictReservations = reservationRepository.findPendingConflictedReservations(accommodationId, reservationId);
-        System.out.println(conflictReservations.size());
         List<ReservationDTO> reservationsDTO = new ArrayList<>(conflictReservations.stream().map(a -> {
             ReservationDTO r = new ReservationDTO();
             r.setReservationId(a.getId());
@@ -244,7 +243,7 @@ public class ReservationService {
 
 
 
-        System.out.println(conflictReservations.size());
+
         Owner owner = reservation.getAccommodation().getOwner();
 
         ReservationDTO reservationDTO = new ReservationDTO();

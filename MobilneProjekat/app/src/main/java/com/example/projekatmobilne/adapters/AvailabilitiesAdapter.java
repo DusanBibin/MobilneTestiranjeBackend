@@ -41,6 +41,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class AvailabilitiesAdapter extends  RecyclerView.Adapter<AvailabilitiesViewHolder>{
     private Context context;
@@ -75,8 +77,8 @@ public class AvailabilitiesAdapter extends  RecyclerView.Adapter<AvailabilitiesV
     }
 
     public List<AvailabilityDTO> getEditList(){
-        existingAvailabilitiesMarkedDeletion.addAll(dataList);
-        return existingAvailabilitiesMarkedDeletion;
+        return Stream.concat(existingAvailabilitiesMarkedDeletion.stream(), dataList.stream())
+                .collect(Collectors.toList());
     }
 
     public void addAvailability(AvailabilityDTO avail){

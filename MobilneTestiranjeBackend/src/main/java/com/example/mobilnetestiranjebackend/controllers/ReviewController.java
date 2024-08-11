@@ -84,7 +84,6 @@ public class ReviewController {
                                        @AuthenticationPrincipal User user){
 
         ReviewDTOResponse review = reviewService.getReview(accommodationId, reservationId, user.getId());
-        System.out.println(review);
         return ResponseEntity.ok().body(review);
     }
 

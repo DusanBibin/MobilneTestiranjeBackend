@@ -203,7 +203,6 @@ public class AccommodationsDifferencesCompareActivity extends AppCompatActivity 
 
                         binding.txtAmenitiesValue.setText(amenities);
                         binding.txtTypeValue.setText(requestInfo.getAccommodationType().toString());
-                        binding.txtAutoAcceptValue.setText(requestInfo.getAutoAcceptEnabled().toString());
 
 
                         if(responseDTO.getAccommodationInfo() != null){
@@ -245,10 +244,7 @@ public class AccommodationsDifferencesCompareActivity extends AppCompatActivity 
                                         binding.txtTypeValue, oldInfo.getAccommodationType().toString());
                             }
 
-                            if(!(oldInfo.getAutoAcceptEnabled().equals(requestInfo.getAutoAcceptEnabled()))){
-                                fillOldTxtValue(binding.txtOldAutoAcceptValue, binding.linearLayoutAutoAccept,
-                                        binding.txtAutoAcceptValue, oldInfo.getAutoAcceptEnabled().toString());
-                            }
+
                         }
 
 

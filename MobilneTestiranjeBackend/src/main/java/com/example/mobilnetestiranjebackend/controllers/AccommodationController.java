@@ -64,7 +64,6 @@ public class AccommodationController {
         }
 
 
-        System.out.println(user instanceof Guest);
         Boolean favorite = null;
         if(user instanceof Guest) {
             Optional<Accommodation> favoriteWrapper = accommodationRepository.findFavoritesByAccommodationIdAndGuestId(accommodationId, user.getId());
@@ -95,15 +94,17 @@ public class AccommodationController {
 
 
         for(Availability a: accommodation.getAvailabilityList()){
-            var availabilityDTO = AvailabilityDTO.builder()
-                    .id(a.getId())
-                    .startDate(a.getStartDate())
-                    .endDate(a.getEndDate())
-                    .cancellationDeadline(a.getCancelDeadline())
-                    .pricePerGuest(a.getPricePerGuest())
-                    .price(a.getPrice())
-                    .build();
-            accommodationDTO.getAvailabilityList().add(availabilityDTO);
+            if(a.getStartDate().isAfter(LocalDate.now()) && a.getEndDate().isAfter(LocalDate.now())){
+                var availabilityDTO = AvailabilityDTO.builder()
+                        .id(a.getId())
+                        .startDate(a.getStartDate())
+                        .endDate(a.getEndDate())
+                        .cancellationDeadline(a.getCancelDeadline())
+                        .pricePerGuest(a.getPricePerGuest())
+                        .price(a.getPrice())
+                        .build();
+                accommodationDTO.getAvailabilityList().add(availabilityDTO);
+            }
         }
 
         var futureReservations = reservationRepository.findReservationsNotEndedByAccommodationId(accommodationId);
@@ -157,7 +158,6 @@ public class AccommodationController {
 
         if(foundImgPath.isEmpty()) throw new NonExistingEntityException("The image with this path does not exist");
 
-        System.out.println("OVDE NE RADIII " + foundImgPath);
         Path filePath = Path.of("uploads/" + foundImgPath);
 
         if (!Files.exists(filePath)) {

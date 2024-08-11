@@ -173,7 +173,7 @@ private final UserRepository userRepository;
                 .minGuests(1L)
                 .maxGuests(4L)
                 .accommodationType(AccommodationType.valueOf("STUDIO"))
-                .autoAcceptEnabled(true)
+                .autoAcceptEnabled(true )
                 .owner(ownerDusan)
                 .availabilityList(new ArrayList<>())
                 .reservations(new ArrayList<>())

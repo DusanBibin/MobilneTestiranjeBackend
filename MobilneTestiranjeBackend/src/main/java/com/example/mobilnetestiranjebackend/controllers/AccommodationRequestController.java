@@ -115,7 +115,7 @@ public class AccommodationRequestController {
         var request = accommodationRequestWrapper.get();
         if(ownerWrapper.isPresent()) {
             Owner owner  = ownerWrapper.get();
-            if(!Objects.equals(request.getAccommodation().getOwner().getId(), owner.getId())) throw new InvalidAuthorizationException("You do not own this accommodation");
+            if(!Objects.equals(request.getOwner().getId(), owner.getId())) throw new InvalidAuthorizationException("You do not own this accommodation");
         }
 
 
@@ -171,7 +171,6 @@ public class AccommodationRequestController {
 
         if(foundImgPath.isEmpty()) throw new NonExistingEntityException("The image with this path does not exist");
 
-        System.out.println("OVDE NE RADIII " + foundImgPath);
         Path filePath = Path.of("uploads/" + foundImgPath);
 
         if (!Files.exists(filePath)) {

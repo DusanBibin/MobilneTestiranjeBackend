@@ -244,8 +244,6 @@ public class AuthenticationService {
                 List<Accommodation> accommodations = accommodationRepository.findByOwnerId(user.getId());
                 for(Accommodation accommodation: accommodations){
                     String[] pathParts = accommodation.getImagePaths().get(0).split("/");
-                    System.out.println("uploads/" + user.getEmail() + "/" + pathParts[2]);
-                    System.out.println("uploads/" + newEmail + "/" + pathParts[2]);
                     File oldFolder = new File("uploads/" + user.getEmail());
                     File newFolder = new File("uploads/" + newEmail);
                     if (oldFolder.renameTo(newFolder)) {

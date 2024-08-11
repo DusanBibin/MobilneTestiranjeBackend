@@ -296,7 +296,7 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
                 if(binding.checkBoxPool.isChecked()) amenities.add(Amenity.POOL);
                 if(binding.checkBoxWifi.isChecked()) amenities.add(Amenity.WIFI);
                 accommodation.setAmenities(amenities);
-
+                accommodation.setAutoAcceptEnabled(false);
                 accommodation.setMinGuests(Long.valueOf(binding.inputEditTextMinGuests.getText().toString()));
                 accommodation.setMaxGuests(Long.valueOf(binding.inputEditTextMaxGuests.getText().toString()));
                 accommodation.setAccommodationType(accommodationType);
@@ -324,6 +324,7 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
                         }
                         if(response.code() == 400){
                             Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
+                            System.out.println(map);
                             if(map.containsKey("message")) Toast.makeText(CreateAccommodationActivity.this, map.get("message"), Toast.LENGTH_SHORT).show();
                             binding.btnConfirm.setVisibility(View.VISIBLE);
                             binding.progressBar.setVisibility(View.GONE);

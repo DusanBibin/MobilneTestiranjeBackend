@@ -19,4 +19,8 @@ public interface AccommodationRequestRepository extends JpaRepository<Accommodat
 
     @Query("select ar from AccommodationRequest ar where ar.owner.id = :ownerId and ar.id = :requestId")
     Optional<AccommodationRequest> findByOwnerIdAndId(Long requestId, Long ownerId);
+
+
+    @Query("select ar from AccommodationRequest ar where ar.owner.id = :ownerId and ar.accommodation.id = :accommodationId and ar.status = 0")
+    Optional<AccommodationRequest> findPendingRequestByAccommodationId(Long ownerId, Long accommodationId);
 }

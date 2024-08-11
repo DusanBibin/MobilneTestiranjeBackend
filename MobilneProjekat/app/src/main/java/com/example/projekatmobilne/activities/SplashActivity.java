@@ -33,6 +33,21 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
+    }
+
+    public void stopSplashTimer() {
+        if (splashTimer != null) {
+            splashTimer.cancel();
+            splashTimer = null;
+        }
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
         binding = ActivitySplashBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -69,7 +84,7 @@ public class SplashActivity extends AppCompatActivity {
         String jwt = JWTManager.getJWT();
 
         if(jwt != null) { if(JWTManager.isExpired()) JWTManager.clearUserData();
-            else JWTManager.saveJWT(jwt);}
+        else JWTManager.saveJWT(jwt);}
 
 
 
@@ -96,13 +111,4 @@ public class SplashActivity extends AppCompatActivity {
         }
 
     }
-
-    public void stopSplashTimer() {
-        if (splashTimer != null) {
-            splashTimer.cancel();
-            splashTimer = null;
-        }
-
-    }
-    
 }
