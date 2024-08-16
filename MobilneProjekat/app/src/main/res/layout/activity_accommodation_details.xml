@@ -415,7 +415,7 @@
                     android:id="@+id/btnRemoveFavorites"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="16dp"
+                    android:layout_marginBottom="32dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Remove from favorites"/>
@@ -437,51 +437,100 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp">
+                android:orientation="vertical">
                 <TextView
                     android:textSize="25sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="15dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
                     android:text="Comments and ratings"/>
                 <ProgressBar
                     android:id="@+id/progressBarReviews"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     />
+
+                <TextView
+                    android:textSize="15sp"
+                    android:id="@+id/txtNoRatings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:text="No ratings and comments yet"/>
                 <LinearLayout
                     android:id="@+id/linearLayoutReviews"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    android:paddingBottom="10dp"
                     android:layout_weight="1"
                     android:orientation="vertical"
-                    android:visibility="gone">
+                    >
 
-
-                    <TextView
-                        android:textSize="15sp"
-                        android:id="@+id/txtNoRatings"
+                    <LinearLayout
+                        android:id="@+id/linearLayoutFoundReviews"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="No ratings and comments yet"/>
+                        android:orientation="vertical">
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recyclerViewDetails"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scrollbars="vertical"
-                        android:nestedScrollingEnabled="false">
-                    </androidx.recyclerview.widget.RecyclerView>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginBottom="16dp">
+
+                            <TextView
+                                android:id="@+id/txtOwnerHeader"
+                                android:textSize="15sp"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Owner average rating"/>
+                            <RatingBar
+                                android:id="@+id/ratingBarOwner"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                style="@android:style/Widget.Material.RatingBar.Indicator"
+                                android:isIndicator="true"
+                                android:numStars="5"/>
+
+                            <TextView
+
+                                android:id="@+id/txtAccommodationHeader"
+                                android:textSize="15sp"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Accommodation average rating"/>
+
+                            <RatingBar
+                                android:id="@+id/ratingBarAccommodation"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                style="@android:style/Widget.Material.RatingBar.Indicator"
+                                android:isIndicator="true"
+                                android:numStars="5"/>
+                        </LinearLayout>
+
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recyclerViewDetails"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scrollbars="vertical"
+                            android:nestedScrollingEnabled="false">
+                        </androidx.recyclerview.widget.RecyclerView>
+
+                    </LinearLayout>
+
                 </LinearLayout>
 
 

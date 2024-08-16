@@ -113,6 +113,7 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
                     Toast.makeText(LoginActivity.this, "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                    t.printStackTrace();
                 }
             });
         });

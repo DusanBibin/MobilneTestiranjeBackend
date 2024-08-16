@@ -170,7 +170,7 @@ public class ComplaintService {
 
         if(!reviewComplaint.getStatus().equals(RequestStatus.PENDING))
             throw new InvalidAuthorizationException("You cannot already review already reviewed complaint");
-
+        reviewComplaint.getReview().setAllowed(false);
         reviewComplaint.setStatus(status);
         reviewComplaint.setResponse(response);
         reviewComplaint = reviewComplaintRepository.save(reviewComplaint);

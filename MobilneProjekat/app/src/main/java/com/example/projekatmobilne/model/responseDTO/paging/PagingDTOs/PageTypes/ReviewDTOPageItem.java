@@ -9,7 +9,9 @@ public class ReviewDTOPageItem {
 
     private ReviewDTOPageItemInner accommodationReview;
 
-
+    public ReviewDTOPageItem(String guestName) {
+        this.guestName = guestName;
+    }
 
     public ReviewDTOPageItem(ReviewDTOPageItemInner ownerReview, ReviewDTOPageItemInner accommodationReview, String guestName) {
         this.ownerReview = ownerReview;

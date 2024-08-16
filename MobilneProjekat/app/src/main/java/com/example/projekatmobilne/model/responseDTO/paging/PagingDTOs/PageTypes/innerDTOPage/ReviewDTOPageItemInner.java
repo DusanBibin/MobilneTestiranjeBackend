@@ -1,6 +1,7 @@
 package com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.PageTypes.innerDTOPage;
 
 public class ReviewDTOPageItemInner {
+    private Long reviewId;
     private String comment;
     private Long rating;
     public ReviewDTOPageItemInner(String comment, Long rating) {
@@ -24,10 +25,19 @@ public class ReviewDTOPageItemInner {
         this.rating = rating;
     }
 
+    public Long getReviewId() {
+        return reviewId;
+    }
+
+    public void setReviewId(Long reviewId) {
+        this.reviewId = reviewId;
+    }
+
     @Override
     public String toString() {
-        return "ReviewDTO{" +
-                "comment='" + comment + '\'' +
+        return "ReviewDTOPageItemInner{" +
+                "reviewId=" + reviewId +
+                ", comment='" + comment + '\'' +
                 ", rating=" + rating +
                 '}';
     }

@@ -1,6 +1,7 @@
 package com.example.mobilnetestiranjebackend.services;
 
 
+import com.example.mobilnetestiranjebackend.DTOs.AccommodationDTOResponse;
 import com.example.mobilnetestiranjebackend.DTOs.ReviewDTO;
 import com.example.mobilnetestiranjebackend.DTOs.ReviewDTOResponse;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthorizationException;
@@ -33,7 +34,7 @@ public class ReviewService {
     private final AccommodationRepository accommodationRepository;
     private final UserRepository userRepository;
 
-    public void createOwnerReview(ReviewDTO reviewDTO, Long ownerId, Long guestId) {
+    public ReviewDTO createOwnerReview(ReviewDTO reviewDTO, Long ownerId, Long guestId) {
 
         var guestWrapper = guestRepository.findById(guestId);
         if(guestWrapper.isEmpty()) throw new NonExistingEntityException("Guest with this id doesn't exist");
@@ -54,6 +55,7 @@ public class ReviewService {
         OwnerReview ownerReview = OwnerReview.builder()
                 .owner(owner)
                 .guest(guest)
+                .allowed(true)
                 .comment(reviewDTO.getComment())
                 .rating(reviewDTO.getRating())
                 .build();
@@ -66,7 +68,8 @@ public class ReviewService {
 
         owner.getOwnerReviews().add(ownerReview);
         ownerRepository.save(owner);
-
+        reviewDTO.setReviewId(ownerReview.getId());
+        return reviewDTO;
     }
 
     public void deleteOwnerReview(Long reviewId, Long guestId) {
@@ -83,7 +86,7 @@ public class ReviewService {
 
     }
 
-    public void createAccommodationReview(ReviewDTO reviewDTO, Long accommodationId, Long reservationId, Long guestId) {
+    public ReviewDTO createAccommodationReview(ReviewDTO reviewDTO, Long accommodationId, Long reservationId, Long guestId) {
 
         var guestWrapper = guestRepository.findById(guestId);
         if(guestWrapper.isEmpty()) throw new NonExistingEntityException("Guest with this id doesn't exist");
@@ -109,7 +112,7 @@ public class ReviewService {
 
 
         var accommodationReview = AccommodationReview.builder()
-                .allowed(false)
+                .allowed(true)
                 .comment(reviewDTO.getComment())
                 .rating(reviewDTO.getRating())
                 .guest(guest)
@@ -122,6 +125,8 @@ public class ReviewService {
         accommodation.getAccommodationReviews().add(accommodationReview);
         accommodationRepository.save(accommodation);
 
+        reviewDTO.setReviewId(accommodationReview.getId());
+        return reviewDTO;
     }
 
     public void deleteAccommodationReview(Long reviewId, Long guestId) {
@@ -144,19 +149,31 @@ public class ReviewService {
 
         List<ReviewDTOResponse> reviews = new ArrayList<>();
         for(Reservation r: reservations){
+
             var guestId = r.getGuest().getId();
 
             var ownerReview = ownerReviewRepository.findByAccommodationAndGuest(accommodationId, guestId);
             var accommodationReview = accommodationReviewRepository.findByAccommodationAndGuest(accommodationId, guestId);
 
 
-            if(ownerReview.isPresent() && accommodationReview.isPresent()){
+            if(accommodationReview.isPresent() || ownerReview.isPresent()){
                 ReviewDTOResponse review = ReviewDTOResponse.builder()
                         .guestName(r.getGuest().getFirstName() + " " + r.getGuest().getLastname())
-                        .ownerReview(new ReviewDTO(ownerReview.get().getComment(), ownerReview.get().getRating()))
-                        .accommodationReview(new ReviewDTO(accommodationReview.get().getComment(), accommodationReview.get().getRating()))
                         .build();
 
+                if(ownerReview.isPresent()){
+                    OwnerReview or = ownerReview.get();
+                    if(or.getAllowed()){
+                        review.setOwnerReview(new ReviewDTO(0L, or.getComment(), or.getRating()));
+                    }
+                }
+
+                if(accommodationReview.isPresent()){
+                    AccommodationReview ar = accommodationReview.get();
+                    if(ar.getAllowed()){
+                        review.setAccommodationReview(new ReviewDTO(0L, ar.getComment(), ar.getRating()));
+                    }
+                }
                 reviews.add(review);
             }
         }
@@ -208,11 +225,11 @@ public class ReviewService {
         ReviewDTO orDTO = null, arDTO = null;
         if(orWrapper.isPresent()){
             OwnerReview or = orWrapper.get();
-            orDTO = new ReviewDTO(or.getComment(), or.getRating());
+            orDTO = new ReviewDTO(or.getId(), or.getComment(), or.getRating());
         }
         if(arWrapper.isPresent()){
             AccommodationReview ar = arWrapper.get();
-            arDTO = new ReviewDTO(ar.getComment(), ar.getRating());
+            arDTO = new ReviewDTO(ar.getId(), ar.getComment(), ar.getRating());
         }
 
 
@@ -223,5 +240,15 @@ public class ReviewService {
 
 
         return review;
+    }
+
+    public Double getAverageAccommodationRating(Long accommodationId) {
+        List<AccommodationReview> reviews = accommodationReviewRepository.findByAccommodationId(accommodationId);
+        return reviews.stream().mapToLong(Review::getRating).average().orElse(0.0);
+    }
+
+    public Double getAverageOwnerRating(Long ownerId) {
+        List<OwnerReview> reviews = ownerReviewRepository.findByOwnerId(ownerId);
+        return reviews.stream().mapToLong(Review::getRating).average().orElse(0.0);
     }
 }

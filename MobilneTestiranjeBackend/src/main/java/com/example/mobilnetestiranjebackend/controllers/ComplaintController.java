@@ -48,7 +48,7 @@ public class ComplaintController {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/review-complaint/{complaintId}/{status}")
-    public ResponseEntity<?> reviewReviewComplaint(@PathVariable("complaintId") Long complaintId,
+    public ResponseEntity<?> reviewComplaint(@PathVariable("complaintId") Long complaintId,
                                              @PathVariable("status") RequestStatus status,
                                                    @AuthenticationPrincipal Admin admin,
                                                    @RequestBody TextNode response){

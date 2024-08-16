@@ -32,9 +32,9 @@ public class ReviewController {
     public ResponseEntity<?> createOwnerReview(@PathVariable("ownerId") Long ownerId,
                                                @RequestBody ReviewDTO reviewDTO,
                                                @AuthenticationPrincipal Guest guest){
-        reviewService.createOwnerReview(reviewDTO, ownerId, guest.getId());
+        ReviewDTO review = reviewService.createOwnerReview(reviewDTO, ownerId, guest.getId());
 
-        return ResponseEntity.ok().body("Successfully created new owner review");
+        return ResponseEntity.ok().body(review);
     }
 
 
@@ -54,9 +54,9 @@ public class ReviewController {
                                                        @PathVariable("reservationId") Long reservationId,
                                                        @RequestBody ReviewDTO reviewDTO,
                                                        @AuthenticationPrincipal Guest guest){
-        reviewService.createAccommodationReview(reviewDTO, accommodationId,reservationId, guest.getId());
+        ReviewDTO review = reviewService.createAccommodationReview(reviewDTO, accommodationId,reservationId, guest.getId());
 
-        return ResponseEntity.ok().body("Successfully created new accommodation review");
+        return ResponseEntity.ok().body(review);
     }
 
     @PreAuthorize("hasAuthority('GUEST')")

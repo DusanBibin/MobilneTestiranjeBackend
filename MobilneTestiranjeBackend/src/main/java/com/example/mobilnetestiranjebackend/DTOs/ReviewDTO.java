@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReviewDTO {
-
+public class  ReviewDTO {
+    private Long reviewId;
     @NotBlank(message = "Comment must be present")
     private String comment;
 

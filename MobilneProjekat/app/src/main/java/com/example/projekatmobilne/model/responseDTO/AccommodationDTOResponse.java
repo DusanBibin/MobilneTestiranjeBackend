@@ -38,7 +38,8 @@ public class AccommodationDTOResponse {
 
     private List<ReservationDTOInner> futureReservations;
     private List<Long> imageIds;
-
+    private Double averageOwnerRating;
+    private Double averageAccommodationRating;
     private Boolean favorite;
 
     public AccommodationDTOResponse(String name, String description, String address, Double lat,
@@ -49,7 +50,7 @@ public class AccommodationDTOResponse {
                                     List<Long> imagePaths,
                                     List<ReservationDTOInner> futureReservations,
                                     Long ownerId, String ownerEmail, String ownerNameAndSurname,
-                                    Boolean favorite) {
+                                    Boolean favorite, Double averageAccommodationRating, Double averageOwnerRating) {
         this.name = name;
         this.description = description;
         this.address = address;
@@ -67,6 +68,8 @@ public class AccommodationDTOResponse {
         this.ownerEmail = ownerEmail;
         this.ownerNameAndSurname = ownerNameAndSurname;
         this.favorite = favorite;
+        this.averageOwnerRating = averageOwnerRating;
+        this.averageAccommodationRating = averageAccommodationRating;
     }
 
     public List<ReservationDTOInner> getFutureReservations() {
@@ -205,6 +208,22 @@ public class AccommodationDTOResponse {
         this.favorite = favorite;
     }
 
+    public Double getAverageOwnerRating() {
+        return averageOwnerRating;
+    }
+
+    public void setAverageOwnerRating(Double averageOwnerRating) {
+        this.averageOwnerRating = averageOwnerRating;
+    }
+
+    public Double getAverageAccommodationRating() {
+        return averageAccommodationRating;
+    }
+
+    public void setAverageAccommodationRating(Double averageAccommodationRating) {
+        this.averageAccommodationRating = averageAccommodationRating;
+    }
+
     @Override
     public String toString() {
         return "AccommodationDTOResponse{" +
@@ -224,6 +243,8 @@ public class AccommodationDTOResponse {
                 ", availabilityList=" + availabilityList +
                 ", futureReservations=" + futureReservations +
                 ", imageIds=" + imageIds +
+                ", averageOwnerRating=" + averageOwnerRating +
+                ", averageAccommodationRating=" + averageAccommodationRating +
                 ", favorite=" + favorite +
                 '}';
     }

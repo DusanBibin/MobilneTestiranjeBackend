@@ -1,8 +1,7 @@
 package com.example.mobilnetestiranjebackend.services;
 
 
-import com.example.mobilnetestiranjebackend.DTOs.AccommodationSearchDTO;
-import com.example.mobilnetestiranjebackend.DTOs.AccommodationViewDTO;
+import com.example.mobilnetestiranjebackend.DTOs.*;
 import com.example.mobilnetestiranjebackend.enums.AccommodationType;
 import com.example.mobilnetestiranjebackend.enums.Amenity;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthorizationException;
@@ -28,6 +27,7 @@ public class AccommodationService {
     private final ReservationRepository reservationRepository;
     private final AccommodationReviewRepository accommodationReviewRepository;
     private final OwnerRepository ownerRepository;
+    private final ReviewService reviewService;
 
     public Optional<Accommodation> findAccommodationById(Long accommodationId) {
         return accommodationRepository.findAccommodationById(accommodationId);
@@ -261,5 +261,83 @@ public class AccommodationService {
     }
 
 
+    public AccommodationDTOResponse getAccommodation(Long accommodationId, User user) {
+
+        var accommodationWrapper = findAccommodationById(accommodationId);
+        if(accommodationWrapper.isEmpty()) throw new NonExistingEntityException("Accommodation with this id does not exist");
+        var accommodation = accommodationWrapper.get();
+
+
+        List<Long> imageIds = new ArrayList<>();
+        for(String imagePath: accommodation.getImagePaths()){
+            String[] pathParts = imagePath.split("/");
+            String fileName = pathParts[3];
+
+            if(!Character.isDigit(fileName.charAt(0))) throw new InvalidInputException("Error with image id");
+
+            Long imageId = Long.parseLong(String.valueOf(fileName.charAt(0)));
+            imageIds.add(imageId);
+        }
+
+
+        Boolean favorite = null;
+        if(user instanceof Guest) {
+            Optional<Accommodation> favoriteWrapper = accommodationRepository.findFavoritesByAccommodationIdAndGuestId(accommodationId, user.getId());
+            favorite = favoriteWrapper.isPresent();
+        }
+
+        Owner owner = accommodation.getOwner();
+        var accommodationDTO = AccommodationDTOResponse.builder()
+                .ownerId(owner.getId())
+                .ownerEmail(owner.getEmail())
+                .ownerNameAndSurname(owner.getFirstName() + " " + owner.getLastname())
+                .id(accommodation.getId())
+                .name(accommodation.getName())
+                .description(accommodation.getDescription())
+                .address(accommodation.getAddress())
+                .lat(accommodation.getLat())
+                .lon(accommodation.getLon())
+                .amenities(accommodation.getAmenities())
+                .minGuests(accommodation.getMinGuests())
+                .maxGuests(accommodation.getMaxGuests())
+                .averageAccommodationRating(reviewService.getAverageAccommodationRating(accommodationId))
+                .averageOwnerRating(reviewService.getAverageOwnerRating(accommodation.getOwner().getId()))
+                .accommodationType(accommodation.getAccommodationType())
+                .autoAcceptEnabled(accommodation.getAutoAcceptEnabled())
+                .availabilityList(new ArrayList<>())
+                .futureReservations(new ArrayList<>())
+                .favorite(favorite)
+                .imageIds(imageIds)
+                .build();
+
+
+        for(Availability a: accommodation.getAvailabilityList()){
+            if(a.getStartDate().isAfter(LocalDate.now()) && a.getEndDate().isAfter(LocalDate.now())){
+                var availabilityDTO = AvailabilityDTO.builder()
+                        .id(a.getId())
+                        .startDate(a.getStartDate())
+                        .endDate(a.getEndDate())
+                        .cancellationDeadline(a.getCancelDeadline())
+                        .pricePerGuest(a.getPricePerGuest())
+                        .price(a.getPrice())
+                        .build();
+                accommodationDTO.getAvailabilityList().add(availabilityDTO);
+            }
+        }
+
+        var futureReservations = reservationRepository.findReservationsNotEndedByAccommodationId(accommodationId);
+
+        for(Reservation r : futureReservations){
+            var reservationDTO = ReservationDTO.builder()
+                    .availabilityId(r.getAvailability().getId())
+                    .reservationEndDate(r.getReservationEndDate())
+                    .reservationStartDate(r.getReservationStartDate())
+                    .guestNum(r.getGuestNum())
+                    .build();
+            accommodationDTO.getFutureReservations().add(reservationDTO);
+        }
+
+        return accommodationDTO;
+    }
 }
 

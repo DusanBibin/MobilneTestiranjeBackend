@@ -216,9 +216,20 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
                 if(response.code() == 200){
                     loadReviewPage();
                     accommodationDTO = ResponseParser.parseResponse(response, AccommodationDTOResponse.class, false);
+                    System.out.println(accommodationDTO.getAverageAccommodationRating());
+                    System.out.println(accommodationDTO.getAverageOwnerRating());
 
 
-
+                    binding.ratingBarAccommodation.setRating(accommodationDTO.getAverageAccommodationRating().floatValue());
+                    binding.ratingBarOwner.setRating(accommodationDTO.getAverageOwnerRating().floatValue());
+                    if(accommodationDTO.getAverageOwnerRating().floatValue() == 0.0){
+                        binding.ratingBarOwner.setVisibility(View.GONE);
+                        binding.txtOwnerHeader.setVisibility(View.GONE);
+                    }
+                    if(accommodationDTO.getAverageAccommodationRating().floatValue() == 0.0){
+                        binding.ratingBarAccommodation.setVisibility(View.GONE);
+                        binding.txtAccommodationHeader.setVisibility(View.GONE);
+                    }
 
                     if(Role.OWNER.equals(JWTManager.getRoleEnum()) && accommodationId != 0L && accommodationDTO.getOwnerId().equals(JWTManager.getUserIdLong())){
                         binding.btnEdit.setVisibility(View.VISIBLE);
@@ -629,7 +640,7 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
                 reviewsAdapter = new ReviewsAdapter(AccommodationDetailsActivity.this, dataList);
                 binding.recyclerViewDetails.setAdapter(reviewsAdapter);
 
-                if(dataList.isEmpty()) binding.txtNoRatings.setVisibility(View.VISIBLE);
+                if(dataList.isEmpty()) {binding.txtNoRatings.setVisibility(View.VISIBLE); binding.linearLayoutFoundReviews.setVisibility(View.GONE);}
 
                 binding.progressBarReviews.setVisibility(View.GONE);
                 binding.linearLayoutReviews.setVisibility(View.VISIBLE);

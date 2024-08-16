@@ -26,5 +26,5 @@ public class Review {
     @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Complaint complaint;
 
-
+    private Boolean allowed;
 }

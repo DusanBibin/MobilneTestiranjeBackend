@@ -12,6 +12,8 @@ import com.example.projekatmobilne.model.Enum.Amenity;
 import com.example.projekatmobilne.model.requestDTO.RegisterRequestDTO;
 import com.example.projekatmobilne.model.requestDTO.ReservationDTO;
 import com.example.projekatmobilne.model.requestDTO.UserDTO;
+import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.PageTypes.ReviewDTOPageItem;
+import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.PageTypes.innerDTOPage.ReviewDTOPageItemInner;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -312,5 +314,41 @@ public interface ApiService {
     @GET("reviews/accommodations/{accommodationId}/reservations/{reservationId}")
     Call<ResponseBody> getReservationReview(@Path("accommodationId") Long accommodationId,
                                              @Path("reservationId") Long reservationId);
+
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @POST("reviews/accommodations/{accommodationId}/reservation/{reservationId}")
+    Call<ResponseBody> createAccommodationReview(@Path("accommodationId") Long accommodationId,
+                                                 @Path("reservationId") Long reservationId,
+                                                 @Body ReviewDTOPageItemInner reviewDTO);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @POST("reviews/owners/{ownerId}")
+    Call<ResponseBody> createOwnerReview(@Path("ownerId") Long ownerId,
+                                                 @Body ReviewDTOPageItemInner reviewDTO);
+
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @DELETE("reviews/owner-reviews/{reviewId}")
+    Call<ResponseBody> deleteOwnerReview(@Path("reviewId") Long reviewId);
+
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @DELETE("reviews/accommodation-reviews/{reviewId}")
+    Call<ResponseBody> deleteAccommodationReview(@Path("reviewId") Long reviewId);
+
+
 
 }

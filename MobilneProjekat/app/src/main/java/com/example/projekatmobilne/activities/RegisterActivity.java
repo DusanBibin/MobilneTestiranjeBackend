@@ -78,14 +78,16 @@ public class RegisterActivity extends AppCompatActivity {
                    if(response.code() == 400){
                        Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
                         System.out.println(map);
-                        if(map.containsKey("message")){
+                        if(map.containsKey("message")) {
                             String errMessage = map.get("message");
-
-                            if(errMessage.equals("User with this email already exists")) binding.emailInputLayout.setError(errMessage);
-                            else binding.phoneInputLayout.setError(errMessage);
+                            Toast.makeText(RegisterActivity.this, errMessage, Toast.LENGTH_SHORT).show();
+                        }else{
+                            Map.Entry<String, String > firstEntry = map.entrySet().iterator().next();
+                            Toast.makeText(RegisterActivity.this, firstEntry.getValue(), Toast.LENGTH_SHORT).show();
                         }
 
-
+                       binding.progressBar.setVisibility(View.GONE);
+                       binding.registerButton.setVisibility(View.VISIBLE);
                    }
 
 
@@ -142,7 +144,7 @@ public class RegisterActivity extends AppCompatActivity {
             isValid = false;
         }
 
-        if(binding.phoneInputEditText.getText().length() < 10) binding.passwordInputLayout.setError("This field must contain at least 10 characters");
+        if(binding.phoneInputEditText.getText().length() < 10) binding.phoneInputLayout.setError("This field must contain at least 10 characters");
 
         if(binding.passwordInputEditText.getText().length() < 10) binding.passwordInputLayout.setError("This field must contain at least 10 characters");
         if(binding.passwordRepeatInputEditText.getText().length() < 10) binding.passwordRepeatInputLayout.setError("This field must contain at least 10 characters");
