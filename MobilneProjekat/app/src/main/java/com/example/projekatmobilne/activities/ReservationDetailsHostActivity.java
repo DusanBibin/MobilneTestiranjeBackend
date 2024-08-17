@@ -56,6 +56,7 @@ public class ReservationDetailsHostActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         binding.cardViewReview.setVisibility(View.GONE);
+        binding.cardViewReport.setVisibility(View.GONE);
         Intent intent = getIntent();
         if(intent != null && intent.hasExtra("reservationId")){
             reservationId = (Long) intent.getSerializableExtra("reservationId");
@@ -70,6 +71,39 @@ public class ReservationDetailsHostActivity extends AppCompatActivity {
                 Intent intent = new Intent(ReservationDetailsHostActivity.this, AccommodationDetailsActivity.class);
                 intent.putExtra("accommodationId", accommodationId);
                 startActivity(intent);
+            }
+        });
+
+        binding.reportButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(binding.inputEditTextReport.getText().toString().isEmpty()){
+                    binding.inputEditTextReport.setError("Reject reason must be provided");
+                    return;
+                }
+
+                binding.linearLayoutButtons.setVisibility(View.GONE);
+                binding.progressBarButton.setVisibility(View.VISIBLE);
+
+                Call<ResponseBody> call = ClientUtils.apiService.sendHostReport(reservationId,binding.inputEditTextReport.getText().toString());
+                call.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if(response.code() == 200){
+                            String responseMessage = ResponseParser.parseResponse(response, String.class, false);
+                            Toast.makeText(ReservationDetailsHostActivity.this, responseMessage, Toast.LENGTH_SHORT).show();
+                        }
+
+                        binding.progressBarButton.setVisibility(View.GONE);
+                        loadReservationDetails();
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        Toast.makeText(ReservationDetailsHostActivity.this, "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                        t.printStackTrace();
+                    }
+                });
             }
         });
 
@@ -283,6 +317,7 @@ public class ReservationDetailsHostActivity extends AppCompatActivity {
                                     binding.ratingBarOwner.setRating(re.getOwnerReview().getRating());
 
                                     binding.cardViewReview.setVisibility(View.VISIBLE);
+                                    binding.cardViewReport.setVisibility(View.GONE);
                                     binding.progressBarReview.setVisibility(View.GONE);
 
                                 }
@@ -326,6 +361,11 @@ public class ReservationDetailsHostActivity extends AppCompatActivity {
                     if(r.getConflictReservations() && JWTManager.getUserIdLong().equals(r.getOwnerId())) {
                         binding.linearLayoutConflictReservations.setVisibility(View.VISIBLE);
                         loadConflictedReservationsPage();
+                    }
+                    if(r.getStatus().equals(ReservationStatus.ACCEPTED) && LocalDate.now().isAfter(r.getReservationStartDate())){
+                        binding.cardViewReport.setVisibility(View.VISIBLE);
+                    } else {
+                        binding.cardViewReview.setVisibility(View.GONE);
                     }
                 }
             }

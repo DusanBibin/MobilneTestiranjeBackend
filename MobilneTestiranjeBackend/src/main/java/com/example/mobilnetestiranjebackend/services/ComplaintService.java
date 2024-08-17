@@ -3,6 +3,7 @@ package com.example.mobilnetestiranjebackend.services;
 
 import com.example.mobilnetestiranjebackend.enums.RequestStatus;
 import com.example.mobilnetestiranjebackend.enums.ReservationStatus;
+import com.example.mobilnetestiranjebackend.enums.Role;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthorizationException;
 import com.example.mobilnetestiranjebackend.exceptions.NonExistingEntityException;
 import com.example.mobilnetestiranjebackend.model.*;
@@ -95,13 +96,22 @@ public class ComplaintService {
 
     }
 
-    public void createUserComplaint(Long reporterId, Long reportedId, String reason) {
+    public void createUserComplaint(Long reporterId, Long reservationId, String reason, Role role) {
 
         Owner owner = null;
         Guest guest = null;
 
         User reporter = null;
         User reported = null;
+
+        Long reportedId = null;
+
+        if(role.equals(Role.OWNER)){
+            reportedId = reservationRepository.findById(reservationId).get().getGuest().getId();
+        }else{
+            reportedId = reservationRepository.findById(reservationId).get().getAccommodation().getOwner().getId();
+        }
+
 
         var ownerWrapper = ownerRepository.findOwnerById(reporterId);
         if(ownerWrapper.isPresent()){

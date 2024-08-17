@@ -24,11 +24,11 @@ public class ComplaintController {
 
     @PreAuthorize("hasAuthority('GUEST') or hasAuthority('OWNER')")
     @PostMapping("/users/{reportedId}")
-    public ResponseEntity<?> createUserComplaint(@PathVariable("reportedId") Long reportedId,
+    public ResponseEntity<?> createUserComplaint(@PathVariable("reportedId") Long reservationId,
                                                  @AuthenticationPrincipal User user,
                                                  @RequestBody TextNode reason){
 
-        complaintService.createUserComplaint(user.getId(), reportedId, reason.asText());
+        complaintService.createUserComplaint(user.getId(), reservationId, reason.asText(), user.getRole());
 
         return new ResponseEntity<>(("Successfully created new review complaint"), HttpStatus.OK);
 

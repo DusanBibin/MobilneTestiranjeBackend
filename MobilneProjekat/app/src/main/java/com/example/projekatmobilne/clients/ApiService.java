@@ -241,6 +241,14 @@ public interface ApiService {
                                           @Path("status") ReservationStatus status,
                                           @Body String reason);
 
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @POST("complaints/users/{reservationId}")
+    Call<ResponseBody> sendHostReport(@Path("reservationId") Long reservationId,
+                                      @Body String reason);
+
 
     @Headers({
             "User-Agent: Mobile-Android",
