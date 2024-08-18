@@ -404,6 +404,11 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="Remove accommodation review"/>
+                                    <Button
+                                        android:id="@+id/btnCreateComplaintAccommodation"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Create review complaint"/>
                                     <ProgressBar
                                         android:visibility="gone"
                                         android:id="@+id/progressBarRemoveAccommodationReview"

@@ -171,15 +171,7 @@ public class AccommodationService {
             if (av.getPricePerGuest()) totalPrice = days * av.getPrice() * guestNum;
             else totalPrice = days * av.getPrice();
 
-            List<AccommodationReview> accommodationsRatings = accommodationReviewRepository.findByAccommodationId(a.getId());
-
-            double ratingSum = 0;
-            for (AccommodationReview ar : accommodationsRatings) {
-                ratingSum += ar.getRating();
-            }
-
-            double ratingAvg = 0;
-            if(ratingSum != 0) ratingAvg = ratingSum / accommodationsRatings.size();
+            Double ratingAvg = reviewService.getAverageAccommodationRating(a.getId());
 
             AccommodationSearchDTO dto = new AccommodationSearchDTO();
             dto.setAccommodationId(a.getId());

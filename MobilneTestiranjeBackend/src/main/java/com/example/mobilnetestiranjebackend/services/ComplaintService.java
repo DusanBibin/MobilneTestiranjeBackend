@@ -1,6 +1,7 @@
 package com.example.mobilnetestiranjebackend.services;
 
 
+import com.example.mobilnetestiranjebackend.DTOs.ComplaintDTO;
 import com.example.mobilnetestiranjebackend.enums.RequestStatus;
 import com.example.mobilnetestiranjebackend.enums.ReservationStatus;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthorizationException;
@@ -26,7 +27,7 @@ public class ComplaintService {
     private final ReservationRepository reservationRepository;
     private final UserRepository userRepository;
 
-    public void createReviewComplaint(Long ownerId, Long reviewId, String reason) {
+    public ComplaintDTO createReviewComplaint(Long ownerId, Long reviewId, String reason) {
 
         var ownerWrapper = ownerRepository.findById(ownerId);
         if(ownerWrapper.isEmpty()) throw new NonExistingEntityException("Owner with this id doesn't exist");
@@ -93,6 +94,20 @@ public class ComplaintService {
         guest.getReviewComplaints().add(reviewComplaint);
         guest = guestRepository.save(guest);
 
+        Long reservationId = 0L;
+        if(isAccommodationReview){ reservationId = accommodationReview.getReservation().getId(); }
+
+        return ComplaintDTO.builder()
+                .ownerNameSurname(owner.getFirstName() + " " + owner.getLastname())
+                .ownerEmail(owner.getEmail())
+                .guestNameSurname(guest.getFirstName() + " " + guest.getLastname())
+                .guestEmail(guest.getEmail())
+                .reviewRating(review.getRating())
+                .reviewComment(review.getComment())
+                .complaintReason(reason)
+                .requestStatus(RequestStatus.PENDING)
+                .declineReason(null)
+                .build();
     }
 
     public void createUserComplaint(Long reporterId, Long reportedId, String reason) {
@@ -155,9 +170,7 @@ public class ComplaintService {
                 .response("")
                 .build();
 
-
         userComplaint = userComplaintRepository.save(userComplaint);
-
 
     }
 
@@ -218,6 +231,33 @@ public class ComplaintService {
     }
 
 
+    public ComplaintDTO getComplaint(Long complaintId, Long userId) {
+
+        var userWrapper = userRepository.findByUserId(userId);
+        if(userWrapper.isEmpty()) throw new NonExistingEntityException("User with this id doesn't exist");
+        User user = userWrapper.get();
+
+        Optional<ReviewComplaint> reviewComplaintWrapper = reviewComplaintRepository.findComplaintById(complaintId);
+        if(reviewComplaintWrapper.isEmpty()) throw new NonExistingEntityException("Review with this id doesn't exist");
+        ReviewComplaint complaint = reviewComplaintWrapper.get();
+        Owner owner = complaint.getOwner();
+        Guest guest = complaint.getGuest();
+        Review review = complaint.getReview();
+
+        if(user instanceof Owner && reviewComplaintRepository.findComplaintByIdAndOwnerId(complaintId, userId).isEmpty())
+            throw new InvalidAuthorizationException("You do not own this complaint");
 
 
+        return ComplaintDTO.builder()
+                .ownerNameSurname(owner.getFirstName() + " " + owner.getLastname())
+                .ownerEmail(owner.getEmail())
+                .guestNameSurname(guest.getFirstName() + " " + guest.getLastname())
+                .guestEmail(guest.getEmail())
+                .reviewRating(review.getRating())
+                .reviewComment(review.getComment())
+                .complaintReason(complaint.getReason())
+                .requestStatus(complaint.getStatus())
+                .declineReason(complaint.getResponse())
+                .build();
+    }
 }

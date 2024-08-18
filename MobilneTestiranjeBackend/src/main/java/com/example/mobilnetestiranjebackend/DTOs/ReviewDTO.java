@@ -24,4 +24,7 @@ public class  ReviewDTO {
     @Min(value = 1, message = "Rating must be between 1 and 5")
     @Max(value = 5, message = "Rating must be between 1 and 5")
     private Long rating;
+
+    private String complaintReason;
+    private Long complaintId;
 }

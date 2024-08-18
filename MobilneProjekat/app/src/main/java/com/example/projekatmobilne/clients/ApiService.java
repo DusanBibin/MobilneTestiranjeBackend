@@ -349,6 +349,20 @@ public interface ApiService {
     @DELETE("reviews/accommodation-reviews/{reviewId}")
     Call<ResponseBody> deleteAccommodationReview(@Path("reviewId") Long reviewId);
 
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @POST("complaints/reviews/{reviewId}")
+    Call<ResponseBody> createReviewComplaint(@Path("reviewId") Long reviewId,
+                                             @Body String reason);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @GET("complaints/{complaintId}")
+    Call<ResponseBody> getComplaint(@Path("complaintId") Long complaintId);
 
 
 }

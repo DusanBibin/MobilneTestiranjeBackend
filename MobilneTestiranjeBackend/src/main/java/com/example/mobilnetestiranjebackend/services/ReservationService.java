@@ -224,17 +224,26 @@ public class ReservationService {
         Optional<AccommodationReview> accommodationReviewWrapper = Optional.empty();
         Optional<OwnerReview> ownerReviewWrapper = Optional.empty();
 
+
         if(ownerRepository.findOwnerById(userId).isPresent()) {
             if(accommodationRepository.findByIdAndOwnerId(accommodationId, userId).isEmpty()) throw new InvalidAuthorizationException("You do not own this accommodation");
+
+            Guest guest = reservation.getGuest();
+
+            accommodationReviewWrapper = accommodationReviewRepository.findByAccommodationIdAndGuestId(accommodationId, guest.getId());
+            ownerReviewWrapper = ownerReviewRepository.findByOwnerIdAndGuestId(userId, guest.getId());
+            System.out.println(accommodationReviewWrapper.isPresent());
+
         }
         else if(guestRepository.findGuestById(userId).isPresent()) {
+
             if(reservationRepository.findByIdAndGuest(reservationId, userId).isEmpty()) throw new InvalidAuthorizationException("You do not own this reservation");
 
-            Optional<Guest> guestWrapper = guestRepository.findGuestById(userId);
-            Guest guest = guestWrapper.get();
+            Owner owner = reservation.getAccommodation().getOwner();
 
-            accommodationReviewWrapper = accommodationReviewRepository.findByReviewIdAndGuestId(reservationId, userId);
-            ownerReviewWrapper = ownerReviewRepository.findByOwnerIdAndGuestId(reservation.getAccommodation().getOwner().getId(), guest.getId());
+            accommodationReviewWrapper = accommodationReviewRepository.findByAccommodationIdAndGuestId(accommodationId, userId);
+            ownerReviewWrapper = ownerReviewRepository.findByOwnerIdAndGuestId(owner.getId(), userId);
+
         }
         else throw new NonExistingEntityException("User with this id doesn't exist");
 
@@ -269,6 +278,8 @@ public class ReservationService {
         reservationDTO.setNameAndSurname(reservation.getGuest().getFirstName() + " " + reservation.getGuest().getLastname());
         reservationDTO.setUserEmail(reservation.getGuest().getEmail());
         reservationDTO.setTimesUserCancel((long) canceledReservations.size());
+
+        System.out.println(reservationDTO.getReviewPresent());
         return reservationDTO;
 
     }

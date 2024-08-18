@@ -33,6 +33,7 @@ public class ReviewService {
     private final AccommodationReviewRepository accommodationReviewRepository;
     private final AccommodationRepository accommodationRepository;
     private final UserRepository userRepository;
+    private final ReviewComplaintRepository reviewComplaintRepository;
 
     public ReviewDTO createOwnerReview(ReviewDTO reviewDTO, Long ownerId, Long guestId) {
 
@@ -164,14 +165,14 @@ public class ReviewService {
                 if(ownerReview.isPresent()){
                     OwnerReview or = ownerReview.get();
                     if(or.getAllowed()){
-                        review.setOwnerReview(new ReviewDTO(0L, or.getComment(), or.getRating()));
+                        review.setOwnerReview(new ReviewDTO(0L, or.getComment(), or.getRating(), null, 0L));
                     }
                 }
 
                 if(accommodationReview.isPresent()){
                     AccommodationReview ar = accommodationReview.get();
                     if(ar.getAllowed()){
-                        review.setAccommodationReview(new ReviewDTO(0L, ar.getComment(), ar.getRating()));
+                        review.setAccommodationReview(new ReviewDTO(0L, ar.getComment(), ar.getRating(), null, 0L));
                     }
                 }
                 reviews.add(review);
@@ -225,11 +226,30 @@ public class ReviewService {
         ReviewDTO orDTO = null, arDTO = null;
         if(orWrapper.isPresent()){
             OwnerReview or = orWrapper.get();
-            orDTO = new ReviewDTO(or.getId(), or.getComment(), or.getRating());
+
+            Optional<ReviewComplaint> orc = reviewComplaintRepository.findByReviewId(or.getId());
+            String reason = null;
+            Long complaintId = 0L;
+            if(orc.isPresent()){
+                reason = orc.get().getReason();
+                complaintId = orc.get().getId();
+            }
+
+            orDTO = new ReviewDTO(or.getId(), or.getComment(), or.getRating(), reason, complaintId);
         }
         if(arWrapper.isPresent()){
             AccommodationReview ar = arWrapper.get();
-            arDTO = new ReviewDTO(ar.getId(), ar.getComment(), ar.getRating());
+
+
+            Optional<ReviewComplaint> orc = reviewComplaintRepository.findByReviewId(ar.getId());
+            String reason = null;
+            Long complaintId = 0L;
+            if(orc.isPresent()){
+                reason = orc.get().getReason();
+                complaintId = orc.get().getId();
+            }
+
+            arDTO = new ReviewDTO(ar.getId(), ar.getComment(), ar.getRating(), reason, complaintId);
         }
 
 
@@ -244,11 +264,11 @@ public class ReviewService {
 
     public Double getAverageAccommodationRating(Long accommodationId) {
         List<AccommodationReview> reviews = accommodationReviewRepository.findByAccommodationId(accommodationId);
-        return reviews.stream().mapToLong(Review::getRating).average().orElse(0.0);
+        return reviews.stream().filter(Review::getAllowed).mapToLong(Review::getRating).average().orElse(0.0);
     }
 
     public Double getAverageOwnerRating(Long ownerId) {
         List<OwnerReview> reviews = ownerReviewRepository.findByOwnerId(ownerId);
-        return reviews.stream().mapToLong(Review::getRating).average().orElse(0.0);
+        return reviews.stream().filter(Review::getAllowed).mapToLong(Review::getRating).average().orElse(0.0);
     }
 }
