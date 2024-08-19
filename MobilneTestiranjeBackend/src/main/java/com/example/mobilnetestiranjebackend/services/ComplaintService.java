@@ -5,13 +5,18 @@ import com.example.mobilnetestiranjebackend.DTOs.ComplaintDTO;
 import com.example.mobilnetestiranjebackend.enums.RequestStatus;
 import com.example.mobilnetestiranjebackend.enums.ReservationStatus;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthorizationException;
+import com.example.mobilnetestiranjebackend.exceptions.InvalidInputException;
 import com.example.mobilnetestiranjebackend.exceptions.NonExistingEntityException;
+import com.example.mobilnetestiranjebackend.helpers.PageConverter;
 import com.example.mobilnetestiranjebackend.model.*;
 import com.example.mobilnetestiranjebackend.repositories.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.InvalidIsolationLevelException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -95,7 +100,11 @@ public class ComplaintService {
         guest = guestRepository.save(guest);
 
         Long reservationId = 0L;
-        if(isAccommodationReview){ reservationId = accommodationReview.getReservation().getId(); }
+        String reviewType = "Owner";
+        if(isAccommodationReview){
+            reservationId = accommodationReview.getReservation().getId();
+            reviewType = "accommodation";
+        }
 
         return ComplaintDTO.builder()
                 .ownerNameSurname(owner.getFirstName() + " " + owner.getLastname())
@@ -106,7 +115,8 @@ public class ComplaintService {
                 .reviewComment(review.getComment())
                 .complaintReason(reason)
                 .requestStatus(RequestStatus.PENDING)
-                .declineReason(null)
+                .reviewType(reviewType)
+                .adminResponse(null)
                 .build();
     }
 
@@ -174,7 +184,7 @@ public class ComplaintService {
 
     }
 
-    public void reviewReviewComplaint(Long complaintId, String response, RequestStatus status) {
+    public void reviewCommentComplaint(Long complaintId, String response, RequestStatus status) {
 
         var reviewComplaintWrapper = reviewComplaintRepository.findById(complaintId);
         if(reviewComplaintWrapper.isEmpty()) throw new NonExistingEntityException("Review with this id doesn't exist");
@@ -257,7 +267,45 @@ public class ComplaintService {
                 .reviewComment(review.getComment())
                 .complaintReason(complaint.getReason())
                 .requestStatus(complaint.getStatus())
-                .declineReason(complaint.getResponse())
+                .adminResponse(complaint.getResponse())
                 .build();
+    }
+
+    public Page<ComplaintDTO> getComplaints(Long adminId, int pageNo, int pageSize) {
+        Optional<User> userWrapper = userRepository.findByUserId(adminId);
+        if(userWrapper.isEmpty()) throw new NonExistingEntityException("User with this id doesn't exist");
+        User user = userWrapper.get();
+        if(!(user instanceof Admin)) throw new InvalidAuthorizationException("You do not have authorization for this");
+
+        List<ReviewComplaint> reviewComplaints = reviewComplaintRepository.findAll();
+
+        List<ComplaintDTO> convertedList = new ArrayList<>(reviewComplaints.stream().map(a -> {
+            ComplaintDTO dto = new ComplaintDTO();
+
+            Review review = a.getReview();
+            Long accommodationId = 0L, reservationId = 0L;
+            if(review instanceof AccommodationReview){
+                Optional<AccommodationReview> ar = accommodationReviewRepository.findById(review.getId());
+                if(ar.isEmpty()) throw new InvalidInputException("Accommodation review with this id doesn't exist");
+                AccommodationReview arReview = ar.get();
+                accommodationId = arReview.getAccommodation().getId();
+                reservationId = arReview.getReservation().getId();
+            }
+
+            dto.setRequestStatus(a.getStatus());
+            dto.setOwnerNameSurname(a.getOwner().getFirstName() + " " + a.getOwner().getLastname());
+            dto.setOwnerEmail(a.getOwner().getEmail());
+            dto.setComplaintId(a.getId());
+            dto.setAccommodationId(accommodationId);
+            dto.setReservationId(reservationId);
+            dto.setReviewId(a.getReview().getId());
+            String reviewType = "Accommodation";
+            if(a.getReview() instanceof OwnerReview)  reviewType = "Owner";
+            dto.setReviewType(reviewType);
+            return dto;
+        }).toList());
+
+
+        return PageConverter.convertListToPage(pageNo, pageSize, convertedList);
     }
 }

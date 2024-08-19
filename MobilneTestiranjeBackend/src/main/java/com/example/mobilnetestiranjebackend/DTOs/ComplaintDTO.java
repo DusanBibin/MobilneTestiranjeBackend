@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ComplaintDTO {
+    private String reviewType;
     private String ownerNameSurname;
     private String ownerEmail;
     private String guestNameSurname;
@@ -20,5 +21,10 @@ public class ComplaintDTO {
     private Long reviewRating;
     private String complaintReason;
     private RequestStatus requestStatus;
-    private  String declineReason;
+    private String adminResponse;
+
+    private Long complaintId;
+    private Long reviewId;
+    private Long accommodationId;
+    private Long reservationId;
 }

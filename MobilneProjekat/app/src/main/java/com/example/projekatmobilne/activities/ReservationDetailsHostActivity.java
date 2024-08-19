@@ -80,7 +80,12 @@ public class ReservationDetailsHostActivity extends AppCompatActivity {
              reservationId = (Long) intent.getSerializableExtra("reservationId");
             accommodationId = (Long) intent.getSerializableExtra("accommodationId");
         }
-
+        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAA");
+        System.out.println("accommodationId");
+        System.out.println(accommodationId);
+        System.out.println("rezervacija id");
+        System.out.println(reservationId);
+        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAA");
         binding.btnRemoveOwnerReview.setVisibility(View.GONE);
         binding.btnRemoveAccommodationReview.setVisibility(View.GONE);
 
@@ -100,14 +105,17 @@ public class ReservationDetailsHostActivity extends AppCompatActivity {
                 }
             }
         });
+
     }
 
 
 
-
-
-
     private void loadReservationDetails(){
+        System.out.println("JEL ULAZIMO OVDEEEE");
+        System.out.println("accommodationId");
+        System.out.println(accommodationId);
+        System.out.println("rezervacija id");
+        System.out.println(reservationId);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ReservationDetailsHostActivity.this);
         binding.recyclerViewReservationConflicts.setLayoutManager(linearLayoutManager);
 
@@ -121,6 +129,11 @@ public class ReservationDetailsHostActivity extends AppCompatActivity {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+               System.out.println("DA LI SMO USLI OVDEE?????");
+               System.out.println(response.code());
+
+
                 if(response.code() == 400){
                     Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
                     if(map.containsKey("message")) Toast.makeText(ReservationDetailsHostActivity.this, map.get("message"), Toast.LENGTH_SHORT).show();
@@ -128,11 +141,12 @@ public class ReservationDetailsHostActivity extends AppCompatActivity {
 
 
                 if(response.code() == 200){
+                    System.out.println("USLI SMO U U LOAD RESERVATIONSDETAILS");
                     reservation = ResponseParser.parseResponse(response, ReservationDTO.class, false);
                     review = new ReviewDTOPageItem(reservation.getNameAndSurname());
-                    System.out.println(reservation.getReviewPresent());
+                    System.out.println(reservation);
                     if(reservation.getStatus().equals(ReservationStatus.ACCEPTED) && LocalDate.now().isAfter(reservation.getReservationEndDate())){
-                        if(reservation.getReviewPresent()){
+                        if(reservation.getReviewPresent() && !JWTManager.getRoleEnum().equals(Role.ADMIN)){
 
                             binding.progressBarReview.setVisibility(View.VISIBLE);
                             Call<ResponseBody> reviewCall = ClientUtils.apiService.getReservationReview(accommodationId, reservationId);
@@ -168,6 +182,12 @@ public class ReservationDetailsHostActivity extends AppCompatActivity {
                                             binding.txtCommentAccommodation.setText(review.getAccommodationReview().getComment());
                                             binding.ratingBarAccommodation.setRating(review.getAccommodationReview().getRating());
 
+                                            System.out.println("AAAA VISEEE ZAVRSI SEE");
+                                            System.out.println(review.getAccommodationReview().getAdminResponse() != null);
+                                            System.out.println(review.getAccommodationReview().getAdminResponse());
+                                            if(review.getAccommodationReview().getAdminResponse() != null){
+                                                binding.txtAccommodationMessage.setVisibility(View.VISIBLE);
+                                            }
 
 
                                         }
@@ -191,6 +211,9 @@ public class ReservationDetailsHostActivity extends AppCompatActivity {
                                                 binding.btnCreateComplaintOwner.setText(btnText);
                                             }
 
+                                            if(review.getOwnerReview().getAdminResponse() != null){
+                                                binding.txtOwnerMessage.setVisibility(View.VISIBLE);
+                                            }
                                             binding.linearLayoutAddOwnerReview.setVisibility(View.GONE);
                                             binding.txtCommentOwner.setText(review.getOwnerReview().getComment());
                                             binding.ratingBarOwner.setRating(review.getOwnerReview().getRating());
@@ -225,7 +248,7 @@ public class ReservationDetailsHostActivity extends AppCompatActivity {
                         }
                     }
 
-
+                    System.out.println(reservation);
                     binding.txtName.setText(reservation.getAccommodationName());
                     binding.txtAddress.setText("Accommodation address: " + reservation.getAccommodationAddress());
                     binding.txtDateRange.setText("Date range: " + reservation.getReservationStartDate() + " - " + reservation.getReservationEndDate());
@@ -252,6 +275,7 @@ public class ReservationDetailsHostActivity extends AppCompatActivity {
                         binding.linearLayoutConflictReservations.setVisibility(View.VISIBLE);
                         loadConflictedReservationsPage();
                     }
+
                 }
             }
 
@@ -273,13 +297,11 @@ public class ReservationDetailsHostActivity extends AppCompatActivity {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-
+                System.out.println("koji je ovo vise kod");
+                System.out.println(response.code());
                 if(response.code() == 200){
                     ReservationHostDTOPagedResponse responseDTO = ResponseParser.parseResponse(response, ReservationHostDTOPagedResponse.class, false);
 
-
-                    System.out.println("IKSDEBRO");
-                    System.out.println(responseDTO.getContent().size());
                     adapter.addMoreData(responseDTO.getContent());
                     isLastPage = responseDTO.isLast();
                     binding.recyclerViewReservationConflicts.setVisibility(View.VISIBLE);
@@ -306,6 +328,7 @@ public class ReservationDetailsHostActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
 
 
         binding.btnCreateComplaintOwner.setOnClickListener(new View.OnClickListener() {

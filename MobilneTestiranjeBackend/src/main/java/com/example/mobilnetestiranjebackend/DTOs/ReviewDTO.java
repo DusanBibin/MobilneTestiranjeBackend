@@ -27,4 +27,5 @@ public class  ReviewDTO {
 
     private String complaintReason;
     private Long complaintId;
+    private String adminResponse;
 }

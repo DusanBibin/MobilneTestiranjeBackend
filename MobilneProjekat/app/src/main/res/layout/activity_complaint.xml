@@ -166,7 +166,7 @@
                         android:layout_height="wrap_content"
                         android:text="Complaint status: " />
                     <TextView
-                        android:id="@+id/txtComplaintDeclineResponse"
+                        android:id="@+id/txtComplaintAdminResponse"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Complaint decline response: " />
@@ -188,6 +188,12 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Reject"/>
+
+                        <ProgressBar
+                            android:id="@+id/progressBarProcessComplaint"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone"/>
 
 
                         <com.google.android.material.textfield.TextInputLayout

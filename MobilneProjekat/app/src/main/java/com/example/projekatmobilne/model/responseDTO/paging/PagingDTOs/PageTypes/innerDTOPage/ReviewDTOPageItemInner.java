@@ -6,6 +6,7 @@ public class ReviewDTOPageItemInner {
     private Long rating;
     private String complaintReason;
     private Long complaintId;
+    private String adminResponse;
     public ReviewDTOPageItemInner(String comment, Long rating) {
         this.comment = comment;
         this.rating = rating;
@@ -51,6 +52,14 @@ public class ReviewDTOPageItemInner {
         this.complaintReason = complaintReason;
     }
 
+    public String getAdminResponse() {
+        return adminResponse;
+    }
+
+    public void setAdminResponse(String adminResponse) {
+        this.adminResponse = adminResponse;
+    }
+
     @Override
     public String toString() {
         return "ReviewDTOPageItemInner{" +
@@ -59,6 +68,7 @@ public class ReviewDTOPageItemInner {
                 ", rating=" + rating +
                 ", complaintReason='" + complaintReason + '\'' +
                 ", complaintId=" + complaintId +
+                ", adminResponse='" + adminResponse + '\'' +
                 '}';
     }
 }

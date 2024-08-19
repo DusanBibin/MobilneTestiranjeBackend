@@ -304,6 +304,13 @@
                                         android:isIndicator="true"
                                         android:numStars="5"/>
 
+                                    <TextView
+                                        android:visibility="gone"
+                                        android:id="@+id/txtOwnerMessage"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:textSize="12sp"
+                                        android:text="Not displayed due to owner comment complaint"/>
                                     <Button
                                         android:id="@+id/btnRemoveOwnerReview"
                                         android:layout_width="wrap_content"
@@ -398,6 +405,15 @@
                                         android:isIndicator="true"
                                         style="@android:style/Widget.Material.RatingBar.Indicator"
                                         android:numStars="5"/>
+
+                                    <TextView
+
+                                        android:visibility="gone"
+                                        android:id="@+id/txtAccommodationMessage"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:textSize="12sp"
+                                        android:text="Not displayed due to owner comment complaint"/>
 
                                     <Button
                                         android:id="@+id/btnRemoveAccommodationReview"

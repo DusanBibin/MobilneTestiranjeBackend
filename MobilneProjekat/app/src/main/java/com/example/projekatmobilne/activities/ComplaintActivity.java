@@ -6,17 +6,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
-import com.example.projekatmobilne.R;
 import com.example.projekatmobilne.clients.ClientUtils;
 import com.example.projekatmobilne.databinding.ActivityComplaintBinding;
-import com.example.projekatmobilne.databinding.ActivityReservationDetailsHostBinding;
+import com.example.projekatmobilne.model.Enum.RequestStatus;
 import com.example.projekatmobilne.model.Enum.Role;
 import com.example.projekatmobilne.model.responseDTO.ComplaintDTO;
 import com.example.projekatmobilne.tools.JWTManager;
@@ -116,16 +111,15 @@ public class ComplaintActivity extends AppCompatActivity {
                         binding.txtReviewRating.setText("Review rating: " + complaintDTO.getReviewRating());
                         binding.txtComplaintReason.setText("Complaint reason: " + complaintDTO.getComplaintReason());
                         binding.txtComplaintStatus.setText("Complaint status: " + complaintDTO.getRequestStatus());
-                        System.out.println("asdfasdfsafdsafdsa");
-                        System.out.println(complaintDTO.getDeclineReason());
-                        System.out.println(complaintDTO.getDeclineReason() != null);
-                        System.out.println(complaintDTO.getDeclineReason().equals(""));
 
-                        if(complaintDTO.getDeclineReason() == null || complaintDTO.getDeclineReason().equals("")){
-                            binding.txtComplaintDeclineResponse.setVisibility(View.GONE);
+                        if(complaintDTO.getAdminResponse() == null || complaintDTO.getAdminResponse().equals("")){
+                            binding.txtComplaintAdminResponse.setVisibility(View.GONE);
                         }else{
-                            binding.txtComplaintDeclineResponse.setText(complaintDTO.getDeclineReason());
+                            binding.txtComplaintAdminResponse.setText("Admin response: " + complaintDTO.getAdminResponse());
                         }
+
+                        if(JWTManager.getRoleEnum().equals(Role.ADMIN) &&
+                                complaintDTO.getRequestStatus().equals(RequestStatus.PENDING)) binding.linearLayoutButtons.setVisibility(View.VISIBLE);
 
                         binding.progressBarSendComplaint.setVisibility(View.GONE);
                         binding.linearLayoutNewComplaint.setVisibility(View.GONE);
@@ -187,7 +181,6 @@ public class ComplaintActivity extends AppCompatActivity {
                         if(response.code() == 200){
                             ComplaintDTO complaintDTO = ResponseParser.parseResponse(response, ComplaintDTO.class, false);
 
-
                             binding.txtOwnerNameSurname.setText("Owner: " + complaintDTO.getOwnerNameSurname());
                             binding.txtOwnerEmail.setText("Owner email: " + complaintDTO.getOwnerEmail());
                             binding.txtGuestNameSurname.setText("Guest: " + complaintDTO.getGuestNameSurname());
@@ -196,10 +189,10 @@ public class ComplaintActivity extends AppCompatActivity {
                             binding.txtReviewRating.setText("Review rating: " + complaintDTO.getReviewRating());
                             binding.txtComplaintReason.setText("Complaint reason: " + complaintDTO.getComplaintReason());
                             binding.txtComplaintStatus.setText("Complaint status: " + complaintDTO.getRequestStatus());
-                            if(complaintDTO.getDeclineReason() != null){
-                                binding.txtComplaintDeclineResponse.setText(complaintDTO.getDeclineReason());
+                            if(complaintDTO.getAdminResponse() == null || complaintDTO.getAdminResponse().equals("")){
+                                binding.txtComplaintAdminResponse.setVisibility(View.GONE);
                             }else{
-                                binding.txtComplaintDeclineResponse.setVisibility(View.GONE);
+                                binding.txtComplaintAdminResponse.setText("Admin response: " + complaintDTO.getAdminResponse());
                             }
                             binding.progressBarSendComplaint.setVisibility(View.GONE);
                             binding.linearLayoutNewComplaint.setVisibility(View.GONE);
@@ -228,9 +221,111 @@ public class ComplaintActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ComplaintActivity.this, ReservationDetailsHostActivity.class);
+                System.out.println("BBBBBBBBBBBBBBBBBBBBBB");
+                System.out.println("accommodationId");
+                System.out.println(accommodationId);
+                System.out.println("rezervacija id");
+                System.out.println(reservationId);
+                System.out.println("BBBBBBBBBBBBBBBBBBBBBB");
                 intent.putExtra("accommodationId", accommodationId);
                 intent.putExtra("reservationId", reservationId);
                 startActivity(intent);
+            }
+        });
+
+
+        binding.btnAccept.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String adminResponse = binding.inputEditTextRejectReason.getText().toString();
+                if(adminResponse.isEmpty()){
+                    binding.inputLayoutRejectReason.setError("This field cannot be empty");
+                    return;
+                }
+
+
+
+                binding.progressBarProcessComplaint.setVisibility(View.GONE);
+                binding.linearLayoutButtons.setVisibility(View.VISIBLE);
+                Call<ResponseBody> call = ClientUtils.apiService.processReviewCommentComplaint(complaintId, RequestStatus.ACCEPTED, adminResponse);
+                call.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+                        if(response.code() == 200){
+                            String responseMessage =
+                                    ResponseParser.parseResponse(response, String.class, false);
+                            Toast.makeText(ComplaintActivity.this, responseMessage, Toast.LENGTH_SHORT).show();
+                            binding.txtComplaintStatus.setText("Complaint status: " + RequestStatus.ACCEPTED.toString());
+
+                        }
+
+                        if(response.code() == 400){
+                            Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
+                            if(map.containsKey("message")) Toast.makeText(ComplaintActivity.this, map.get("message"), Toast.LENGTH_SHORT).show();
+                        }
+
+                        binding.txtComplaintAdminResponse.setText(adminResponse);
+                        binding.progressBarProcessComplaint.setVisibility(View.VISIBLE);
+                        binding.linearLayoutButtons.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        Toast.makeText(ComplaintActivity.this, "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                        t.printStackTrace();
+                    }
+                });
+
+            }
+        });
+
+        binding.btnReject.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                binding.progressBarProcessComplaint.setVisibility(View.GONE);
+                binding.linearLayoutButtons.setVisibility(View.VISIBLE);
+
+
+                String rejectReason = binding.inputEditTextRejectReason.getText().toString();
+                if(rejectReason.isEmpty()){
+                    binding.inputLayoutRejectReason.setError("This field cannot be empty");
+                    return;
+                }
+
+
+                Call<ResponseBody> call = ClientUtils.apiService
+                        .processReviewCommentComplaint(complaintId, RequestStatus.REJECTED, rejectReason);
+                call.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+                        if(response.code() == 200){
+                            String responseMessage =
+                                    ResponseParser.parseResponse(response, String.class, false);
+                            Toast.makeText(ComplaintActivity.this, responseMessage, Toast.LENGTH_SHORT).show();
+
+                            binding.txtComplaintStatus.setText("Complaint status: " + RequestStatus.REJECTED.toString());
+                            binding.txtComplaintAdminResponse.setText("Admin response: " + rejectReason);
+                        }
+
+                        if(response.code() == 400){
+                            Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
+                            if(map.containsKey("message")) Toast.makeText(ComplaintActivity.this, map.get("message"), Toast.LENGTH_SHORT).show();
+                        }
+
+                        binding.progressBarProcessComplaint.setVisibility(View.VISIBLE);
+                        binding.linearLayoutButtons.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        Toast.makeText(ComplaintActivity.this, "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                        t.printStackTrace();
+                    }
+                });
+
             }
         });
     }

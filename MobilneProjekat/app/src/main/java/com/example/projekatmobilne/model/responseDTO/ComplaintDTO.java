@@ -2,7 +2,7 @@ package com.example.projekatmobilne.model.responseDTO;
 
 import com.example.projekatmobilne.model.Enum.RequestStatus;
 
-public class ComplaintDTO {
+public class  ComplaintDTO {
     private String ownerNameSurname;
     private String ownerEmail;
     private String guestNameSurname;
@@ -11,21 +11,35 @@ public class ComplaintDTO {
     private Long reviewRating;
     private String complaintReason;
     private RequestStatus requestStatus;
-    private String declineReason;
+    private String adminResponse;
+    private String reviewType;
+
+    private Long complaintId;
+    private Long reviewId;
+    private Long accommodationId;
+    private Long reservationId;
 
 
     public ComplaintDTO(String ownerNameSurname, String ownerEmail, String guestEmail,
                         String reviewComment, String complaintReason, RequestStatus requestStatus,
-                        String declineReason, String guestNameSurname, Long reviewRating) {
+                        String adminResponse, String guestNameSurname, Long reviewRating,
+                        String reviewType, Long complaintId, Long reviewId, Long accommodationId,
+                        Long reservationId) {
         this.ownerNameSurname = ownerNameSurname;
         this.ownerEmail = ownerEmail;
         this.guestEmail = guestEmail;
         this.reviewComment = reviewComment;
         this.complaintReason = complaintReason;
         this.requestStatus = requestStatus;
-        this.declineReason = declineReason;
+        this.adminResponse = adminResponse;
         this.guestNameSurname = guestNameSurname;
         this.reviewRating = reviewRating;
+        this.reviewType = reviewType;
+
+        this.complaintId = complaintId;
+        this.reviewId = reviewId;
+        this.accommodationId = accommodationId;
+        this.reservationId = reservationId;
     }
 
 
@@ -85,12 +99,12 @@ public class ComplaintDTO {
         this.requestStatus = requestStatus;
     }
 
-    public String getDeclineReason() {
-        return declineReason;
+    public String getAdminResponse() {
+        return adminResponse;
     }
 
-    public void setDeclineReason(String declineReason) {
-        this.declineReason = declineReason;
+    public void setAdminResponse(String adminResponse) {
+        this.adminResponse = adminResponse;
     }
 
     public String getComplaintReason() {
@@ -99,6 +113,46 @@ public class ComplaintDTO {
 
     public void setComplaintReason(String complaintReason) {
         this.complaintReason = complaintReason;
+    }
+
+    public String getReviewType() {
+        return reviewType;
+    }
+
+    public void setReviewType(String reviewType) {
+        this.reviewType = reviewType;
+    }
+
+    public Long getComplaintId() {
+        return complaintId;
+    }
+
+    public void setComplaintId(Long complaintId) {
+        this.complaintId = complaintId;
+    }
+
+    public Long getReviewId() {
+        return reviewId;
+    }
+
+    public void setReviewId(Long reviewId) {
+        this.reviewId = reviewId;
+    }
+
+    public Long getAccommodationId() {
+        return accommodationId;
+    }
+
+    public void setAccommodationId(Long accommodationId) {
+        this.accommodationId = accommodationId;
+    }
+
+    public Long getReservationId() {
+        return reservationId;
+    }
+
+    public void setReservationId(Long reservationId) {
+        this.reservationId = reservationId;
     }
 
     @Override
@@ -112,7 +166,12 @@ public class ComplaintDTO {
                 ", reviewRating=" + reviewRating +
                 ", complaintReason='" + complaintReason + '\'' +
                 ", requestStatus=" + requestStatus +
-                ", declineReason='" + declineReason + '\'' +
+                ", adminResponse='" + adminResponse + '\'' +
+                ", reviewType='" + reviewType + '\'' +
+                ", complaintId=" + complaintId +
+                ", reviewId=" + reviewId +
+                ", accommodationId=" + accommodationId +
+                ", reservationId=" + reservationId +
                 '}';
     }
 }

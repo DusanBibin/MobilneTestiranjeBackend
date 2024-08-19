@@ -365,4 +365,21 @@ public interface ApiService {
     Call<ResponseBody> getComplaint(@Path("complaintId") Long complaintId);
 
 
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @GET("complaints")
+    Call<ResponseBody> getComplaints(@Query("pageNo") int pageNo,
+                                     @Query("pageSize") int pageSize);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @PUT("complaints/review-complaint/{complaintId}/{status}")
+    Call<ResponseBody> processReviewCommentComplaint(@Path("complaintId") Long complaintId,
+                                                     @Path("status") RequestStatus status,
+                                                     @Body String response);
 }

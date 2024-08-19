@@ -4,6 +4,7 @@ package com.example.mobilnetestiranjebackend.services;
 import com.example.mobilnetestiranjebackend.DTOs.AccommodationDTOResponse;
 import com.example.mobilnetestiranjebackend.DTOs.ReviewDTO;
 import com.example.mobilnetestiranjebackend.DTOs.ReviewDTOResponse;
+import com.example.mobilnetestiranjebackend.enums.RequestStatus;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthorizationException;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidDateException;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidInputException;
@@ -165,14 +166,14 @@ public class ReviewService {
                 if(ownerReview.isPresent()){
                     OwnerReview or = ownerReview.get();
                     if(or.getAllowed()){
-                        review.setOwnerReview(new ReviewDTO(0L, or.getComment(), or.getRating(), null, 0L));
+                        review.setOwnerReview(new ReviewDTO(0L, or.getComment(), or.getRating(), null, 0L, null));
                     }
                 }
 
                 if(accommodationReview.isPresent()){
                     AccommodationReview ar = accommodationReview.get();
                     if(ar.getAllowed()){
-                        review.setAccommodationReview(new ReviewDTO(0L, ar.getComment(), ar.getRating(), null, 0L));
+                        review.setAccommodationReview(new ReviewDTO(0L, ar.getComment(), ar.getRating(), null, 0L, null));
                     }
                 }
                 reviews.add(review);
@@ -230,12 +231,15 @@ public class ReviewService {
             Optional<ReviewComplaint> orc = reviewComplaintRepository.findByReviewId(or.getId());
             String reason = null;
             Long complaintId = 0L;
+            String adminResponse = null;
             if(orc.isPresent()){
                 reason = orc.get().getReason();
                 complaintId = orc.get().getId();
+                adminResponse = orc.get().getResponse();
+                if(!orc.get().getStatus().equals(RequestStatus.PENDING)) adminResponse = orc.get().getResponse();
             }
 
-            orDTO = new ReviewDTO(or.getId(), or.getComment(), or.getRating(), reason, complaintId);
+            orDTO = new ReviewDTO(or.getId(), or.getComment(), or.getRating(), reason, complaintId, adminResponse);
         }
         if(arWrapper.isPresent()){
             AccommodationReview ar = arWrapper.get();
@@ -244,12 +248,14 @@ public class ReviewService {
             Optional<ReviewComplaint> orc = reviewComplaintRepository.findByReviewId(ar.getId());
             String reason = null;
             Long complaintId = 0L;
+            String adminResponse = null;
             if(orc.isPresent()){
                 reason = orc.get().getReason();
                 complaintId = orc.get().getId();
+                if(!orc.get().getStatus().equals(RequestStatus.PENDING)) adminResponse = orc.get().getResponse();
             }
 
-            arDTO = new ReviewDTO(ar.getId(), ar.getComment(), ar.getRating(), reason, complaintId);
+            arDTO = new ReviewDTO(ar.getId(), ar.getComment(), ar.getRating(), reason, complaintId, adminResponse);
         }
 
 
