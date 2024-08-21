@@ -2,6 +2,7 @@ package com.example.mobilnetestiranjebackend.controllers;
 
 
 import com.example.mobilnetestiranjebackend.DTOs.ComplaintDTO;
+import com.example.mobilnetestiranjebackend.DTOs.UserComplaintDTO;
 import com.example.mobilnetestiranjebackend.enums.RequestStatus;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidEnumValueException;
 import com.example.mobilnetestiranjebackend.model.Admin;
@@ -40,19 +41,19 @@ public class ComplaintController {
     @PostMapping("/reviews/{reviewId}")
     public ResponseEntity<?> createReviewComplaint(@PathVariable("reviewId") Long reviewId,
                                                    @AuthenticationPrincipal Owner owner,
-                                                   @RequestBody TextNode reason){
+                                                   @RequestBody String reason){
 
-        complaintService.createReviewComplaint(owner.getId(), reviewId, reason.asText());
+        ComplaintDTO complaint = complaintService.createReviewComplaint(owner.getId(), reviewId, reason);
 
-        return new ResponseEntity<>(("Successfully created new review complaint"), HttpStatus.OK);
+        return ResponseEntity.ok().body(complaint);
 
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/review-complaint/{complaintId}/{status}")
     public ResponseEntity<?> reviewReviewComplaint(@PathVariable("complaintId") Long complaintId,
-                                                    @PathVariable("status") RequestStatus status,
-                                                    @AuthenticationPrincipal Admin admin,
+                                                   @PathVariable("status") RequestStatus status,
+                                                   @AuthenticationPrincipal Admin admin,
                                                    @RequestBody TextNode response){
 
         if(!status.equals(RequestStatus.ACCEPTED) && !status.equals(RequestStatus.REJECTED)) throw new InvalidEnumValueException("Invalid operation");
@@ -66,8 +67,8 @@ public class ComplaintController {
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/user-complaint/{complaintId}/{status}")
     public ResponseEntity<?> reviewUserComplaint(@PathVariable("complaintId") Long complaintId,
-                                                   @PathVariable("status") RequestStatus status,
-                                                   @AuthenticationPrincipal Admin admin){
+                                                 @PathVariable("status") RequestStatus status,
+                                                 @AuthenticationPrincipal Admin admin){
 
         if(status.equals(RequestStatus.PENDING)) throw new InvalidEnumValueException("Invalid operation");
 
@@ -77,13 +78,33 @@ public class ComplaintController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping("")
-    public ResponseEntity<?> getComplaints(@RequestParam(defaultValue = "0") int pageNo,
-                                            @RequestParam(defaultValue = "10") int pageSize,
-                                            @AuthenticationPrincipal Admin admin){
+    @GetMapping("/getUserComplaints")
+    public ResponseEntity<?> getUserComplaints(@RequestParam(defaultValue = "0") int pageNo,
+                                               @RequestParam(defaultValue = "10") int pageSize,
+                                               @AuthenticationPrincipal Admin admin) {
 
-        Page<ComplaintDTO> complaints = complaintService.getComplaints(pageNo, pageSize);
+        Page<UserComplaintDTO> complaints = complaintService.getUserComplaints(pageNo, pageSize);
         return new ResponseEntity<>(complaints, HttpStatus.OK);
+    }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('OWNER')")
+    @GetMapping("{complaintId}")
+    public ResponseEntity<?> getComplaint(@PathVariable("complaintId") Long complaintId,
+                                          @AuthenticationPrincipal User user) {
+
+        ComplaintDTO complaint = complaintService.getComplaint(complaintId, user.getId());
+
+        return ResponseEntity.ok().body(complaint);
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("")
+    public ResponseEntity<?> getAllComplaints(@AuthenticationPrincipal Admin admin,
+                                              @RequestParam(defaultValue = "0") int pageNo,
+                                              @RequestParam(defaultValue = "10") int pageSize) {
+        Page<ComplaintDTO> complaintDTOPage = complaintService.getComplaints(admin.getId(), pageNo, pageSize);
+
+
+        return ResponseEntity.ok().body(complaintDTOPage);
     }
 }

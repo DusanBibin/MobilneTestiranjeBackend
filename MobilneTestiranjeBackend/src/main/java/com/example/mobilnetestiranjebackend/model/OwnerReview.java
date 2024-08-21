@@ -19,4 +19,5 @@ public class OwnerReview extends Review {
     @ManyToOne
     private Owner owner;
 
+
 }

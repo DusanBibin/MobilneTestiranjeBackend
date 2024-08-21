@@ -1,8 +1,10 @@
 package com.example.mobilnetestiranjebackend.services;
 
 
+import com.example.mobilnetestiranjebackend.DTOs.AccommodationDTOResponse;
 import com.example.mobilnetestiranjebackend.DTOs.ReviewDTO;
 import com.example.mobilnetestiranjebackend.DTOs.ReviewDTOResponse;
+import com.example.mobilnetestiranjebackend.enums.RequestStatus;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthorizationException;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidDateException;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidInputException;
@@ -32,8 +34,9 @@ public class ReviewService {
     private final AccommodationReviewRepository accommodationReviewRepository;
     private final AccommodationRepository accommodationRepository;
     private final UserRepository userRepository;
+    private final ReviewComplaintRepository reviewComplaintRepository;
 
-    public void createOwnerReview(ReviewDTO reviewDTO, Long ownerId, Long guestId) {
+    public ReviewDTO createOwnerReview(ReviewDTO reviewDTO, Long ownerId, Long guestId) {
 
         var guestWrapper = guestRepository.findById(guestId);
         if(guestWrapper.isEmpty()) throw new NonExistingEntityException("Guest with this id doesn't exist");
@@ -54,6 +57,7 @@ public class ReviewService {
         OwnerReview ownerReview = OwnerReview.builder()
                 .owner(owner)
                 .guest(guest)
+                .allowed(true)
                 .comment(reviewDTO.getComment())
                 .rating(reviewDTO.getRating())
                 .build();
@@ -66,7 +70,8 @@ public class ReviewService {
 
         owner.getOwnerReviews().add(ownerReview);
         ownerRepository.save(owner);
-
+        reviewDTO.setReviewId(ownerReview.getId());
+        return reviewDTO;
     }
 
     public void deleteOwnerReview(Long reviewId, Long guestId) {
@@ -83,7 +88,7 @@ public class ReviewService {
 
     }
 
-    public void createAccommodationReview(ReviewDTO reviewDTO, Long accommodationId, Long reservationId, Long guestId) {
+    public ReviewDTO createAccommodationReview(ReviewDTO reviewDTO, Long accommodationId, Long reservationId, Long guestId) {
 
         var guestWrapper = guestRepository.findById(guestId);
         if(guestWrapper.isEmpty()) throw new NonExistingEntityException("Guest with this id doesn't exist");
@@ -109,7 +114,7 @@ public class ReviewService {
 
 
         var accommodationReview = AccommodationReview.builder()
-                .allowed(false)
+                .allowed(true)
                 .comment(reviewDTO.getComment())
                 .rating(reviewDTO.getRating())
                 .guest(guest)
@@ -122,6 +127,8 @@ public class ReviewService {
         accommodation.getAccommodationReviews().add(accommodationReview);
         accommodationRepository.save(accommodation);
 
+        reviewDTO.setReviewId(accommodationReview.getId());
+        return reviewDTO;
     }
 
     public void deleteAccommodationReview(Long reviewId, Long guestId) {
@@ -144,19 +151,31 @@ public class ReviewService {
 
         List<ReviewDTOResponse> reviews = new ArrayList<>();
         for(Reservation r: reservations){
+
             var guestId = r.getGuest().getId();
 
             var ownerReview = ownerReviewRepository.findByAccommodationAndGuest(accommodationId, guestId);
             var accommodationReview = accommodationReviewRepository.findByAccommodationAndGuest(accommodationId, guestId);
 
 
-            if(ownerReview.isPresent() && accommodationReview.isPresent()){
+            if(accommodationReview.isPresent() || ownerReview.isPresent()){
                 ReviewDTOResponse review = ReviewDTOResponse.builder()
                         .guestName(r.getGuest().getFirstName() + " " + r.getGuest().getLastname())
-                        .ownerReview(new ReviewDTO(ownerReview.get().getComment(), ownerReview.get().getRating()))
-                        .accommodationReview(new ReviewDTO(accommodationReview.get().getComment(), accommodationReview.get().getRating()))
                         .build();
 
+                if(ownerReview.isPresent()){
+                    OwnerReview or = ownerReview.get();
+                    if(or.getAllowed()){
+                        review.setOwnerReview(new ReviewDTO(0L, or.getComment(), or.getRating(), null, 0L, null));
+                    }
+                }
+
+                if(accommodationReview.isPresent()){
+                    AccommodationReview ar = accommodationReview.get();
+                    if(ar.getAllowed()){
+                        review.setAccommodationReview(new ReviewDTO(0L, ar.getComment(), ar.getRating(), null, 0L, null));
+                    }
+                }
                 reviews.add(review);
             }
         }
@@ -208,11 +227,35 @@ public class ReviewService {
         ReviewDTO orDTO = null, arDTO = null;
         if(orWrapper.isPresent()){
             OwnerReview or = orWrapper.get();
-            orDTO = new ReviewDTO(or.getComment(), or.getRating());
+
+            Optional<ReviewComplaint> orc = reviewComplaintRepository.findByReviewId(or.getId());
+            String reason = null;
+            Long complaintId = 0L;
+            String adminResponse = null;
+            if(orc.isPresent()){
+                reason = orc.get().getReason();
+                complaintId = orc.get().getId();
+                adminResponse = orc.get().getResponse();
+                if(!orc.get().getStatus().equals(RequestStatus.PENDING)) adminResponse = orc.get().getResponse();
+            }
+
+            orDTO = new ReviewDTO(or.getId(), or.getComment(), or.getRating(), reason, complaintId, adminResponse);
         }
         if(arWrapper.isPresent()){
             AccommodationReview ar = arWrapper.get();
-            arDTO = new ReviewDTO(ar.getComment(), ar.getRating());
+
+
+            Optional<ReviewComplaint> orc = reviewComplaintRepository.findByReviewId(ar.getId());
+            String reason = null;
+            Long complaintId = 0L;
+            String adminResponse = null;
+            if(orc.isPresent()){
+                reason = orc.get().getReason();
+                complaintId = orc.get().getId();
+                if(!orc.get().getStatus().equals(RequestStatus.PENDING)) adminResponse = orc.get().getResponse();
+            }
+
+            arDTO = new ReviewDTO(ar.getId(), ar.getComment(), ar.getRating(), reason, complaintId, adminResponse);
         }
 
 
@@ -223,5 +266,15 @@ public class ReviewService {
 
 
         return review;
+    }
+
+    public Double getAverageAccommodationRating(Long accommodationId) {
+        List<AccommodationReview> reviews = accommodationReviewRepository.findByAccommodationId(accommodationId);
+        return reviews.stream().filter(Review::getAllowed).mapToLong(Review::getRating).average().orElse(0.0);
+    }
+
+    public Double getAverageOwnerRating(Long ownerId) {
+        List<OwnerReview> reviews = ownerReviewRepository.findByOwnerId(ownerId);
+        return reviews.stream().filter(Review::getAllowed).mapToLong(Review::getRating).average().orElse(0.0);
     }
 }

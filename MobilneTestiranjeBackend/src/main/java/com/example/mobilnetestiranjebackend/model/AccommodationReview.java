@@ -27,5 +27,5 @@ public class AccommodationReview extends Review{
     @ManyToOne
     private Accommodation accommodation;
 
-    private Boolean allowed;
+
 }

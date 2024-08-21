@@ -48,77 +48,7 @@ public class AccommodationController {
     public ResponseEntity<?> getAccommodation(@PathVariable("accommodationId") Long accommodationId,
                                               @AuthenticationPrincipal User user){
 
-        var accommodationWrapper = accommodationService.findAccommodationById(accommodationId);
-        if(accommodationWrapper.isEmpty()) throw new NonExistingEntityException("Accommodation with this id does not exist");
-        var accommodation = accommodationWrapper.get();
-
-        List<Long> imageIds = new ArrayList<>();
-        for(String imagePath: accommodation.getImagePaths()){
-            String[] pathParts = imagePath.split("/");
-            String fileName = pathParts[3];
-
-            if(!Character.isDigit(fileName.charAt(0))) throw new InvalidInputException("Error with image id");
-
-            Long imageId = Long.parseLong(String.valueOf(fileName.charAt(0)));
-            imageIds.add(imageId);
-        }
-
-
-        Boolean favorite = null;
-        if(user instanceof Guest) {
-            Optional<Accommodation> favoriteWrapper = accommodationRepository.findFavoritesByAccommodationIdAndGuestId(accommodationId, user.getId());
-            favorite = favoriteWrapper.isPresent();
-        }
-
-        Owner owner = accommodation.getOwner();
-        var accommodationDTO = AccommodationDTOResponse.builder()
-                .ownerId(owner.getId())
-                .ownerEmail(owner.getEmail())
-                .ownerNameAndSurname(owner.getFirstName() + " " + owner.getLastname())
-                .id(accommodation.getId())
-                .name(accommodation.getName())
-                .description(accommodation.getDescription())
-                .address(accommodation.getAddress())
-                .lat(accommodation.getLat())
-                .lon(accommodation.getLon())
-                .amenities(accommodation.getAmenities())
-                .minGuests(accommodation.getMinGuests())
-                .maxGuests(accommodation.getMaxGuests())
-                .accommodationType(accommodation.getAccommodationType())
-                .autoAcceptEnabled(accommodation.getAutoAcceptEnabled())
-                .availabilityList(new ArrayList<>())
-                .futureReservations(new ArrayList<>())
-                .favorite(favorite)
-                .imageIds(imageIds)
-                .build();
-
-
-        for(Availability a: accommodation.getAvailabilityList()){
-            if(a.getStartDate().isAfter(LocalDate.now()) && a.getEndDate().isAfter(LocalDate.now())){
-                var availabilityDTO = AvailabilityDTO.builder()
-                        .id(a.getId())
-                        .startDate(a.getStartDate())
-                        .endDate(a.getEndDate())
-                        .cancellationDeadline(a.getCancelDeadline())
-                        .pricePerGuest(a.getPricePerGuest())
-                        .price(a.getPrice())
-                        .build();
-                accommodationDTO.getAvailabilityList().add(availabilityDTO);
-            }
-        }
-
-        var futureReservations = reservationRepository.findReservationsNotEndedByAccommodationId(accommodationId);
-
-        for(Reservation r : futureReservations){
-            var reservationDTO = ReservationDTO.builder()
-                    .availabilityId(r.getAvailability().getId())
-                    .reservationEndDate(r.getReservationEndDate())
-                    .reservationStartDate(r.getReservationStartDate())
-                    .guestNum(r.getGuestNum())
-                    .build();
-            accommodationDTO.getFutureReservations().add(reservationDTO);
-        }
-
+        AccommodationDTOResponse accommodationDTO = accommodationService.getAccommodation(accommodationId, user);
 
         return ResponseEntity.ok().body(accommodationDTO);
     }

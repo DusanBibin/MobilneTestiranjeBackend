@@ -233,30 +233,21 @@ public class AccommodationsDifferencesCompareActivity extends AppCompatActivity 
                                     }
                                 }
 
-
                                 fillOldTxtValue(binding.txtOldAmenitiesValue, binding.linearLayoutAmenities,
                                         binding.txtAmenitiesValue, amenitiesBuilder.toString());
                             }
-
 
                             if(!(oldInfo.getAccommodationType().equals(requestInfo.getAccommodationType()))){
                                 fillOldTxtValue(binding.txtOldTypeValue, binding.linearLayoutType,
                                         binding.txtTypeValue, oldInfo.getAccommodationType().toString());
                             }
-
-
                         }
 
-
-                        System.out.println(responseDTO.getRequestAvailabilities().size());
                         for(AvailabilityDTO avail: responseDTO.getRequestAvailabilities()){
                             availabilitiesAdapter.addAvailability(avail);
-                            System.out.println(avail);
                         }
-                        System.out.println(responseDTO.getAvailabilities().size());
                         for(AvailabilityDTO avail: responseDTO.getAvailabilities()){
                             availabilitiesAdapter.addExistingAvailability(avail);
-                            System.out.println(avail);
                         }
                     }
                 }
@@ -295,7 +286,6 @@ public class AccommodationsDifferencesCompareActivity extends AppCompatActivity 
                             if (contentDisposition != null && contentDisposition.contains("filename=")) {
                                 filename = contentDisposition.split("filename=")[1].replace(";", "").replace("\"", "");
                             }
-                            System.out.println(filename);;
                             File cacheDir = getApplicationContext().getCacheDir();
                             File tempFile = new File(cacheDir, filename);
                             FileOutputStream fos = new FileOutputStream(tempFile);

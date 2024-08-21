@@ -32,4 +32,8 @@ public interface OwnerReviewRepository  extends JpaRepository<OwnerReview, Long>
 
     @Query("select or from OwnerReview or where or.guest.id = :guestId and or.owner.id = :ownerId")
     Optional<OwnerReview> findByOwnerIdAndGuestId(Long ownerId, Long guestId);
+
+
+    @Query("select or from OwnerReview or where or.owner.id = :ownerId")
+    List<OwnerReview> findByOwnerId(Long ownerId);
 }

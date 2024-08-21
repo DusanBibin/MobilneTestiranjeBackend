@@ -61,9 +61,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println(holder.getAdapterPosition());
-
-
                 String path = tempImages.get(holder.getAdapterPosition()).getAbsolutePath();
                 Intent intent = new Intent(context, FullScreenImageActivity.class);
                 intent.putExtra("picture", path);

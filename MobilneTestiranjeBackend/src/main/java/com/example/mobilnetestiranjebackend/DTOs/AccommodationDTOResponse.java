@@ -42,6 +42,9 @@ public class AccommodationDTOResponse {
 
     private Boolean autoAcceptEnabled;
 
+    private Double averageOwnerRating;
+    private Double averageAccommodationRating;
+
     private List<@Valid AvailabilityDTO> availabilityList;
 
     private List<Long> imageIds;

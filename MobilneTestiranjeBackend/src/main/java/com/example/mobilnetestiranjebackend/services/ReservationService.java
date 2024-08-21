@@ -30,6 +30,7 @@ public class ReservationService {
     private final GuestRepository guestRepository;
     private final AccommodationReviewRepository accommodationReviewRepository;
     private final OwnerReviewRepository ownerReviewRepository;
+    private final AdminRepository adminRepository;
 
 
     public Optional<Reservation> findReservationByIdAccommodation(Long accommodationId, Long reservationId) {
@@ -184,10 +185,15 @@ public class ReservationService {
         return PageConverter.convertListToPage(pageNo, pageSize, reservationsDTO);
     }
 
-    public Page<ReservationDTO> getConflictReservations(Long accommodationId, Long reservationId, Owner owner, int pageNo, int pageSize) {
+    public Page<ReservationDTO> getConflictReservations(Long accommodationId, Long reservationId, User user, int pageNo, int pageSize) {
 
-        Optional<Accommodation> accommodationWrapper = accommodationRepository.findByIdAndOwnerId(accommodationId, owner.getId());
-        if(accommodationWrapper.isEmpty()) throw new InvalidAuthorizationException("You do not own this accommodation");
+        if(user instanceof Owner){
+            Optional<Owner> ownerWrapper = ownerRepository.findOwnerById(user.getId());
+            Owner owner = ownerWrapper.get();
+            Optional<Accommodation> accommodationWrapper = accommodationRepository.findByIdAndOwnerId(accommodationId, owner.getId());
+            if(accommodationWrapper.isEmpty()) throw new InvalidAuthorizationException("You do not own this accommodation");
+        }
+
 
         Optional<Reservation> reservationWrapper = reservationRepository.findByIdAndAccommodation(accommodationId, reservationId);
         if(reservationWrapper.isEmpty()) throw new NonExistingEntityException("This reservation does not exist");
@@ -224,17 +230,34 @@ public class ReservationService {
         Optional<AccommodationReview> accommodationReviewWrapper = Optional.empty();
         Optional<OwnerReview> ownerReviewWrapper = Optional.empty();
 
+
         if(ownerRepository.findOwnerById(userId).isPresent()) {
             if(accommodationRepository.findByIdAndOwnerId(accommodationId, userId).isEmpty()) throw new InvalidAuthorizationException("You do not own this accommodation");
+
+            Guest guest = reservation.getGuest();
+
+            accommodationReviewWrapper = accommodationReviewRepository.findByAccommodationIdAndGuestId(accommodationId, guest.getId());
+            ownerReviewWrapper = ownerReviewRepository.findByOwnerIdAndGuestId(userId, guest.getId());
+
         }
         else if(guestRepository.findGuestById(userId).isPresent()) {
+
             if(reservationRepository.findByIdAndGuest(reservationId, userId).isEmpty()) throw new InvalidAuthorizationException("You do not own this reservation");
 
-            Optional<Guest> guestWrapper = guestRepository.findGuestById(userId);
-            Guest guest = guestWrapper.get();
+            Owner owner = reservation.getAccommodation().getOwner();
 
-            accommodationReviewWrapper = accommodationReviewRepository.findByReviewIdAndGuestId(reservationId, userId);
-            ownerReviewWrapper = ownerReviewRepository.findByOwnerIdAndGuestId(reservation.getAccommodation().getOwner().getId(), guest.getId());
+            accommodationReviewWrapper = accommodationReviewRepository.findByAccommodationIdAndGuestId(accommodationId, userId);
+            ownerReviewWrapper = ownerReviewRepository.findByOwnerIdAndGuestId(owner.getId(), userId);
+
+        }else if(adminRepository.findAdminById(userId).isPresent()) {
+
+
+            Guest guest = reservation.getGuest();
+            Owner owner = reservation.getAccommodation().getOwner();
+
+            accommodationReviewWrapper = accommodationReviewRepository.findByAccommodationIdAndGuestId(accommodationId, guest.getId());
+            ownerReviewWrapper = ownerReviewRepository.findByOwnerIdAndGuestId(owner.getId(), guest.getId());
+
         }
         else throw new NonExistingEntityException("User with this id doesn't exist");
 
@@ -269,6 +292,7 @@ public class ReservationService {
         reservationDTO.setNameAndSurname(reservation.getGuest().getFirstName() + " " + reservation.getGuest().getLastname());
         reservationDTO.setUserEmail(reservation.getGuest().getEmail());
         reservationDTO.setTimesUserCancel((long) canceledReservations.size());
+        
         return reservationDTO;
 
     }

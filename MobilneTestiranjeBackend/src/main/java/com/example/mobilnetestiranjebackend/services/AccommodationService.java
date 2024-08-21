@@ -1,8 +1,7 @@
 package com.example.mobilnetestiranjebackend.services;
 
 
-import com.example.mobilnetestiranjebackend.DTOs.AccommodationSearchDTO;
-import com.example.mobilnetestiranjebackend.DTOs.AccommodationViewDTO;
+import com.example.mobilnetestiranjebackend.DTOs.*;
 import com.example.mobilnetestiranjebackend.enums.AccommodationType;
 import com.example.mobilnetestiranjebackend.enums.Amenity;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthorizationException;
@@ -28,6 +27,7 @@ public class AccommodationService {
     private final ReservationRepository reservationRepository;
     private final AccommodationReviewRepository accommodationReviewRepository;
     private final OwnerRepository ownerRepository;
+    private final ReviewService reviewService;
 
     public Optional<Accommodation> findAccommodationById(Long accommodationId) {
         return accommodationRepository.findAccommodationById(accommodationId);
@@ -78,13 +78,10 @@ public class AccommodationService {
     public Page<AccommodationSearchDTO> searchAccommodations(Long guestNum, String address, LocalDate startDate, LocalDate endDate,
                                      List<Amenity> amenities, AccommodationType accommodationType, Long minPrice,
                                      Long maxPrice, int pageNo, int pageSize, Boolean isAscending, String sortType) {
-        System.out.println(startDate);
-        System.out.println(endDate);
         Long daysBetween = ChronoUnit.DAYS.between(startDate, endDate) + 1;
         //RADIMO QUERY ZA ULAZNE PARAMETRE
         List<Accommodation> temp1 = accommodationRepository.searchAccommodations(guestNum, address,
                 startDate, endDate, accommodationType, minPrice, maxPrice, daysBetween);
-        System.out.println("iksde1 " + temp1.size());
 
 
         List<Accommodation> temp2 = new ArrayList<>();
@@ -98,7 +95,6 @@ public class AccommodationService {
                 if(tempSet.equals(tempAmenities)) temp2.add(a);
             }
         }
-        System.out.println("iksde2 " + temp2.size());
         List<Accommodation> foundAccommodations = new ArrayList<>();
 
 
@@ -156,7 +152,6 @@ public class AccommodationService {
             }
         }
 
-        System.out.println("iksde3 " + foundAccommodations.size());
         List<AccommodationSearchDTO> convertedList = new ArrayList<>(foundAccommodations.stream().map(a -> {
             Availability av = map.get(a.getId());
             LocalDate startCorrected = mapStartDates.get(a.getId());
@@ -171,15 +166,7 @@ public class AccommodationService {
             if (av.getPricePerGuest()) totalPrice = days * av.getPrice() * guestNum;
             else totalPrice = days * av.getPrice();
 
-            List<AccommodationReview> accommodationsRatings = accommodationReviewRepository.findByAccommodationId(a.getId());
-
-            double ratingSum = 0;
-            for (AccommodationReview ar : accommodationsRatings) {
-                ratingSum += ar.getRating();
-            }
-
-            double ratingAvg = 0;
-            if(ratingSum != 0) ratingAvg = ratingSum / accommodationsRatings.size();
+            Double ratingAvg = reviewService.getAverageAccommodationRating(a.getId());
 
             AccommodationSearchDTO dto = new AccommodationSearchDTO();
             dto.setAccommodationId(a.getId());
@@ -210,7 +197,6 @@ public class AccommodationService {
 
         //Page<AccommodationSearchDTO> dtoPage = convertListToPage(pageNo, pageSize, convertedList);
         Page<AccommodationSearchDTO> dtoPage = PageConverter.convertListToPage(pageNo, pageSize, convertedList);
-        System.out.println("iksde4 " + dtoPage.getContent().size());
         return dtoPage;
     }
 
@@ -261,5 +247,83 @@ public class AccommodationService {
     }
 
 
+    public AccommodationDTOResponse getAccommodation(Long accommodationId, User user) {
+
+        var accommodationWrapper = findAccommodationById(accommodationId);
+        if(accommodationWrapper.isEmpty()) throw new NonExistingEntityException("Accommodation with this id does not exist");
+        var accommodation = accommodationWrapper.get();
+
+
+        List<Long> imageIds = new ArrayList<>();
+        for(String imagePath: accommodation.getImagePaths()){
+            String[] pathParts = imagePath.split("/");
+            String fileName = pathParts[3];
+
+            if(!Character.isDigit(fileName.charAt(0))) throw new InvalidInputException("Error with image id");
+
+            Long imageId = Long.parseLong(String.valueOf(fileName.charAt(0)));
+            imageIds.add(imageId);
+        }
+
+
+        Boolean favorite = null;
+        if(user instanceof Guest) {
+            Optional<Accommodation> favoriteWrapper = accommodationRepository.findFavoritesByAccommodationIdAndGuestId(accommodationId, user.getId());
+            favorite = favoriteWrapper.isPresent();
+        }
+
+        Owner owner = accommodation.getOwner();
+        var accommodationDTO = AccommodationDTOResponse.builder()
+                .ownerId(owner.getId())
+                .ownerEmail(owner.getEmail())
+                .ownerNameAndSurname(owner.getFirstName() + " " + owner.getLastname())
+                .id(accommodation.getId())
+                .name(accommodation.getName())
+                .description(accommodation.getDescription())
+                .address(accommodation.getAddress())
+                .lat(accommodation.getLat())
+                .lon(accommodation.getLon())
+                .amenities(accommodation.getAmenities())
+                .minGuests(accommodation.getMinGuests())
+                .maxGuests(accommodation.getMaxGuests())
+                .averageAccommodationRating(reviewService.getAverageAccommodationRating(accommodationId))
+                .averageOwnerRating(reviewService.getAverageOwnerRating(accommodation.getOwner().getId()))
+                .accommodationType(accommodation.getAccommodationType())
+                .autoAcceptEnabled(accommodation.getAutoAcceptEnabled())
+                .availabilityList(new ArrayList<>())
+                .futureReservations(new ArrayList<>())
+                .favorite(favorite)
+                .imageIds(imageIds)
+                .build();
+
+
+        for(Availability a: accommodation.getAvailabilityList()){
+            if(a.getStartDate().isAfter(LocalDate.now()) && a.getEndDate().isAfter(LocalDate.now())){
+                var availabilityDTO = AvailabilityDTO.builder()
+                        .id(a.getId())
+                        .startDate(a.getStartDate())
+                        .endDate(a.getEndDate())
+                        .cancellationDeadline(a.getCancelDeadline())
+                        .pricePerGuest(a.getPricePerGuest())
+                        .price(a.getPrice())
+                        .build();
+                accommodationDTO.getAvailabilityList().add(availabilityDTO);
+            }
+        }
+
+        var futureReservations = reservationRepository.findReservationsNotEndedByAccommodationId(accommodationId);
+
+        for(Reservation r : futureReservations){
+            var reservationDTO = ReservationDTO.builder()
+                    .availabilityId(r.getAvailability().getId())
+                    .reservationEndDate(r.getReservationEndDate())
+                    .reservationStartDate(r.getReservationStartDate())
+                    .guestNum(r.getGuestNum())
+                    .build();
+            accommodationDTO.getFutureReservations().add(reservationDTO);
+        }
+
+        return accommodationDTO;
+    }
 }
 

@@ -86,16 +86,11 @@ public class AccommodationRequestsTabFragment extends Fragment {
     private void loadPage() {
 
         binding.txtNoItemsRequests.setVisibility(View.GONE);
-        System.out.println("da li ulazimo ovdeeee ");
         Call<ResponseBody> call = ClientUtils.apiService.getOwnerAccommodationRequests(currentPage, 10);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 AccommodationRequestPreviewDTOPagedResponse responseDTO = ResponseParser.parseResponse(response, AccommodationRequestPreviewDTOPagedResponse.class, false);
-
-                System.out.println("da li ulazimo ovdeeee takodjeeee");
-
-                System.out.println(responseDTO.getContent().size());
 
                 adapter.addMoreData(responseDTO.getContent());
                 isLastPage = responseDTO.isLast();

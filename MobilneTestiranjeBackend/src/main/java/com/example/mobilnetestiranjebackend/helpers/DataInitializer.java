@@ -8,7 +8,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.sql.Array;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -22,20 +21,12 @@ private final OwnerRepository ownerRepository;
 private final PasswordEncoder passwordEncoder;
 private final AccommodationRepository accommodationRepository;
 private final AvailabilityRepository availabilityRepository;
-private final AccommodationRequestRepository accommodationRequestRepository;
-private final AvailabilityRequestRepository availabilityRequestRepository;
 private final GuestRepository guestRepository;
 private final ReservationRepository reservationRepository;
-private final AccommodationReviewRepository accommodationReviewRepository;
-private final OwnerReviewRepository ownerReviewRepository;
-private final ReviewComplaintRepository reviewComplaintRepository;
 private final UserRepository userRepository;
 
     @Override
-    public void run(String... args) throws Exception {
-
-
-
+    public void run(String... args) {
 
         Owner ownerDusan = Owner.builder()
                 .firstName("Dusan")
@@ -282,8 +273,8 @@ private final UserRepository userRepository;
                 .guest(guestDusan1)
                 .status(ReservationStatus.ACCEPTED)
                 .accommodation(accommodation)
-                .reservationEndDate(LocalDate.now().minusDays(15))
-                .reservationStartDate(LocalDate.now().minusDays(16))
+                .reservationEndDate(LocalDate.now().minusDays(6))
+                .reservationStartDate(LocalDate.now().minusDays(3))
                 .cancelDeadline(availabilityOld.getCancelDeadline())
                 .price((ChronoUnit.DAYS.between(LocalDate.now().minusDays(11), LocalDate.now().minusDays(7)) + 1) * availabilityOld.getPrice())
                 .unitPrice(availabilityOld.getPrice())

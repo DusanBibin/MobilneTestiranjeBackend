@@ -35,7 +35,7 @@ public class ReservationController {
     private final AvailabilityService availabilityService;
     private final ReservationService reservationService;
 
-    @PreAuthorize("hasAuthority('GUEST') or hasAuthority('OWNER')")
+    @PreAuthorize("hasAuthority('GUEST') or hasAuthority('OWNER') or hasAuthority('ADMIN')")
     @GetMapping("/{accommodationId}/reservations/{reservationId}")
     public ResponseEntity<?> getReservationDetails(@PathVariable("accommodationId") Long accommodationId,
                                                    @PathVariable("reservationId") Long reservationId,
@@ -180,15 +180,15 @@ public class ReservationController {
     }
 
 
-    @PreAuthorize("hasAuthority('OWNER')")
+    @PreAuthorize("hasAuthority('OWNER') or hasAuthority('ADMIN')")
     @GetMapping("/{accommodationId}/reservations/{reservationId}/conflict-reservations")
     public ResponseEntity<?> getConflictedReservations(@PathVariable("accommodationId") Long accommodationId,
                                                        @PathVariable("reservationId") Long reservationId,
                                                        @RequestParam(defaultValue = "0") int pageNo,
                                                        @RequestParam(defaultValue = "10") int pageSize,
-                                                       @AuthenticationPrincipal Owner owner){
+                                                       @AuthenticationPrincipal User user){
 
-        Page<ReservationDTO> conflictReservations = reservationService.getConflictReservations(accommodationId, reservationId, owner, pageNo, pageSize);
+        Page<ReservationDTO> conflictReservations = reservationService.getConflictReservations(accommodationId, reservationId, user, pageNo, pageSize);
         return ResponseEntity.ok().body(conflictReservations);
     }
 

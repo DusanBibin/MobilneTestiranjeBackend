@@ -239,7 +239,7 @@
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"
                                 />
-                             
+
 
                         </LinearLayout>
 
@@ -248,6 +248,7 @@
 
                     <androidx.cardview.widget.CardView
                         android:id="@+id/cardViewReview"
+
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:cardElevation="8dp"
@@ -261,8 +262,6 @@
                             android:orientation="vertical"
                             android:padding="10dp">
 
-
-
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
@@ -275,17 +274,21 @@
                                     android:layout_height="wrap_content"
                                     android:textSize="20sp"
                                     android:text="Guest name"/>
+                                <TextView
+                                    android:id="@+id/txtOwner"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textSize="15sp"
+                                    android:layout_marginTop="10dp"
+                                    android:text="Owner review"/>
                                 <LinearLayout
                                     android:id="@+id/linearLayoutOwnerReview"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:orientation="vertical">
-                                    <TextView
-                                        android:id="@+id/txtOwner"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:textSize="15sp"
-                                        android:text="Owner review"/>
+                                    android:orientation="vertical"
+                                    android:layout_marginTop="5dp"
+                                    android:layout_marginBottom="15dp">
+
                                     <TextView
                                         android:id="@+id/txtCommentOwner"
                                         android:layout_width="match_parent"
@@ -300,20 +303,93 @@
                                         style="@android:style/Widget.Material.RatingBar.Indicator"
                                         android:isIndicator="true"
                                         android:numStars="5"/>
+
+                                    <TextView
+                                        android:visibility="gone"
+                                        android:id="@+id/txtOwnerMessage"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:textSize="12sp"
+                                        android:text="Not displayed due to owner comment complaint"/>
+                                    <Button
+                                        android:id="@+id/btnRemoveOwnerReview"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Remove owner review"/>
+
+                                    <Button
+                                        android:id="@+id/btnCreateComplaintOwner"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Create review complaint"/>
+
+                                    <ProgressBar
+                                        android:visibility="gone"
+                                        android:id="@+id/progressBarRemoveOwnerReview"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"/>
                                 </LinearLayout>
 
+                                <LinearLayout
+                                    android:id="@+id/linearLayoutAddOwnerReview"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:layout_marginBottom="15dp"
+                                    android:layout_marginTop="5dp">
 
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        android:id="@+id/inputLayoutOwnerComment"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="Owner comment"
+                                        app:errorEnabled="true"
+                                        app:endIconMode="clear_text">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputEditTextOwnerComment"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:inputType="text"
+                                            />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                    <RatingBar
+                                        android:id="@+id/ratingBarAddOwner"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:stepSize="1"
+                                        android:numStars="5"/>
+                                    <Button
+                                        android:id="@+id/btnAddOwnerReview"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Add owner review"/>
+
+                                    <ProgressBar
+                                        android:visibility="gone"
+                                        android:id="@+id/progressBarAddOwnerReview"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"/>
+
+                                </LinearLayout>
+
+                                <TextView
+                                    android:id="@+id/txtAccommodation"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textSize="15sp"
+                                    android:text="Accommodation review"
+                                    android:layout_marginTop="10dp"/>
                                 <LinearLayout
                                     android:id="@+id/linearLayoutAccommodationReview"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:orientation="vertical">
-                                    <TextView
-                                        android:id="@+id/txtAccommodation"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:textSize="15sp"
-                                        android:text="Accommodation review"/>
+                                    android:orientation="vertical"
+                                    android:layout_marginBottom="15dp"
+                                    android:layout_marginTop="5dp">
+
 
                                     <TextView
                                         android:id="@+id/txtCommentAccommodation"
@@ -329,6 +405,76 @@
                                         android:isIndicator="true"
                                         style="@android:style/Widget.Material.RatingBar.Indicator"
                                         android:numStars="5"/>
+
+                                    <TextView
+
+                                        android:visibility="gone"
+                                        android:id="@+id/txtAccommodationMessage"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:textSize="12sp"
+                                        android:text="Not displayed due to owner comment complaint"/>
+
+                                    <Button
+                                        android:id="@+id/btnRemoveAccommodationReview"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Remove accommodation review"/>
+                                    <Button
+                                        android:id="@+id/btnCreateComplaintAccommodation"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Create review complaint"/>
+                                    <ProgressBar
+                                        android:visibility="gone"
+                                        android:id="@+id/progressBarRemoveAccommodationReview"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"/>
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:id="@+id/linearLayoutAddAccommodationReview"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+
+                                    android:layout_marginBottom="15dp"
+                                    android:layout_marginTop="5dp">
+
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        android:id="@+id/inputLayoutAccommodationComment"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:hint="Accommodation comment"
+                                        app:errorEnabled="true"
+                                        app:endIconMode="clear_text">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/inputEditTextAccommodationComment"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:inputType="text"
+                                            />
+                                    </com.google.android.material.textfield.TextInputLayout>
+
+                                    <RatingBar
+                                        android:id="@+id/ratingBarAddAccommodation"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:stepSize="1"
+                                        android:numStars="5"/>
+                                    <Button
+                                        android:id="@+id/btnAddAccommodationReview"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Add accommodation review"/>
+                                    <ProgressBar
+                                        android:visibility="gone"
+                                        android:id="@+id/progressBarAddAccommodationReview"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"/>
                                 </LinearLayout>
 
                         </LinearLayout>
