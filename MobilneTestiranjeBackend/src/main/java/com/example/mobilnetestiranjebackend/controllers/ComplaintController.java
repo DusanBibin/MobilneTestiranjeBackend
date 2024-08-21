@@ -1,6 +1,7 @@
 package com.example.mobilnetestiranjebackend.controllers;
 
 
+import com.example.mobilnetestiranjebackend.DTOs.ComplaintDTO;
 import com.example.mobilnetestiranjebackend.enums.RequestStatus;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidEnumValueException;
 import com.example.mobilnetestiranjebackend.model.Admin;
@@ -9,6 +10,7 @@ import com.example.mobilnetestiranjebackend.model.User;
 import com.example.mobilnetestiranjebackend.services.ComplaintService;
 import com.fasterxml.jackson.databind.node.TextNode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -49,8 +51,8 @@ public class ComplaintController {
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/review-complaint/{complaintId}/{status}")
     public ResponseEntity<?> reviewReviewComplaint(@PathVariable("complaintId") Long complaintId,
-                                             @PathVariable("status") RequestStatus status,
-                                                   @AuthenticationPrincipal Admin admin,
+                                                    @PathVariable("status") RequestStatus status,
+                                                    @AuthenticationPrincipal Admin admin,
                                                    @RequestBody TextNode response){
 
         if(!status.equals(RequestStatus.ACCEPTED) && !status.equals(RequestStatus.REJECTED)) throw new InvalidEnumValueException("Invalid operation");
@@ -61,23 +63,27 @@ public class ComplaintController {
 
     }
 
-
-
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/user-complaint/{complaintId}/{status}")
     public ResponseEntity<?> reviewUserComplaint(@PathVariable("complaintId") Long complaintId,
                                                    @PathVariable("status") RequestStatus status,
-                                                   @AuthenticationPrincipal Admin admin,
-                                                   @RequestBody TextNode response){
+                                                   @AuthenticationPrincipal Admin admin){
 
-        if(!status.equals(RequestStatus.ACCEPTED) && !status.equals(RequestStatus.REJECTED)) throw new InvalidEnumValueException("Invalid operation");
+        if(status.equals(RequestStatus.PENDING)) throw new InvalidEnumValueException("Invalid operation");
 
-        complaintService.reviewUserComplaint(complaintId, response.asText(), status);
+        complaintService.reviewUserComplaint(complaintId, status);
 
         return new ResponseEntity<>(("Successfully reviewed a review complaint"), HttpStatus.OK);
-
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("")
+    public ResponseEntity<?> getComplaints(@RequestParam(defaultValue = "0") int pageNo,
+                                            @RequestParam(defaultValue = "10") int pageSize,
+                                            @AuthenticationPrincipal Admin admin){
 
+        Page<ComplaintDTO> complaints = complaintService.getComplaints(pageNo, pageSize);
+        return new ResponseEntity<>(complaints, HttpStatus.OK);
 
+    }
 }

@@ -1,18 +1,23 @@
 package com.example.mobilnetestiranjebackend.services;
 
 
+import com.example.mobilnetestiranjebackend.DTOs.ComplaintDTO;
 import com.example.mobilnetestiranjebackend.enums.RequestStatus;
 import com.example.mobilnetestiranjebackend.enums.ReservationStatus;
 import com.example.mobilnetestiranjebackend.enums.Role;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthorizationException;
 import com.example.mobilnetestiranjebackend.exceptions.NonExistingEntityException;
+import com.example.mobilnetestiranjebackend.helpers.PageConverter;
 import com.example.mobilnetestiranjebackend.model.*;
 import com.example.mobilnetestiranjebackend.repositories.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.InvalidIsolationLevelException;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -188,12 +193,11 @@ public class ComplaintService {
     }
 
 
-    public void reviewUserComplaint(Long complaintId, String response, RequestStatus status) {
+    public void reviewUserComplaint(Long complaintId, RequestStatus status) {
 
         var userComplaintWrapper = userComplaintRepository.findById(complaintId);
         if(userComplaintWrapper.isEmpty()) throw new NonExistingEntityException("Review with this id doesn't exist");
-        var userComplaint = userComplaintWrapper.get();
-
+        UserComplaint userComplaint = userComplaintWrapper.get();
 
         if(!userComplaint.getStatus().equals(RequestStatus.PENDING))
             throw new InvalidAuthorizationException("You cannot already review already reviewed complaint");
@@ -204,9 +208,7 @@ public class ComplaintService {
 
         if(user.getBlocked()) throw new InvalidIsolationLevelException("User is already blocked");
 
-
         if(status.equals(RequestStatus.ACCEPTED)){
-
             user.setBlocked(true);
             user = userRepository.save(user);
 
@@ -222,9 +224,23 @@ public class ComplaintService {
 
 
         userComplaint.setStatus(status);
-        userComplaint.setResponse(response);
         userComplaint = userComplaintRepository.save(userComplaint);
         
+    }
+
+    public Page<ComplaintDTO> getComplaints(int pageNo, int pageSize) {
+        List<UserComplaint> userComplaints = userComplaintRepository.findPendingUserComplaints();
+        List<ComplaintDTO> complaintDTOs = userComplaints.stream().map(uc -> {
+            ComplaintDTO dto = new ComplaintDTO();
+            dto.setId(uc.getId());
+            dto.setReporedUser(uc.getReported().getUsername());
+            dto.setReporterUser(uc.getReporter().getUsername());
+            dto.setReportedUserRole(uc.getReported().getRole().name());
+            dto.setReporterUserRole(uc.getReporter().getRole().name());
+            dto.setReason(uc.getReason());
+            return dto;
+        }).collect(Collectors.toList());
+        return PageConverter.convertListToPage(pageNo, pageSize, complaintDTOs);
     }
 
 

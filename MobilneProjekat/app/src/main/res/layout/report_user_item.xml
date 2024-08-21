@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/cardViewReportUserItem"
+    app:cardElevation="4dp"
+    app:cardCornerRadius="16dp"
+    android:layout_marginBottom="10dp"
+    android:layout_marginStart="10dp"
+    android:layout_marginEnd="10dp"
+    android:layout_marginTop="10dp">
+
+    <LinearLayout
+        android:id="@+id/linearLayoutReportUserView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingBottom="10dp">
+
+        <!-- Ime reportovanog korisnika -->
+        <TextView
+            android:id="@+id/txtReportedUserName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Reportovan korisnik:"
+            android:textSize="18sp"
+            android:paddingTop="10dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp" />
+
+        <!-- Uloga reportovanog korisnika -->
+        <TextView
+            android:id="@+id/txtReportedUserRole"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Uloga reportovanog korisnika:"
+            android:textSize="16sp"
+            android:paddingTop="5dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp" />
+
+        <!-- Ime korisnika koji ulaže prijavu -->
+        <TextView
+            android:id="@+id/txtReportingUserName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Oštećen korisnik:"
+            android:textSize="18sp"
+            android:paddingTop="10dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp" />
+
+        <!-- Uloga oštećenog korisnika -->
+        <TextView
+            android:id="@+id/txtReportingUserRole"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Uloga oštećenog korisnika:"
+            android:textSize="16sp"
+            android:paddingTop="5dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp" />
+
+        <!-- Razlog -->
+        <TextView
+            android:id="@+id/txtReportReason"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Razlog:"
+            android:textSize="16sp"
+            android:paddingTop="10dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="5dp" />
+
+        <!-- Accept and Reject buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:paddingEnd="10dp"
+            android:paddingTop="10dp">
+
+            <Button
+                android:id="@+id/btnAcceptUser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ACCEPT"
+                android:textSize="16sp"
+                android:background="?android:attr/selectableItemBackground"
+                android:padding="10dp"
+                app:cornerRadius="8dp"
+                android:textColor="@android:color/black"
+                android:backgroundTint="@color/colorPrimary" />
+
+            <Button
+                android:id="@+id/btnRejectUser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="REJECT"
+                android:textSize="16sp"
+                android:background="?android:attr/selectableItemBackground"
+                android:padding="10dp"
+                app:cornerRadius="8dp"
+                android:textColor="@android:color/black"
+                android:backgroundTint="@color/colorPrimary"
+                android:layout_marginStart="10dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
