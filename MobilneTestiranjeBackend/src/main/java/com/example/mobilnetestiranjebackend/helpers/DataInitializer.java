@@ -8,7 +8,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.sql.Array;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -22,20 +21,12 @@ private final OwnerRepository ownerRepository;
 private final PasswordEncoder passwordEncoder;
 private final AccommodationRepository accommodationRepository;
 private final AvailabilityRepository availabilityRepository;
-private final AccommodationRequestRepository accommodationRequestRepository;
-private final AvailabilityRequestRepository availabilityRequestRepository;
 private final GuestRepository guestRepository;
 private final ReservationRepository reservationRepository;
-private final AccommodationReviewRepository accommodationReviewRepository;
-private final OwnerReviewRepository ownerReviewRepository;
-private final ReviewComplaintRepository reviewComplaintRepository;
 private final UserRepository userRepository;
 
     @Override
-    public void run(String... args) throws Exception {
-
-
-
+    public void run(String... args) {
 
         Owner ownerDusan = Owner.builder()
                 .firstName("Dusan")

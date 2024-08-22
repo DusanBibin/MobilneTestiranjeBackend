@@ -216,9 +216,6 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
                 if(response.code() == 200){
                     loadReviewPage();
                     accommodationDTO = ResponseParser.parseResponse(response, AccommodationDTOResponse.class, false);
-                    System.out.println(accommodationDTO.getAverageAccommodationRating());
-                    System.out.println(accommodationDTO.getAverageOwnerRating());
-
 
                     binding.ratingBarAccommodation.setRating(accommodationDTO.getAverageAccommodationRating().floatValue());
                     binding.ratingBarOwner.setRating(accommodationDTO.getAverageOwnerRating().floatValue());
@@ -560,7 +557,6 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
                                 if (contentDisposition != null && contentDisposition.contains("filename=")) {
                                     filename = contentDisposition.split("filename=")[1].replace(";", "").replace("\"", "");
                                 }
-                                System.out.println(filename);;
                                 File cacheDir = getApplicationContext().getCacheDir();
                                 File tempFile = new File(cacheDir, filename);
                                 FileOutputStream fos = new FileOutputStream(tempFile);

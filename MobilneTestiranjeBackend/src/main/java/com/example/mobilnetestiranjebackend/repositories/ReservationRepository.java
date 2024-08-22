@@ -88,6 +88,10 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             "WHERE r.id = :reservationId AND r.guest.id = :guestId")
     Optional<Reservation> findByIdAndGuest(Long reservationId, Long guestId);
 
+    @Query("SELECT r FROM Reservation r " +
+            "WHERE r.id = :reservationId")
+    Optional<Reservation> findById(Long reservationId);
+
 
     @Query("select r from Reservation r where r.guest.id = :guestId and r.accommodation.owner.id = :ownerId and" +
             " r.status = 1 and r.reservationEndDate <= CURRENT_DATE ")

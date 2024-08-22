@@ -109,7 +109,6 @@ public class HomeActivity extends AppCompatActivity {
 ////            }
 //
 //        });
-        System.out.println("ROLA ZA OVU GRESKU STO HOCU DA ULOVIM JE: " + JWTManager.getRole());
 
         if(JWTManager.getRoleEnum() != null) populateNavigationToolbarMenu(JWTManager.getRoleEnum());
         else populateNavigationToolbarMenu(null);

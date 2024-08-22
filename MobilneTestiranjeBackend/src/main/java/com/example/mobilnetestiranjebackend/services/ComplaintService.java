@@ -2,8 +2,10 @@ package com.example.mobilnetestiranjebackend.services;
 
 
 import com.example.mobilnetestiranjebackend.DTOs.ComplaintDTO;
+import com.example.mobilnetestiranjebackend.DTOs.UserComplaintDTO;
 import com.example.mobilnetestiranjebackend.enums.RequestStatus;
 import com.example.mobilnetestiranjebackend.enums.ReservationStatus;
+import com.example.mobilnetestiranjebackend.enums.Role;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidAuthorizationException;
 import com.example.mobilnetestiranjebackend.exceptions.InvalidInputException;
 import com.example.mobilnetestiranjebackend.exceptions.NonExistingEntityException;
@@ -18,6 +20,7 @@ import org.springframework.transaction.InvalidIsolationLevelException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -120,13 +123,22 @@ public class ComplaintService {
                 .build();
     }
 
-    public void createUserComplaint(Long reporterId, Long reportedId, String reason) {
+    public void createUserComplaint(Long reporterId, Long reservationId, String reason, Role role) {
 
         Owner owner = null;
         Guest guest = null;
 
         User reporter = null;
         User reported = null;
+
+        Long reportedId = null;
+
+        if(role.equals(Role.OWNER)){
+            reportedId = reservationRepository.findById(reservationId).get().getGuest().getId();
+        }else{
+            reportedId = reservationRepository.findById(reservationId).get().getAccommodation().getOwner().getId();
+        }
+
 
         var ownerWrapper = ownerRepository.findOwnerById(reporterId);
         if(ownerWrapper.isPresent()){
@@ -201,25 +213,22 @@ public class ComplaintService {
     }
 
 
-    public void reviewUserComplaint(Long complaintId, String response, RequestStatus status) {
+    public void reviewUserComplaint(Long complaintId, RequestStatus status) {
 
         var userComplaintWrapper = userComplaintRepository.findById(complaintId);
         if(userComplaintWrapper.isEmpty()) throw new NonExistingEntityException("Review with this id doesn't exist");
-        var userComplaint = userComplaintWrapper.get();
-
+        UserComplaint userComplaint = userComplaintWrapper.get();
 
         if(!userComplaint.getStatus().equals(RequestStatus.PENDING))
             throw new InvalidAuthorizationException("You cannot already review already reviewed complaint");
-        
+
         var userWrapper = userRepository.findByUserId(userComplaint.getReported().getId());
         if(userWrapper.isEmpty()) throw new NonExistingEntityException("User with this id doesn't exist");
         var user = userWrapper.get();
 
         if(user.getBlocked()) throw new InvalidIsolationLevelException("User is already blocked");
 
-
         if(status.equals(RequestStatus.ACCEPTED)){
-
             user.setBlocked(true);
             user = userRepository.save(user);
 
@@ -235,9 +244,23 @@ public class ComplaintService {
 
 
         userComplaint.setStatus(status);
-        userComplaint.setResponse(response);
         userComplaint = userComplaintRepository.save(userComplaint);
-        
+
+    }
+
+    public Page<UserComplaintDTO> getUserComplaints(int pageNo, int pageSize) {
+        List<UserComplaint> userComplaints = userComplaintRepository.findPendingUserComplaints();
+        List<UserComplaintDTO> complaintDTOs = userComplaints.stream().map(uc -> {
+            UserComplaintDTO dto = new UserComplaintDTO();
+            dto.setId(uc.getId());
+            dto.setReporedUser(uc.getReported().getUsername());
+            dto.setReporterUser(uc.getReporter().getUsername());
+            dto.setReportedUserRole(uc.getReported().getRole().name());
+            dto.setReporterUserRole(uc.getReporter().getRole().name());
+            dto.setReason(uc.getReason());
+            return dto;
+        }).collect(Collectors.toList());
+        return PageConverter.convertListToPage(pageNo, pageSize, complaintDTOs);
     }
 
 
@@ -307,5 +330,21 @@ public class ComplaintService {
 
 
         return PageConverter.convertListToPage(pageNo, pageSize, convertedList);
+    }
+
+    public void reviewReviewComplaint(Long complaintId, String response, RequestStatus status) {
+
+        var reviewComplaintWrapper = reviewComplaintRepository.findById(complaintId);
+        if(reviewComplaintWrapper.isEmpty()) throw new NonExistingEntityException("Review with this id doesn't exist");
+        var reviewComplaint = reviewComplaintWrapper.get();
+
+
+        if(!reviewComplaint.getStatus().equals(RequestStatus.PENDING))
+            throw new InvalidAuthorizationException("You cannot already review already reviewed complaint");
+
+        reviewComplaint.setStatus(status);
+        reviewComplaint.setResponse(response);
+        reviewComplaint = reviewComplaintRepository.save(reviewComplaint);
+
     }
 }

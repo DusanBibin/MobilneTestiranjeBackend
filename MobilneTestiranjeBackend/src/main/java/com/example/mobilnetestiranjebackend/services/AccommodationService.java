@@ -78,13 +78,10 @@ public class AccommodationService {
     public Page<AccommodationSearchDTO> searchAccommodations(Long guestNum, String address, LocalDate startDate, LocalDate endDate,
                                      List<Amenity> amenities, AccommodationType accommodationType, Long minPrice,
                                      Long maxPrice, int pageNo, int pageSize, Boolean isAscending, String sortType) {
-        System.out.println(startDate);
-        System.out.println(endDate);
         Long daysBetween = ChronoUnit.DAYS.between(startDate, endDate) + 1;
         //RADIMO QUERY ZA ULAZNE PARAMETRE
         List<Accommodation> temp1 = accommodationRepository.searchAccommodations(guestNum, address,
                 startDate, endDate, accommodationType, minPrice, maxPrice, daysBetween);
-        System.out.println("iksde1 " + temp1.size());
 
 
         List<Accommodation> temp2 = new ArrayList<>();
@@ -98,7 +95,6 @@ public class AccommodationService {
                 if(tempSet.equals(tempAmenities)) temp2.add(a);
             }
         }
-        System.out.println("iksde2 " + temp2.size());
         List<Accommodation> foundAccommodations = new ArrayList<>();
 
 
@@ -156,7 +152,6 @@ public class AccommodationService {
             }
         }
 
-        System.out.println("iksde3 " + foundAccommodations.size());
         List<AccommodationSearchDTO> convertedList = new ArrayList<>(foundAccommodations.stream().map(a -> {
             Availability av = map.get(a.getId());
             LocalDate startCorrected = mapStartDates.get(a.getId());
@@ -202,7 +197,6 @@ public class AccommodationService {
 
         //Page<AccommodationSearchDTO> dtoPage = convertListToPage(pageNo, pageSize, convertedList);
         Page<AccommodationSearchDTO> dtoPage = PageConverter.convertListToPage(pageNo, pageSize, convertedList);
-        System.out.println("iksde4 " + dtoPage.getContent().size());
         return dtoPage;
     }
 

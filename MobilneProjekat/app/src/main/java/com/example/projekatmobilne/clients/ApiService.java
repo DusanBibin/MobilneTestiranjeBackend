@@ -52,12 +52,6 @@ public interface ApiService {
     @POST("auth/register")
     Call<ResponseBody> register(@Body RegisterRequestDTO request);
 
-
-
-
-
-
-
     @Headers({
             "User-Agent: Mobile-Android",
             "Content-Type:application/json"
@@ -129,7 +123,6 @@ public interface ApiService {
             @Query("pageSize") int pageSize
     );
 
-    //napraviti ovo
     @Headers({
             "User-Agent: Mobile-Android",
             "Content-Type:application/json"
@@ -143,8 +136,6 @@ public interface ApiService {
     })
     @GET("accommodation-requests/{accommodationRequestId}/images/{imageId}")
     Call<ResponseBody> getAccommodationRequestImage(@Path("accommodationRequestId") Long accommodationId, @Path("imageId") Long imageId);
-
-
 
     @Headers({
             "User-Agent: Mobile-Android",
@@ -192,6 +183,20 @@ public interface ApiService {
             "User-Agent: Mobile-Android",
             "Content-Type:application/json"
     })
+    @GET("complaints/getUserComplaints")
+    Call<ResponseBody> getUserReportsRequests(@Query("pageNo") int pageNo, @Query("pageSize") int pageSize);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @PUT("complaints/user-complaint/{complaintId}/{status}")
+    Call<ResponseBody> reviewUserComplaint(@Path("complaintId") Long complaintId,
+                                             @Path("status") RequestStatus status);
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
     @GET("accommodation-requests/{accommodationRequestId}")
     Call<ResponseBody> getOwnerAccommodationRequest(@Path("accommodationRequestId") Long accommodationRequestId);
 
@@ -224,7 +229,6 @@ public interface ApiService {
                                        @Query("pageNo") int pageNo,
                                        @Query("pageSize") int pageSize);
 
-
     @Headers({
             "User-Agent: Mobile-Android",
             "Content-Type:application/json"
@@ -243,6 +247,13 @@ public interface ApiService {
                                           @Path("status") ReservationStatus status,
                                           @Body String reason);
 
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @POST("complaints/users/{reservationId}")
+    Call<ResponseBody> sendHostReport(@Path("reservationId") Long reservationId,
+                                      @Body String reason);
 
     @Headers({
             "User-Agent: Mobile-Android",
@@ -253,6 +264,7 @@ public interface ApiService {
                                                @Path("reservationId") Long reservationId,
                                                @Query("pageNo") int pageNo,
                                                @Query("pageSize") int pageSize);
+
     @Headers({
             "User-Agent: Mobile-Android",
             "Content-Type:application/json"
@@ -260,7 +272,6 @@ public interface ApiService {
     @PUT("accommodations/{accommodationId}/reservation-auto-accept/{status}")
     Call<ResponseBody> toggleAutoAccept(@Path("accommodationId") Long accommodationId,
                                         @Path("status") Boolean status);
-
 
     @Headers({
             "User-Agent: Mobile-Android",
@@ -270,8 +281,6 @@ public interface ApiService {
     Call<ResponseBody> cancelReservation(@Path("accommodationId") Long accommodationId,
                                          @Path("reservationId") Long reservationId);
 
-
-
     @Headers({
             "User-Agent: Mobile-Android",
             "Content-Type:application/json"
@@ -280,14 +289,12 @@ public interface ApiService {
     Call<ResponseBody> deleteReservation(@Path("accommodationId") Long accommodationId,
                                          @Path("reservationId") Long reservationId);
 
-
     @Headers({
             "User-Agent: Mobile-Android",
             "Content-Type:application/json"
     })
     @PUT("accommodations/{accommodationId}/add-favorites")
     Call<ResponseBody> addFavorites(@Path("accommodationId") Long accommodationId);
-
 
     @Headers({
             "User-Agent: Mobile-Android",
@@ -296,8 +303,6 @@ public interface ApiService {
     @PUT("accommodations/{accommodationId}/remove-favorites")
     Call<ResponseBody> removeFavorites(@Path("accommodationId") Long accommodationId);
 
-
-
     @Headers({
             "User-Agent: Mobile-Android",
             "Content-Type:application/json"
@@ -305,7 +310,6 @@ public interface ApiService {
     @GET("accommodations/favorites")
     Call<ResponseBody> getFavorites(@Query("pageNo") int pageNo,
                                     @Query("pageSize") int pageSize);
-
 
     @Headers({
             "User-Agent: Mobile-Android",

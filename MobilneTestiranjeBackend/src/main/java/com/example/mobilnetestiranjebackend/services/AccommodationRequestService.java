@@ -563,14 +563,7 @@ public class AccommodationRequestService {
 //                availabilityRepository.delete(availability);
 //            }
 
-
-
-
             for(AvailabilityRequest ar: accommodationRequest.getAvailabilityRequests()){
-                System.out.println("--------");
-                System.out.println(ar.getId());
-                System.out.println(ar.getRequestType());
-                System.out.println("--------");
                 if (ar.getRequestType().equals(RequestType.CREATE)){
                      var availability = Availability.builder()
                              .accommodation(accommodation)

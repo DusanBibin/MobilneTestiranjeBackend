@@ -77,7 +77,6 @@ public class RegisterActivity extends AppCompatActivity {
 
                    if(response.code() == 400){
                        Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
-                        System.out.println(map);
                         if(map.containsKey("message")) {
                             String errMessage = map.get("message");
                             Toast.makeText(RegisterActivity.this, errMessage, Toast.LENGTH_SHORT).show();

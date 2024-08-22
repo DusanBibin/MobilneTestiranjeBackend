@@ -129,29 +129,22 @@ public class AvailabilitiesAdapter extends  RecyclerView.Adapter<AvailabilitiesV
 
                 AvailabilityDTO avail = existingAvailabilitiesForEdit.get(item.getId());
                 if(avail != null){
-                    System.out.println(avail);
-
                     holder.txtPriceOld.setText("Price: " + avail.getPrice().toString());
                     holder.txtIsPerGuestOld.setText("Is per guest price: " + avail.getPricePerGuest().toString());
                     holder.txtDateRangeOld.setText("Date range: " + avail.getStartDate().format(formatter) + " " + avail.getEndDate().format(formatter));
                     holder.txtCancelDateOld.setText("Cancel date: " + avail.getCancellationDeadline().format(formatter));
-
-
-
                     if(!avail.getPricePerGuest().equals(item.getPricePerGuest())){
                         holder.txtChangeFromMessage.setVisibility(View.VISIBLE);
                         holder.linearLayoutAvailabilityOld.setVisibility(View.VISIBLE);
                         holder.txtIsPerGuestOld.setVisibility(View.VISIBLE);
                         holder.txtIsPerGuest.setTextColor(orange);
                     }
-
                     if(!avail.getPrice().equals(item.getPrice())){
                         holder.txtChangeFromMessage.setVisibility(View.VISIBLE);
                         holder.linearLayoutAvailabilityOld.setVisibility(View.VISIBLE);
                         holder.txtPriceOld.setVisibility(View.VISIBLE);
                         holder.txtPrice.setTextColor(orange);
                     }
-
                     if(!avail.getEndDate().equals(item.getEndDate()) || !avail.getStartDate().equals(item.getStartDate())){
                         holder.txtChangeFromMessage.setVisibility(View.VISIBLE);
                         holder.linearLayoutAvailabilityOld.setVisibility(View.VISIBLE);
@@ -184,11 +177,8 @@ public class AvailabilitiesAdapter extends  RecyclerView.Adapter<AvailabilitiesV
                     dataList.remove(holder.getAdapterPosition());
                 }
 
-
                 notifyDataSetChanged();
                 notifyItemRemoved(holder.getAdapterPosition());
-                System.out.println("SADA JE DATALIST:" + dataList.size());
-                System.out.println("SADA JE EXISTING BLA BLA:" + existingAvailabilitiesMarkedDeletion.size());
             }
         });
 

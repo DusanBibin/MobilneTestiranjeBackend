@@ -238,7 +238,6 @@ public class ReservationService {
 
             accommodationReviewWrapper = accommodationReviewRepository.findByAccommodationIdAndGuestId(accommodationId, guest.getId());
             ownerReviewWrapper = ownerReviewRepository.findByOwnerIdAndGuestId(userId, guest.getId());
-            System.out.println(accommodationReviewWrapper.isPresent());
 
         }
         else if(guestRepository.findGuestById(userId).isPresent()) {
@@ -293,8 +292,7 @@ public class ReservationService {
         reservationDTO.setNameAndSurname(reservation.getGuest().getFirstName() + " " + reservation.getGuest().getLastname());
         reservationDTO.setUserEmail(reservation.getGuest().getEmail());
         reservationDTO.setTimesUserCancel((long) canceledReservations.size());
-
-        System.out.println(reservationDTO.getReviewPresent());
+        
         return reservationDTO;
 
     }

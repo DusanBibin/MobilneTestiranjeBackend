@@ -303,12 +303,7 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
                 accommodation.setAvailabilityList(availabilitiesAdapter.getEditList());
                 accommodation.setImagesToDelete(imagesAddAdapter.getImagesToDelete());
 
-                for(File iksde: imagesAddAdapter.getImagesToAdd()){
-                    System.out.println(iksde.getName());
-                }
                 List<MultipartBody.Part> images = prepareFilePart("images", imagesAddAdapter.getImagesToAdd());
-                System.out.println("broj slika je:" );
-                System.out.println(images.size());
                 Call<ResponseBody> call;
                 if(accommodationId == 0) call = ClientUtils.apiService.createNewAccommodationRequest(accommodation, images);
                 else call = ClientUtils.apiService.createNewEditAccommodationRequest(accommodation, images, accommodationId);
@@ -324,7 +319,6 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
                         }
                         if(response.code() == 400){
                             Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
-                            System.out.println(map);
                             if(map.containsKey("message")) Toast.makeText(CreateAccommodationActivity.this, map.get("message"), Toast.LENGTH_SHORT).show();
                             binding.btnConfirm.setVisibility(View.VISIBLE);
                             binding.progressBar.setVisibility(View.GONE);
@@ -435,7 +429,6 @@ public class CreateAccommodationActivity extends AppCompatActivity implements On
                             if (contentDisposition != null && contentDisposition.contains("filename=")) {
                                 filename = contentDisposition.split("filename=")[1].replace(";", "").replace("\"", "");
                             }
-                            System.out.println(filename);
                             File cacheDir = getApplicationContext().getCacheDir();
                             File tempFile = new File(cacheDir, filename);
                             FileOutputStream fos = new FileOutputStream(tempFile);

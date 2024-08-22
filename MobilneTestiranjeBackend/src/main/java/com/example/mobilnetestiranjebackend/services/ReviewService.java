@@ -166,14 +166,14 @@ public class ReviewService {
                 if(ownerReview.isPresent()){
                     OwnerReview or = ownerReview.get();
                     if(or.getAllowed()){
-                        review.setOwnerReview(new ReviewDTO(0L, or.getComment(), or.getRating(), null, 0L, null));
+                        review.setOwnerReview(new ReviewDTO(0L, or.getComment(), or.getRating(), null, 0L, null, null));
                     }
                 }
 
                 if(accommodationReview.isPresent()){
                     AccommodationReview ar = accommodationReview.get();
                     if(ar.getAllowed()){
-                        review.setAccommodationReview(new ReviewDTO(0L, ar.getComment(), ar.getRating(), null, 0L, null));
+                        review.setAccommodationReview(new ReviewDTO(0L, ar.getComment(), ar.getRating(), null, 0L, null, null));
                     }
                 }
                 reviews.add(review);
@@ -232,14 +232,16 @@ public class ReviewService {
             String reason = null;
             Long complaintId = 0L;
             String adminResponse = null;
+            RequestStatus status = null;
             if(orc.isPresent()){
                 reason = orc.get().getReason();
                 complaintId = orc.get().getId();
                 adminResponse = orc.get().getResponse();
                 if(!orc.get().getStatus().equals(RequestStatus.PENDING)) adminResponse = orc.get().getResponse();
+                status = orc.get().getStatus();
             }
 
-            orDTO = new ReviewDTO(or.getId(), or.getComment(), or.getRating(), reason, complaintId, adminResponse);
+            orDTO = new ReviewDTO(or.getId(), or.getComment(), or.getRating(), reason, complaintId, adminResponse, status);
         }
         if(arWrapper.isPresent()){
             AccommodationReview ar = arWrapper.get();
@@ -249,13 +251,15 @@ public class ReviewService {
             String reason = null;
             Long complaintId = 0L;
             String adminResponse = null;
+            RequestStatus status = null;
             if(orc.isPresent()){
                 reason = orc.get().getReason();
                 complaintId = orc.get().getId();
                 if(!orc.get().getStatus().equals(RequestStatus.PENDING)) adminResponse = orc.get().getResponse();
+                status = orc.get().getStatus();
             }
 
-            arDTO = new ReviewDTO(ar.getId(), ar.getComment(), ar.getRating(), reason, complaintId, adminResponse);
+            arDTO = new ReviewDTO(ar.getId(), ar.getComment(), ar.getRating(), reason, complaintId, adminResponse, status);
         }
 
 

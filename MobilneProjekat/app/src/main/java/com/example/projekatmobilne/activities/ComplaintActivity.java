@@ -87,8 +87,6 @@ public class ComplaintActivity extends AppCompatActivity {
             }
         }
 
-
-
         if(complaintId != 0L){
             binding.progressBarComplaintDetails.setVisibility(View.VISIBLE);
             binding.nestedScrollView.setVisibility(View.GONE);
@@ -140,20 +138,6 @@ public class ComplaintActivity extends AppCompatActivity {
                 }
             });
         }
-
-
-
-        System.out.println("accommodation complaint");
-        System.out.println(accommodationReviewComplaintId);
-
-        System.out.println("owner complaint");
-        System.out.println(ownerReviewComplaintId);
-
-        System.out.println("review");
-        System.out.println(reviewId);
-
-        System.out.println("reservation");
-        System.out.println(reservationId);
 
         setupButtons();
 
@@ -221,12 +205,6 @@ public class ComplaintActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ComplaintActivity.this, ReservationDetailsHostActivity.class);
-                System.out.println("BBBBBBBBBBBBBBBBBBBBBB");
-                System.out.println("accommodationId");
-                System.out.println(accommodationId);
-                System.out.println("rezervacija id");
-                System.out.println(reservationId);
-                System.out.println("BBBBBBBBBBBBBBBBBBBBBB");
                 intent.putExtra("accommodationId", accommodationId);
                 intent.putExtra("reservationId", reservationId);
                 startActivity(intent);

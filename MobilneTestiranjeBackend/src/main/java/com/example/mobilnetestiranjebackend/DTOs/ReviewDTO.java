@@ -1,6 +1,7 @@
 package com.example.mobilnetestiranjebackend.DTOs;
 
 
+import com.example.mobilnetestiranjebackend.enums.RequestStatus;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -28,4 +29,5 @@ public class  ReviewDTO {
     private String complaintReason;
     private Long complaintId;
     private String adminResponse;
+    private RequestStatus status;
 }

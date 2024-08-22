@@ -34,7 +34,6 @@ public class FullScreenImageActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         Bundle extras = getIntent().getExtras();
-        System.out.println(extras.getString("picture"));
         Bitmap bmp = BitmapFactory.decodeFile(extras.getString("picture"));
 
         binding.fullscreenImageView.setImageBitmap(bmp);

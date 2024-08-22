@@ -59,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             if (binding.passwordInputEditText.getText().toString().isEmpty()) {
-                binding.passwordInputLayout.setError("This field cannot be em  pty");
+                binding.passwordInputLayout.setError("This field cannot be empty");
                 isValid = false;
             }
             if(!isValid) return;
