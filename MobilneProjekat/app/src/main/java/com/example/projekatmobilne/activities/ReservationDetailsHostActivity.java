@@ -22,6 +22,7 @@ import com.example.projekatmobilne.R;
 import com.example.projekatmobilne.adapters.ReservationHostViewAdapter;
 import com.example.projekatmobilne.clients.ClientUtils;
 import com.example.projekatmobilne.databinding.ActivityReservationDetailsHostBinding;
+import com.example.projekatmobilne.model.Enum.RequestStatus;
 import com.example.projekatmobilne.model.Enum.ReservationStatus;
 import com.example.projekatmobilne.model.Enum.Role;
 import com.example.projekatmobilne.model.requestDTO.ReservationDTO;
@@ -568,77 +569,143 @@ public class ReservationDetailsHostActivity extends AppCompatActivity {
 
 
                 if(response.code() == 200){
-                    ReservationDTO r = ResponseParser.parseResponse(response, ReservationDTO.class, false);
 
-                    if(r.getReviewPresent()){
+                    reservation = ResponseParser.parseResponse(response, ReservationDTO.class, false);
+                    review = new ReviewDTOPageItem(reservation.getNameAndSurname());
+                    System.out.println(reservation);
+                    if(reservation.getStatus().equals(ReservationStatus.ACCEPTED) && LocalDate.now().isAfter(reservation.getReservationEndDate())){
+                        if(reservation.getReviewPresent() && !JWTManager.getRoleEnum().equals(Role.ADMIN)){
 
-                        binding.progressBarReview.setVisibility(View.VISIBLE);
-                        Call<ResponseBody> reviewCall = ClientUtils.apiService.getReservationReview(accommodationId, reservationId);
-                        reviewCall.enqueue(new Callback<ResponseBody>() {
-                            @Override
-                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                                if(response.code() == 200){
-                                    ReviewDTOPageItem re = ResponseParser.parseResponse(response, ReviewDTOPageItem.class, false);
-                                    if(re.getAccommodationReview() == null) binding.linearLayoutAccommodationReview.setVisibility(View.GONE);
-                                    if(re.getOwnerReview() == null) binding.linearLayoutOwnerReview.setVisibility(View.GONE);
+                            binding.progressBarReview.setVisibility(View.VISIBLE);
+                            Call<ResponseBody> reviewCall = ClientUtils.apiService.getReservationReview(accommodationId, reservationId);
+                            reviewCall.enqueue(new Callback<ResponseBody>() {
+                                @Override
+                                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                    if(response.code() == 200){
+                                        review = ResponseParser.parseResponse(response, ReviewDTOPageItem.class, false);
+                                        System.out.println(review);
 
-                                    binding.txtGuestName.setText(r.getNameAndSurname());
-                                    binding.txtCommentAccommodation.setText(re.getAccommodationReview().getComment());
-                                    binding.txtCommentOwner.setText(re.getOwnerReview().getComment());
-                                    binding.ratingBarAccommodation.setRating(re.getAccommodationReview().getRating());
-                                    binding.ratingBarOwner.setRating(re.getOwnerReview().getRating());
+                                        if(review.getAccommodationReview() == null){
+                                            binding.linearLayoutAccommodationReview.setVisibility(View.GONE);
+                                            if(reservation.getOwnerId().equals(JWTManager.getUserIdLong()))
+                                            {
+                                                binding.linearLayoutAddAccommodationReview.setVisibility(View.GONE);
+                                                binding.txtAccommodation.setVisibility(View.GONE);
+                                            }
+                                        }else{
 
-                                    binding.cardViewReview.setVisibility(View.VISIBLE);
-                                    binding.cardViewReport.setVisibility(View.GONE);
-                                    binding.progressBarReview.setVisibility(View.GONE);
 
+                                            if(reservation.getGuestId().equals(JWTManager.getUserIdLong())) binding.btnRemoveAccommodationReview.setVisibility(View.VISIBLE);
+                                            if(reservation.getOwnerId().equals(JWTManager.getUserIdLong())){
+                                                binding.btnCreateComplaintAccommodation.setVisibility(View.VISIBLE);
+                                                String btnText = "Create complaint";
+                                                if(review.getAccommodationReview().getComplaintReason() != null){
+                                                    btnText = "View complaint";
+                                                    accommodationReviewComplaintId = review.getAccommodationReview().getComplaintId();
+                                                }
+                                                binding.btnCreateComplaintAccommodation.setText(btnText);
+                                            }
+
+                                            binding.linearLayoutAddAccommodationReview.setVisibility(View.GONE);
+                                            binding.txtCommentAccommodation.setText(review.getAccommodationReview().getComment());
+                                            binding.ratingBarAccommodation.setRating(review.getAccommodationReview().getRating());
+
+
+                                            if(review.getAccommodationReview().getAdminResponse() != null && review.getAccommodationReview().getStatus().equals(RequestStatus.ACCEPTED)){
+                                                binding.txtAccommodationMessage.setVisibility(View.VISIBLE);
+                                            }
+
+
+                                        }
+
+                                        if(review.getOwnerReview() == null){
+                                            binding.linearLayoutOwnerReview.setVisibility(View.GONE);
+                                            if(reservation.getOwnerId().equals(JWTManager.getUserIdLong())){
+                                                binding.linearLayoutAddOwnerReview.setVisibility(View.GONE);
+                                                binding.txtOwner.setVisibility(View.GONE);
+                                            }
+                                        }else{
+                                            if(reservation.getGuestId().equals(JWTManager.getUserIdLong())) binding.btnRemoveOwnerReview.setVisibility(View.VISIBLE);
+                                            if(reservation.getOwnerId().equals(JWTManager.getUserIdLong())){
+                                                binding.btnCreateComplaintOwner.setVisibility(View.VISIBLE);
+                                                String btnText = "Create complaint";
+                                                System.out.println(review.getOwnerReview());
+                                                if(review.getOwnerReview().getComplaintReason() != null){
+                                                    btnText = "View complaint";
+                                                    ownerReviewComplaintId = review.getOwnerReview().getComplaintId();
+                                                }
+                                                binding.btnCreateComplaintOwner.setText(btnText);
+                                            }
+
+                                            if(review.getOwnerReview().getAdminResponse() != null && review.getOwnerReview().getStatus().equals(RequestStatus.ACCEPTED)){
+                                                binding.txtOwnerMessage.setVisibility(View.VISIBLE);
+                                            }
+                                            binding.linearLayoutAddOwnerReview.setVisibility(View.GONE);
+                                            binding.txtCommentOwner.setText(review.getOwnerReview().getComment());
+                                            binding.ratingBarOwner.setRating(review.getOwnerReview().getRating());
+
+                                        }
+
+
+
+                                        binding.txtGuestName.setText(reservation.getNameAndSurname());
+                                        binding.cardViewReview.setVisibility(View.VISIBLE);
+                                        binding.progressBarReview.setVisibility(View.GONE);
+
+                                    }
+
+                                    if(response.code() == 400){
+                                        Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
+                                        if(map.containsKey("message")) Toast.makeText(ReservationDetailsHostActivity.this, map.get("message"), Toast.LENGTH_SHORT).show();
+                                    }
                                 }
 
-                                if(response.code() == 400){
-                                    Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
-                                    if(map.containsKey("message")) Toast.makeText(ReservationDetailsHostActivity.this, map.get("message"), Toast.LENGTH_SHORT).show();
+                                @Override
+                                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                    Toast.makeText(ReservationDetailsHostActivity.this, "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                                    t.printStackTrace();
                                 }
+                            });
+                        }else{
+                            if(reservation.getGuestId().equals(JWTManager.getUserIdLong())){
+                                binding.linearLayoutAccommodationReview.setVisibility(View.GONE);
+                                binding.linearLayoutOwnerReview.setVisibility(View.GONE);
+                                binding.cardViewReview.setVisibility(View.VISIBLE);
                             }
-
-                            @Override
-                            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                Toast.makeText(ReservationDetailsHostActivity.this, "There was a problem, try again later", Toast.LENGTH_SHORT).show();
-                                t.printStackTrace();
-                            }
-                        });
+                        }
                     }
 
-                    binding.txtName.setText(r.getAccommodationName());
-                    binding.txtAddress.setText("Accommodation address: " + r.getAccommodationAddress());
-                    binding.txtDateRange.setText("Date range: " + r.getReservationStartDate() + " - " + r.getReservationEndDate());
-                    binding.txtCancelDeadline.setText("Cancel deadline: " + r.getCancelDeadline());
-                    binding.txtGuestNumber.setText("Number of guests: " + r.getGuestNum());
-                    binding.txtUnitPrice.setText("Unit price: " + r.getUnitPrice());
-                    binding.txtIsPricePerGuest.setText("Is price per guest: " + r.getPerGuest());
-                    binding.txtTotalPrice.setText("Total price: " + r.getPrice());
-                    binding.txtStatus.setText("Reservation status: " + r.getStatus());
-                    binding.txtRejectReason.setText("Reject reason: " + r.getReason());
-                    binding.txtOwnerNameSurname.setText("Name and surname: " + r.getOwnerNameAndSurname());
-                    binding.txtOwnerEmail.setText("Email: " + r.getOwnerEmail());
-                    binding.txtNameSurname.setText("Name and surname: " + r.getNameAndSurname());
-                    binding.txtEmail.setText("Email: " + r.getUserEmail());
-                    binding.txtTimeCanceled.setText("Times user canceled past reservations: " + r.getTimesUserCancel());
-                    if(r.getStatus().equals(ReservationStatus.DECLINED)) binding.txtRejectReason.setVisibility(View.VISIBLE);
-                    if(!(r.getStatus().equals(ReservationStatus.PENDING) && JWTManager.getRoleEnum().equals(Role.OWNER))) binding.linearLayoutButtons.setVisibility(View.GONE);
-                    if(!(r.getStatus().equals(ReservationStatus.ACCEPTED) &&
-                            JWTManager.getRoleEnum().equals(Role.GUEST) && LocalDate.now().isBefore(r.getCancelDeadline())))
+                    binding.txtName.setText(reservation.getAccommodationName());
+                    binding.txtAddress.setText("Accommodation address: " + reservation.getAccommodationAddress());
+                    binding.txtDateRange.setText("Date range: " + reservation.getReservationStartDate() + " - " + reservation.getReservationEndDate());
+                    binding.txtCancelDeadline.setText("Cancel deadline: " + reservation.getCancelDeadline());
+                    binding.txtGuestNumber.setText("Number of guests: " + reservation.getGuestNum());
+                    binding.txtUnitPrice.setText("Unit price: " + reservation.getUnitPrice());
+                    binding.txtIsPricePerGuest.setText("Is price per guest: " + reservation.getPerGuest());
+                    binding.txtTotalPrice.setText("Total price: " + reservation.getPrice());
+                    binding.txtStatus.setText("Reservation status: " + reservation.getStatus());
+                    binding.txtRejectReason.setText("Reject reason: " + reservation.getReason());
+                    binding.txtOwnerNameSurname.setText("Name and surname: " + reservation.getOwnerNameAndSurname());
+                    binding.txtOwnerEmail.setText("Email: " + reservation.getOwnerEmail());
+                    binding.txtNameSurname.setText("Name and surname: " + reservation.getNameAndSurname());
+                    binding.txtEmail.setText("Email: " + reservation.getUserEmail());
+                    binding.txtTimeCanceled.setText("Times user canceled past reservations: " + reservation.getTimesUserCancel());
+                    if(reservation.getStatus().equals(ReservationStatus.DECLINED)) binding.txtRejectReason.setVisibility(View.VISIBLE);
+                    if(!(reservation.getStatus().equals(ReservationStatus.PENDING) && JWTManager.getRoleEnum().equals(Role.OWNER))) binding.linearLayoutButtons.setVisibility(View.GONE);
+                    if(!(reservation.getStatus().equals(ReservationStatus.ACCEPTED) &&
+                            JWTManager.getRoleEnum().equals(Role.GUEST) && LocalDate.now().isBefore(reservation.getCancelDeadline())))
                         binding.btnCancel.setVisibility(View.GONE);
-                    if(!(r.getStatus().equals(ReservationStatus.PENDING) && JWTManager.getRoleEnum().equals(Role.GUEST)))
+                    if(!(reservation.getStatus().equals(ReservationStatus.PENDING) && JWTManager.getRoleEnum().equals(Role.GUEST)))
                         binding.btnDelete.setVisibility(View.GONE);
-                    if(r.getConflictReservations() && JWTManager.getUserIdLong().equals(r.getOwnerId())) {
+                    if(reservation.getConflictReservations() && JWTManager.getUserIdLong().equals(reservation.getOwnerId())) {
                         binding.linearLayoutConflictReservations.setVisibility(View.VISIBLE);
                         loadConflictedReservationsPage();
                     }
-                    if(r.getStatus().equals(ReservationStatus.ACCEPTED) && LocalDate.now().isAfter(r.getReservationStartDate())){
+                    if(reservation.getStatus().equals(ReservationStatus.ACCEPTED) && LocalDate.now().isAfter(reservation.getReservationStartDate()))
                         binding.cardViewReport.setVisibility(View.VISIBLE);
-                    } else {
-                        binding.cardViewReview.setVisibility(View.GONE);
-                    }
+//                    } else {
+//                        binding.cardViewReview.setVisibility(View.GONE);
+//                    }
                 }
             }
 

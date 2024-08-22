@@ -1,5 +1,7 @@
 package com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.PageTypes.innerDTOPage;
 
+import com.example.projekatmobilne.model.Enum.RequestStatus;
+
 public class ReviewDTOPageItemInner {
     private Long reviewId;
     private String comment;
@@ -7,9 +9,18 @@ public class ReviewDTOPageItemInner {
     private String complaintReason;
     private Long complaintId;
     private String adminResponse;
+    private RequestStatus status;
     public ReviewDTOPageItemInner(String comment, Long rating) {
         this.comment = comment;
         this.rating = rating;
+    }
+
+    public RequestStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(RequestStatus status) {
+        this.status = status;
     }
 
     public Long getComplaintId() {
@@ -69,6 +80,7 @@ public class ReviewDTOPageItemInner {
                 ", complaintReason='" + complaintReason + '\'' +
                 ", complaintId=" + complaintId +
                 ", adminResponse='" + adminResponse + '\'' +
+                ", status=" + status +
                 '}';
     }
 }
