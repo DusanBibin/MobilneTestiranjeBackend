@@ -67,6 +67,11 @@
             android:name=".services.ConnectionCheckService"
             android:exported="false" />
 
+        <service
+            android:name=".services.ForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="location" />
+
         <receiver
             android:name=".receivers.ConnectionStatusReceiver"
             android:exported="true">

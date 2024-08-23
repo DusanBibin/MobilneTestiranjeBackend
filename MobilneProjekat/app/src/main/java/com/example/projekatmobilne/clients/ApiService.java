@@ -3,6 +3,7 @@ package com.example.projekatmobilne.clients;
 
 import com.example.projekatmobilne.model.Enum.RequestStatus;
 import com.example.projekatmobilne.model.Enum.ReservationStatus;
+import com.example.projekatmobilne.model.Notification;
 import com.example.projekatmobilne.model.requestDTO.AccommodationDTO;
 import com.example.projekatmobilne.model.requestDTO.AuthenticationRequestDTO;
 import com.example.projekatmobilne.model.requestDTO.AvailabilityDTO;
@@ -386,4 +387,18 @@ public interface ApiService {
     Call<ResponseBody> processReviewCommentComplaint(@Path("complaintId") Long complaintId,
                                                      @Path("status") RequestStatus status,
                                                      @Body String response);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @PUT("notification/{id}/toggle-read")
+    Call<ResponseBody> toggleNotification(@Path("id") Long id);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @GET("notification/user")
+    Call<ResponseBody> getNotifications();
 }

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardViewNotificationItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    android:layout_marginStart="10dp"
+    android:layout_marginEnd="10dp"
+    android:layout_marginTop="10dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp">
+
+    <LinearLayout
+        android:id="@+id/linearLayoutNotificationView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="?android:attr/selectableItemBackground"
+        android:padding="16dp">
+
+        <!-- Poruka -->
+        <TextView
+            android:id="@+id/txtNotificationMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Notification Message"
+            android:textSize="18sp"
+            android:textColor="@android:color/black"
+            android:paddingBottom="8dp" />
+
+        <TextView
+            android:id="@+id/txtNotificationType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Notification Type"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:paddingBottom="8dp" />
+
+        <!-- Datum -->
+        <TextView
+            android:id="@+id/txtNotificationDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Date: 2024-08-23 14:00:00"
+            android:textSize="14sp"
+            android:textColor="@android:color/darker_gray" />
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
