@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@ToString(exclude = {"guest", "accommodation", "availability"})
 @Table(name = "reservation")
 public class Reservation {
     @Id

@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@ToString(exclude = {"reservations", "ownerReviews", "accommodationReviews", "favorites", "reviewComplaints"})
 @Table(name = "guest")
 public class Guest extends User {
 

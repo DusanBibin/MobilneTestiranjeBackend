@@ -3,6 +3,7 @@ package com.example.projekatmobilne.activities;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -30,6 +31,7 @@ import com.example.projekatmobilne.databinding.ActivityAccommodationDetailsBindi
 import com.example.projekatmobilne.model.Enum.Role;
 import com.example.projekatmobilne.model.requestDTO.AvailabilityDTO;
 import com.example.projekatmobilne.model.requestDTO.ReservationDTO;
+import com.example.projekatmobilne.model.responseDTO.MonthlyReportDTO;
 import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.ReviewsDTOPagedResponse;
 import com.example.projekatmobilne.model.responseDTO.AccommodationDTOResponse;
 import com.example.projekatmobilne.model.responseDTO.innerDTO.AvailabilityDTOInner;
@@ -38,6 +40,13 @@ import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.PageTypes
 import com.example.projekatmobilne.tools.EventDecorator;
 import com.example.projekatmobilne.tools.JWTManager;
 import com.example.projekatmobilne.tools.ResponseParser;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -123,6 +132,7 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
 
         binding.progressBar.setVisibility(View.VISIBLE);
         binding.scrollViewAccommodationDetails.setVisibility(View.GONE);
+        binding.cardViewGraph.setVisibility(View.GONE);
 
 
         calendarView = findViewById(R.id.calendarView);
@@ -245,6 +255,11 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
                                 startActivity(intent);
                             }
                         });
+
+                        binding.cardViewGraph.setVisibility(View.VISIBLE);
+
+                        // TODO ucitavanje grafa
+                        loadBarChartData();
 
 
                         binding.toggleBtnAutoAccept.setVisibility(View.VISIBLE);
@@ -753,5 +768,58 @@ public class AccommodationDetailsActivity extends AppCompatActivity implements O
             binding.progressBar.setVisibility(View.GONE);
             binding.scrollViewAccommodationDetails.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void loadBarChartData() {
+        binding.progressBar.setVisibility(View.VISIBLE);
+        binding.cardViewGraph.setVisibility(View.GONE);
+
+        Call<Map<String, MonthlyReportDTO>> call = ClientUtils.apiService.getLast12MonthsReport(accommodationId);
+        call.enqueue(new Callback<Map<String, MonthlyReportDTO>>() {
+            @Override
+            public void onResponse(Call<Map<String, MonthlyReportDTO>> call, Response<Map<String, MonthlyReportDTO>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Map<String, MonthlyReportDTO> reportData = response.body();
+                    List<BarEntry> entriesReservations = new ArrayList<>();
+                    List<BarEntry> entriesProfit = new ArrayList<>();
+                    List<String> labels = new ArrayList<>();
+
+                    int index = 0;
+                    for (Map.Entry<String, MonthlyReportDTO> entry : reportData.entrySet()) {
+                        String monthYear = entry.getKey();
+                        MonthlyReportDTO dto = entry.getValue();
+                        labels.add(monthYear);
+                        entriesReservations.add(new BarEntry(index, (float) dto.getReservationCount()));
+                        entriesProfit.add(new BarEntry(index, (float) dto.getTotalProfit()));
+                        index++;
+                    }
+
+                    BarDataSet dataSetReservations = new BarDataSet(entriesReservations, "Number of Reservations");
+                    dataSetReservations.setColor(Color.BLUE);
+                    BarDataSet dataSetProfit = new BarDataSet(entriesProfit, "Total Profit");
+                    dataSetProfit.setColor(Color.GREEN);
+
+                    BarData barData = new BarData(dataSetReservations, dataSetProfit);
+                    binding.barChart.setData(barData);
+                    binding.barChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(labels));
+                    binding.barChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+                    binding.barChart.getXAxis().setGranularity(1f);
+                    binding.barChart.getXAxis().setLabelRotationAngle(45f);
+                    binding.barChart.getDescription().setEnabled(false);
+                    binding.barChart.animateY(1000);
+
+                    binding.progressBar.setVisibility(View.GONE);
+                    binding.cardViewGraph.setVisibility(View.VISIBLE);
+                } else {
+                    Toast.makeText(AccommodationDetailsActivity.this, "Failed to load data", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Map<String, MonthlyReportDTO>> call, Throwable t) {
+                Toast.makeText(AccommodationDetailsActivity.this, "There was a problem, try again later", Toast.LENGTH_SHORT).show();
+                t.printStackTrace();
+            }
+        });
     }
 }
