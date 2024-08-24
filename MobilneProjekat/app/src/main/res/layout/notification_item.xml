@@ -29,15 +29,6 @@
             android:textColor="@android:color/black"
             android:paddingBottom="8dp" />
 
-        <TextView
-            android:id="@+id/txtNotificationType"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Notification Type"
-            android:textSize="16sp"
-            android:textColor="@android:color/black"
-            android:paddingBottom="8dp" />
-
         <!-- Datum -->
         <TextView
             android:id="@+id/txtNotificationDate"

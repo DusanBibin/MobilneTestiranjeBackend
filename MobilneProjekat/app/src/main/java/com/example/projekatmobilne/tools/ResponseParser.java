@@ -1,5 +1,8 @@
 package com.example.projekatmobilne.tools;
 
+import android.util.Log;
+
+import com.example.projekatmobilne.adapters.LocalDateTimeAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -10,6 +13,7 @@ import com.google.gson.JsonParseException;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import okhttp3.ResponseBody;
 import retrofit2.Response;
@@ -21,7 +25,7 @@ public class ResponseParser {
         public LocalDate deserialize(JsonElement json, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             return LocalDate.parse(json.getAsJsonPrimitive().getAsString());
         }
-    }).create();
+    }).registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter()).create();
 
     public static <T> T parseResponse(Response<ResponseBody> response, Class<T> classOfT, Boolean isErrorResponse){
 
@@ -38,5 +42,9 @@ public class ResponseParser {
 
     }
 
-
+    public static <T> T parseTypeResponse(String responseBody, Type typeOfT, Boolean isErrorResponse){
+        Log.d("ResponseParser", "parseTypeResponse: " + responseBody);
+        if (typeOfT == String.class) return (T) responseBody;
+        else return gsonCustom.fromJson(responseBody, typeOfT);
+    }
 }

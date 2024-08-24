@@ -17,7 +17,10 @@ import com.example.projekatmobilne.databinding.FragmentNotificationsBinding;
 import com.example.projekatmobilne.model.Notification;
 import com.example.projekatmobilne.model.responseDTO.NotificationListDTO;
 import com.example.projekatmobilne.tools.ResponseParser;
+import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,15 +79,27 @@ public class NotificationsFragment extends Fragment {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 binding.progressBar.setVisibility(View.GONE);
-                Log.d("NotificationsFragment", "onResponse: " + response.body().toString());
                 if(response.isSuccessful()){
-
-                    NotificationListDTO notificationResponse = ResponseParser.parseResponse(response, NotificationListDTO.class, false);
+                    Type listType = new TypeToken<NotificationListDTO>(){}.getType();
+                    NotificationListDTO notificationResponse = null;
+                    try {
+                        String responseBody = response.body().string();
+                        notificationResponse = ResponseParser.parseTypeResponse(responseBody, listType, false);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    Log.d("NotificationsFragment", "Notification Response: " + notificationResponse);
                     dataList.addAll(notificationResponse.getContent());
+                    notificationAdapter.setList(dataList);
                     notificationAdapter.notifyDataSetChanged();
+
 
                     if(dataList.isEmpty()){
                         binding.txtNoNotifications.setVisibility(View.VISIBLE);
+                    }
+                    else{
+                        binding.recyclerViewNotifications.setVisibility(View.VISIBLE);
+                        binding.progressBar.setVisibility(View.GONE);
                     }
                 }else{
                     Toast.makeText(getActivity(), "There was a problem, try again later", Toast.LENGTH_SHORT).show();

@@ -14,6 +14,7 @@ import com.example.projekatmobilne.R;
 import com.example.projekatmobilne.clients.ClientUtils;
 import com.example.projekatmobilne.model.Notification;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -42,11 +43,20 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationViewHo
         return dataList;
     }
 
+    public void setList(List<Notification> dataList) {
+        this.dataList = dataList;
+        notifyDataSetChanged();
+    }
+
     @Override
     public void onBindViewHolder(@NonNull NotificationViewHolder holder, int position) {
         Notification notification = dataList.get(position);
         holder.txtNotificationMessage.setText(notification.getMessage());
-        holder.txtNotificationDate.setText(notification.getCreatedAt().toString());
+
+        // Formatiranje datuma
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy. HH:mm");
+        String formattedDate = notification.getCreatedAt().format(formatter);
+        holder.txtNotificationDate.setText(formattedDate);
 
         holder.itemView.setOnClickListener(v -> {
             int adapterPosition = holder.getAdapterPosition();

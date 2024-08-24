@@ -11,12 +11,12 @@ public class Notification {
     private Boolean isRead;
     private LocalDateTime createdAt;
 
-    private NotificationType notificationType;
+    private String notificationType;
 
     public Notification() {
     }
 
-    public Notification(Long id, Long userId, String message, Boolean isRead, LocalDateTime createdAt, NotificationType notificationType) {
+    public Notification(Long id, Long userId, String message, Boolean isRead, LocalDateTime createdAt, String notificationType) {
         this.id = id;
         this.userId = userId;
         this.message = message;
@@ -65,11 +65,11 @@ public class Notification {
         this.createdAt = createdAt;
     }
 
-    public NotificationType getNotificationType() {
+    public String getNotificationType() {
         return notificationType;
     }
 
-    public void setNotificationType(NotificationType notificationType) {
+    public void setNotificationType(String notificationType) {
         this.notificationType = notificationType;
     }
 }
