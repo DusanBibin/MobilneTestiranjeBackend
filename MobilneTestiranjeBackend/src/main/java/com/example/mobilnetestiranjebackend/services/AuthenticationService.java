@@ -48,6 +48,7 @@ public class AuthenticationService {
     private final VerificationEmailChangeRepository verificationEmailChangeRepository;
     private final VerificationRepository verificationRepository;
     private final AccommodationRepository accommodationRepository;
+    private final NotificationPreferencesRepository notificationPreferencesRepository;
 
     @Value("${spring.sendgrid.api-key}")
     private String SENDGRID_API_KEY;
@@ -64,9 +65,6 @@ public class AuthenticationService {
 
         Random random = new Random();
         String code = String.format("%05d", random.nextInt(100000));
-
-
-        User user = null;
 
         if(request.getRole().equals(Role.OWNER)){
             var owner = Owner.builder()
@@ -86,8 +84,32 @@ public class AuthenticationService {
                     .ownerReviews(new ArrayList<>())
                     .reviewComplaints(new ArrayList<>())
                     .build();
-            user = owner;
             ownerRepository.save(owner);
+
+            List<NotificationPreferences> preferences = List.of(
+                    NotificationPreferences.builder()
+                            .userId(owner.getId())
+                            .notificationType(NotificationType.RESERVATION_REQUEST)
+                            .isEnabled(true)
+                            .build(),
+                    NotificationPreferences.builder()
+                            .userId(owner.getId())
+                            .notificationType(NotificationType.RESERVATION_CANCELLATION)
+                            .isEnabled(true)
+                            .build(),
+                    NotificationPreferences.builder()
+                            .userId(owner.getId())
+                            .notificationType(NotificationType.OWNER_REVIEW)
+                            .isEnabled(true)
+                            .build(),
+                    NotificationPreferences.builder()
+                            .userId(owner.getId())
+                            .notificationType(NotificationType.ACCOMMODATION_REVIEW)
+                            .isEnabled(true)
+                            .build());
+
+            notificationPreferencesRepository.saveAll(preferences);
+
         }else{
             var guest = Guest.builder()
                     .firstName(request.getFirstName())
@@ -107,8 +129,14 @@ public class AuthenticationService {
                     .favorites(new ArrayList<>())
                     .reviewComplaints(new ArrayList<>())
                     .build();
-            user = guest;
             guestRepository.save(guest);
+
+            NotificationPreferences preference = NotificationPreferences.builder()
+                    .userId(guest.getId())
+                    .notificationType(NotificationType.RESERVATION_RESPONSE)
+                    .isEnabled(true)
+                    .build();
+            notificationPreferencesRepository.save(preference);
         }
 
 //        try {

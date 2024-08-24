@@ -20,7 +20,7 @@ public class ClientUtils {
     // mac os ipconfig getifaddr en0
     // IVINA mreza 172.20.10.12
     //public static final String SERVICE_API_PATH = "http://192.168.0.29:8080/api/v1/";  // localhost - Danilo
-    public static final String SERVICE_API_PATH = "http://172.20.10.12:8080/api/v1/";  // localhost - Danilo
+    public static final String SERVICE_API_PATH = "http://"+ BuildConfig.IP_ADDR +":8080/api/v1/";  // localhost - Danilo
 
     /*
      * Ovo ce nam sluziti za debug, da vidimo da li zahtevi i odgovori idu
