@@ -385,9 +385,41 @@
 
 
                 </LinearLayout>
+
             </androidx.cardview.widget.CardView>
 
-            <Button
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardViewGraph"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Yearly Statistic"
+                            android:textSize="20sp"
+                            />
+
+                        <com.github.mikephil.charting.charts.BarChart
+                            android:id="@+id/barChart"
+                            android:layout_width="match_parent"
+                            android:layout_height="300dp"
+                            android:layout_marginTop="16dp"/>
+
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+
+                <Button
                 android:id="@+id/btnEdit"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
@@ -433,110 +465,108 @@
             </LinearLayout>
 
 
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <TextView
-                    android:textSize="25sp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
-                    android:text="Comments and ratings"/>
-                <ProgressBar
-                    android:id="@+id/progressBarReviews"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    />
-
-                <TextView
-                    android:textSize="15sp"
-                    android:id="@+id/txtNoRatings"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
-                    android:text="No ratings and comments yet"/>
                 <LinearLayout
-                    android:id="@+id/linearLayoutReviews"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    >
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-                    <LinearLayout
-                        android:id="@+id/linearLayoutFoundReviews"
+                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:text="Comments and ratings"
+                        android:textSize="25sp" />
+
+                    <ProgressBar
+                        android:id="@+id/progressBarReviews"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/txtNoRatings"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:text="No ratings and comments yet"
+                        android:textSize="15sp" />
+
+                    <LinearLayout
+                        android:id="@+id/linearLayoutReviews"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
                         android:orientation="vertical">
 
                         <LinearLayout
+                            android:id="@+id/linearLayoutFoundReviews"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
+                            android:orientation="vertical">
 
-                            android:layout_marginEnd="16dp"
-                            android:layout_marginStart="16dp"
-                            android:layout_marginBottom="16dp">
-
-                            <TextView
-                                android:id="@+id/txtOwnerHeader"
-                                android:textSize="15sp"
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Owner average rating"/>
-                            <RatingBar
-                                android:id="@+id/ratingBarOwner"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                style="@android:style/Widget.Material.RatingBar.Indicator"
-                                android:isIndicator="true"
-                                android:numStars="5"/>
+                                android:layout_marginStart="16dp"
 
-                            <TextView
+                                android:layout_marginEnd="16dp"
+                                android:layout_marginBottom="16dp"
+                                android:orientation="vertical">
 
-                                android:id="@+id/txtAccommodationHeader"
-                                android:textSize="15sp"
+                                <TextView
+                                    android:id="@+id/txtOwnerHeader"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Owner average rating"
+                                    android:textSize="15sp" />
+
+                                <RatingBar
+                                    android:id="@+id/ratingBarOwner"
+                                    style="@android:style/Widget.Material.RatingBar.Indicator"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:isIndicator="true"
+                                    android:numStars="5" />
+
+                                <TextView
+
+                                    android:id="@+id/txtAccommodationHeader"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Accommodation average rating"
+                                    android:textSize="15sp" />
+
+                                <RatingBar
+                                    android:id="@+id/ratingBarAccommodation"
+                                    style="@android:style/Widget.Material.RatingBar.Indicator"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:isIndicator="true"
+                                    android:numStars="5" />
+                            </LinearLayout>
+
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/recyclerViewDetails"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="Accommodation average rating"/>
+                                android:layout_height="match_parent"
+                                android:nestedScrollingEnabled="false"
+                                android:scrollbars="vertical"></androidx.recyclerview.widget.RecyclerView>
 
-                            <RatingBar
-                                android:id="@+id/ratingBarAccommodation"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                style="@android:style/Widget.Material.RatingBar.Indicator"
-                                android:isIndicator="true"
-                                android:numStars="5"/>
                         </LinearLayout>
-
-
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/recyclerViewDetails"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scrollbars="vertical"
-                            android:nestedScrollingEnabled="false">
-                        </androidx.recyclerview.widget.RecyclerView>
 
                     </LinearLayout>
 
+
                 </LinearLayout>
-
-
-            </LinearLayout>
-
-
 
 
             </LinearLayout>

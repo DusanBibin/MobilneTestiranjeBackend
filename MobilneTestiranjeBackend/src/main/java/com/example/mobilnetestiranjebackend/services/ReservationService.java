@@ -2,6 +2,7 @@ package com.example.mobilnetestiranjebackend.services;
 
 import com.example.mobilnetestiranjebackend.DTOs.AccommodationRequestPreviewDTO;
 import com.example.mobilnetestiranjebackend.DTOs.AccommodationSearchDTO;
+import com.example.mobilnetestiranjebackend.DTOs.MonthlyReportDTO;
 import com.example.mobilnetestiranjebackend.DTOs.ReservationDTO;
 import com.example.mobilnetestiranjebackend.enums.RequestType;
 import com.example.mobilnetestiranjebackend.enums.ReservationStatus;
@@ -17,9 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -297,6 +296,52 @@ public class ReservationService {
 
     }
 
+    public Map<String, MonthlyReportDTO> getLast12MonthsReport(Long accommodationId) {
+        System.out.println("POGODIO SERVIS POZIV");
+        LocalDate now = LocalDate.now();
+        LocalDate startDate = now.minusMonths(12).withDayOfMonth(1);
+        LocalDate endDate = now.withDayOfMonth(now.lengthOfMonth());
+
+        // Pronaći sve prihvaćene rezervacije za određeni smeštaj u poslednjih 12 meseci
+        List<Reservation> reservations = reservationRepository.findByAccommodationIdAndDateRangeAndStatus(accommodationId, ReservationStatus.ACCEPTED, startDate, endDate);
+        System.out.println("PRONADJENE REZ");
+        System.out.println(reservations);
+
+        // Inicijalizovati mapu za prikupljanje ukupnog profita i broja rezervacija po mesecima
+        Map<String, MonthlyReportDTO> monthlyData = new HashMap<>();
+        for (int month = 1; month <= 12; month++) {
+            LocalDate monthStart = now.minusMonths(12 - month).withDayOfMonth(1);
+            LocalDate monthEnd = monthStart.withDayOfMonth(monthStart.lengthOfMonth());
+            String monthYear = monthStart.getMonth().toString() + " " + monthStart.getYear();
+
+            MonthlyReportDTO report = new MonthlyReportDTO();
+            report.setMonthYear(monthYear);
+            report.setTotalProfit(0.0);
+            report.setReservationCount(0);
+            monthlyData.put(monthYear, report);
+        }
+
+        // Izračunati ukupni profit i broj rezervacija po mesecima
+        for (Reservation reservation : reservations) {
+            LocalDate startDateReservation = reservation.getReservationStartDate();
+            LocalDate endDateReservation = reservation.getReservationEndDate();
+
+            LocalDate currentMonthStart = startDate.withDayOfMonth(1);
+            LocalDate currentMonthEnd = currentMonthStart.withDayOfMonth(currentMonthStart.lengthOfMonth());
+
+            if (startDateReservation.isBefore(currentMonthEnd) && endDateReservation.isAfter(currentMonthStart)) {
+                String monthYear = startDateReservation.getMonth().toString() + " " + startDateReservation.getYear();
+                MonthlyReportDTO report = monthlyData.get(monthYear);
+
+                double totalPrice = reservation.getPrice();
+                report.setTotalProfit(report.getTotalProfit() + totalPrice);
+                report.setReservationCount(report.getReservationCount() + 1);
+                monthlyData.put(monthYear, report);
+            }
+        }
+
+        return monthlyData;
+    }
 
 
 

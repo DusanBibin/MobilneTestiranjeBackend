@@ -66,4 +66,5 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.3'
     implementation 'com.squareup.retrofit2:converter-jackson:2.9.0'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 }

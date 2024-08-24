@@ -12,11 +12,13 @@ import com.example.projekatmobilne.model.Enum.Amenity;
 import com.example.projekatmobilne.model.requestDTO.RegisterRequestDTO;
 import com.example.projekatmobilne.model.requestDTO.ReservationDTO;
 import com.example.projekatmobilne.model.requestDTO.UserDTO;
+import com.example.projekatmobilne.model.responseDTO.MonthlyReportDTO;
 import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.PageTypes.ReviewDTOPageItem;
 import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.PageTypes.innerDTOPage.ReviewDTOPageItemInner;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.MultipartBody;
 import okhttp3.Response;
@@ -367,6 +369,13 @@ public interface ApiService {
     })
     @GET("complaints/{complaintId}")
     Call<ResponseBody> getComplaint(@Path("complaintId") Long complaintId);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @GET("reports/last-12-months-report")
+    Call<Map<String, MonthlyReportDTO>> getLast12MonthsReport(@Query("accommodationId") Long accommodationId);
 
 
 

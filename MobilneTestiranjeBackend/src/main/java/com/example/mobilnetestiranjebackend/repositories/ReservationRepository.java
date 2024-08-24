@@ -5,6 +5,7 @@ import com.example.mobilnetestiranjebackend.model.Availability;
 import com.example.mobilnetestiranjebackend.model.Reservation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -131,4 +132,15 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     @Query("select r from Reservation r where r.id = :reservationId and r.guest.id = :userId and r.status = 0")
     List<Reservation> findGuestCanceledReservations(Long reservationId, Long userId);
+
+    @Query("SELECT r FROM Reservation r WHERE r.accommodation.id = :accommodationId AND " +
+            "r.status = :status AND " +
+            "((r.reservationStartDate BETWEEN :startDate AND :endDate) OR " +
+            "(r.reservationEndDate BETWEEN :startDate AND :endDate) OR " +
+            "(r.reservationStartDate <= :startDate AND r.reservationEndDate >= :endDate))")
+    List<Reservation> findByAccommodationIdAndDateRangeAndStatus(
+            @Param("accommodationId") Long accommodationId,
+            @Param("status") ReservationStatus status,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
 }
