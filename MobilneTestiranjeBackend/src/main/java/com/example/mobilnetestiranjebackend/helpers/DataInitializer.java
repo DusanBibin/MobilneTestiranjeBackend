@@ -24,6 +24,7 @@ private final AvailabilityRepository availabilityRepository;
 private final GuestRepository guestRepository;
 private final ReservationRepository reservationRepository;
 private final UserRepository userRepository;
+private final NotificationRepository notificationRepository;
 
     @Override
     public void run(String... args) {
@@ -282,6 +283,16 @@ private final UserRepository userRepository;
                 .guestNum(1L)
                 .build();
 
+        var notification = Notification.builder()
+                .id(1L)
+                .userId(ownerDusan.getId())
+                .message("New accommodation created")
+                .isRead(false)
+                .notificationType(NotificationType.ACCOMMODATION_REVIEW)
+                .createdAt(LocalDate.now().atStartOfDay())
+                .build();
+
+        notification = notificationRepository.save(notification);
 
 
         reservationOld1 = reservationRepository.save(reservationOld1);
@@ -457,6 +468,7 @@ private final UserRepository userRepository;
                     .pricePerGuest(true)
                     .accommodation(accommodation)
                     .build();
+
 
             availabilityEditTest = availabilityRepository.save(availabilityEditTest);
             availabilityDeleteTest = availabilityRepository.save(availabilityDeleteTest);
