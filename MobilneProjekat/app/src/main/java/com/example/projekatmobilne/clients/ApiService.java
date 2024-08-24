@@ -1,9 +1,11 @@
 package com.example.projekatmobilne.clients;
 
 
+import com.example.projekatmobilne.model.Enum.NotificationType;
 import com.example.projekatmobilne.model.Enum.RequestStatus;
 import com.example.projekatmobilne.model.Enum.ReservationStatus;
 import com.example.projekatmobilne.model.Notification;
+import com.example.projekatmobilne.model.NotificationPreferences;
 import com.example.projekatmobilne.model.requestDTO.AccommodationDTO;
 import com.example.projekatmobilne.model.requestDTO.AuthenticationRequestDTO;
 import com.example.projekatmobilne.model.requestDTO.AvailabilityDTO;
@@ -410,4 +412,21 @@ public interface ApiService {
     })
     @GET("notification/user")
     Call<ResponseBody> getNotifications();
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @PUT("/notification-preferences/{userId}/{notificationType}")
+    Call<ResponseBody> updateNotificationPreference(
+            @Path("userId") Long userId,
+            @Path("notificationType") NotificationType notificationType,
+            @Query("isEnabled") Boolean isEnabled);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @GET("/notification-preferences/{userId}")
+    Call<List<NotificationPreferences>> getNotificationPreferencesByUserId(@Path("userId") Long userId);
 }

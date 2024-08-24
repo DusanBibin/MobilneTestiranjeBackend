@@ -25,6 +25,7 @@ private final GuestRepository guestRepository;
 private final ReservationRepository reservationRepository;
 private final UserRepository userRepository;
 private final NotificationRepository notificationRepository;
+private final NotificationPreferencesRepository notificationPreferencesRepository;
 
     @Override
     public void run(String... args) {
@@ -148,6 +149,71 @@ private final NotificationRepository notificationRepository;
                 .build();
 
         admin = userRepository.save(admin);
+
+        List<NotificationPreferences> preferences = List.of(
+                NotificationPreferences.builder()
+                        .id(1L)
+                        .userId(ownerDusan.getId())
+                        .notificationType(NotificationType.RESERVATION_REQUEST)
+                        .isEnabled(true)
+                        .build(),
+                NotificationPreferences.builder()
+                        .id(2L)
+                        .userId(ownerDusan.getId())
+                        .notificationType(NotificationType.RESERVATION_CANCELLATION)
+                        .isEnabled(true)
+                        .build(),
+                NotificationPreferences.builder()
+                        .id(3L)
+                        .userId(ownerDusan.getId())
+                        .notificationType(NotificationType.OWNER_REVIEW)
+                        .isEnabled(true)
+                        .build(),
+                NotificationPreferences.builder()
+                        .id(4L)
+                        .userId(ownerDusan.getId())
+                        .notificationType(NotificationType.ACCOMMODATION_REVIEW)
+                        .isEnabled(true)
+                        .build()
+        );
+        notificationPreferencesRepository.saveAll(preferences);
+
+        List<Notification> notifications = List.of(
+                Notification.builder()
+                        .id(1L)
+                        .userId(ownerDusan.getId())
+                        .message("Dummy notification for RESERVATION_REQUEST")
+                        .isRead(false)
+                        .notificationType(NotificationType.RESERVATION_REQUEST)
+                        .createdAt(LocalDate.now().atStartOfDay())
+                        .build(),
+                Notification.builder()
+                        .id(2L)
+                        .userId(ownerDusan.getId())
+                        .message("Dummy notification for RESERVATION_CANCELLATION")
+                        .isRead(false)
+                        .notificationType(NotificationType.RESERVATION_CANCELLATION)
+                        .createdAt(LocalDate.now().atStartOfDay())
+                        .build(),
+                Notification.builder()
+                        .id(3L)
+                        .userId(ownerDusan.getId())
+                        .message("Dummy notification for OWNER_REVIEW")
+                        .isRead(false)
+                        .notificationType(NotificationType.OWNER_REVIEW)
+                        .createdAt(LocalDate.now().atStartOfDay())
+                        .build(),
+                Notification.builder()
+                        .id(4L)
+                        .userId(ownerDusan.getId())
+                        .message("Dummy notification for ACCOMMODATION_REVIEW")
+                        .isRead(false)
+                        .notificationType(NotificationType.ACCOMMODATION_REVIEW)
+                        .createdAt(LocalDate.now().atStartOfDay())
+                        .build()
+        );
+        notificationRepository.saveAll(notifications);
+
 
 
         var accommodation = Accommodation.builder()
@@ -282,17 +348,6 @@ private final NotificationRepository notificationRepository;
                 .perGuest(false)
                 .guestNum(1L)
                 .build();
-
-        var notification = Notification.builder()
-                .id(1L)
-                .userId(ownerDusan.getId())
-                .message("New accommodation created")
-                .isRead(false)
-                .notificationType(NotificationType.ACCOMMODATION_REVIEW)
-                .createdAt(LocalDate.now().atStartOfDay())
-                .build();
-
-        notification = notificationRepository.save(notification);
 
 
         reservationOld1 = reservationRepository.save(reservationOld1);

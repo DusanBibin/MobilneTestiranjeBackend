@@ -15,7 +15,9 @@ import com.example.projekatmobilne.adapters.NotificationAdapter;
 import com.example.projekatmobilne.clients.ClientUtils;
 import com.example.projekatmobilne.databinding.FragmentNotificationsBinding;
 import com.example.projekatmobilne.model.Notification;
+import com.example.projekatmobilne.model.NotificationPreferences;
 import com.example.projekatmobilne.model.responseDTO.NotificationListDTO;
+import com.example.projekatmobilne.tools.JWTManager;
 import com.example.projekatmobilne.tools.ResponseParser;
 import com.google.gson.reflect.TypeToken;
 
@@ -60,7 +62,28 @@ public class NotificationsFragment extends Fragment {
         binding.recyclerViewNotifications.setLayoutManager(linearLayoutManager);
         notificationAdapter = new NotificationAdapter(dataList, getActivity());
         binding.recyclerViewNotifications.setAdapter(notificationAdapter);
-        loadPage();
+        fetchNotificationPreferences();
+    }
+
+    private void fetchNotificationPreferences() {
+        Long userId = Long.valueOf(JWTManager.getUserId());
+        Call<List<NotificationPreferences>> call = ClientUtils.apiService.getNotificationPreferencesByUserId(userId);
+        call.enqueue(new Callback<List<NotificationPreferences>>() {
+            @Override
+            public void onResponse(Call<List<NotificationPreferences>> call, Response<List<NotificationPreferences>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<NotificationPreferences> preferences = response.body();
+                    loadPage(preferences);
+                } else {
+                    Toast.makeText(getActivity(), "Failed to fetch preferences", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<NotificationPreferences>> call, Throwable t) {
+                Toast.makeText(getActivity(), "Error fetching preferences", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -68,10 +91,10 @@ public class NotificationsFragment extends Fragment {
         super.onResume();
         dataList.clear();
         notificationAdapter.notifyDataSetChanged();
-        loadPage();
+        fetchNotificationPreferences();
     }
 
-    private void loadPage(){
+    private void loadPage(List<NotificationPreferences> preferences) {
         binding.progressBar.setVisibility(View.VISIBLE);
         binding.txtNoNotifications.setVisibility(View.GONE);
         Call<ResponseBody> call = ClientUtils.apiService.getNotifications();
@@ -79,7 +102,7 @@ public class NotificationsFragment extends Fragment {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 binding.progressBar.setVisibility(View.GONE);
-                if(response.isSuccessful()){
+                if (response.isSuccessful()) {
                     Type listType = new TypeToken<NotificationListDTO>(){}.getType();
                     NotificationListDTO notificationResponse = null;
                     try {
@@ -89,19 +112,17 @@ public class NotificationsFragment extends Fragment {
                         throw new RuntimeException(e);
                     }
                     Log.d("NotificationsFragment", "Notification Response: " + notificationResponse);
-                    dataList.addAll(notificationResponse.getContent());
+                    dataList.addAll(filterNotifications(notificationResponse.getContent(), preferences));
                     notificationAdapter.setList(dataList);
                     notificationAdapter.notifyDataSetChanged();
 
-
-                    if(dataList.isEmpty()){
+                    if (dataList.isEmpty()) {
                         binding.txtNoNotifications.setVisibility(View.VISIBLE);
-                    }
-                    else{
+                    } else {
                         binding.recyclerViewNotifications.setVisibility(View.VISIBLE);
                         binding.progressBar.setVisibility(View.GONE);
                     }
-                }else{
+                } else {
                     Toast.makeText(getActivity(), "There was a problem, try again later", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -112,5 +133,18 @@ public class NotificationsFragment extends Fragment {
                 t.printStackTrace();
             }
         });
+    }
+
+    private List<Notification> filterNotifications(List<Notification> notifications, List<NotificationPreferences> preferences) {
+        List<Notification> filteredNotifications = new ArrayList<>();
+        for (Notification notification : notifications) {
+            for (NotificationPreferences preference : preferences) {
+                if (preference.getNotificationType().toString().equals(notification.getNotificationType()) && preference.getIsEnabled()) {
+                    filteredNotifications.add(notification);
+                    break;
+                }
+            }
+        }
+        return filteredNotifications;
     }
 }

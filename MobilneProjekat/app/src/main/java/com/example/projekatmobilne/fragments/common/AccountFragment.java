@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -19,7 +20,9 @@ import com.example.projekatmobilne.R;
 import com.example.projekatmobilne.activities.LoginActivity;
 import com.example.projekatmobilne.clients.ClientUtils;
 import com.example.projekatmobilne.databinding.FragmentAccountBinding;
+import com.example.projekatmobilne.model.Enum.NotificationType;
 import com.example.projekatmobilne.model.Enum.Role;
+import com.example.projekatmobilne.model.NotificationPreferences;
 import com.example.projekatmobilne.model.requestDTO.ChangePasswordDTO;
 import com.example.projekatmobilne.model.requestDTO.UserDTO;
 import com.example.projekatmobilne.model.responseDTO.UserDTOResponse;
@@ -28,6 +31,7 @@ import com.example.projekatmobilne.tools.ResponseParser;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import okhttp3.ResponseBody;
@@ -42,6 +46,12 @@ public class AccountFragment extends Fragment {
             addressEdit, confirmDeletionEdit, confirmationCodeEdit, newEmailEdit;
     private TextInputLayout passwordInput, newPasswordInput, repeatPasswordInput, nameInput,
             surnameInput, addressInput, confirmDeletionInput, confirmationCodeInput, newEmailInput;
+    private CheckBox checkboxReservationRequest;
+    private CheckBox checkboxReservationCancellation;
+    private CheckBox checkboxOwnerReview;
+    private CheckBox checkboxAccommodationReview;
+    private CheckBox checkboxReservationResponse;
+
     private FragmentAccountBinding binding;
     private Dialog changeDetailsDialog, changePasswordDialog, deleteAccountDialog, confirmCodeDialog;
     private UserDTOResponse data;
@@ -196,9 +206,69 @@ public class AccountFragment extends Fragment {
             });
         });
 
+        checkboxReservationRequest = view.findViewById(R.id.checkbox_reservation_request);
+        checkboxReservationCancellation = view.findViewById(R.id.checkbox_reservation_cancellation);
+        checkboxOwnerReview = view.findViewById(R.id.checkbox_owner_review);
+        checkboxAccommodationReview = view.findViewById(R.id.checkbox_accommodation_review);
+        checkboxReservationResponse = view.findViewById(R.id.checkbox_reservation_response);
 
+        boolean isOwner = Role.OWNER.equals(JWTManager.getRoleEnum());
 
+        if (isOwner) {
+            checkboxReservationResponse.setVisibility(View.GONE);
+        } else {
+            checkboxReservationRequest.setVisibility(View.GONE);
+            checkboxReservationCancellation.setVisibility(View.GONE);
+            checkboxOwnerReview.setVisibility(View.GONE);
+            checkboxAccommodationReview.setVisibility(View.GONE);
+        }
 
+        setCheckboxListeners(checkboxReservationRequest, NotificationType.RESERVATION_REQUEST);
+        setCheckboxListeners(checkboxReservationCancellation, NotificationType.RESERVATION_CANCELLATION);
+        setCheckboxListeners(checkboxOwnerReview, NotificationType.OWNER_REVIEW);
+        setCheckboxListeners(checkboxAccommodationReview, NotificationType.ACCOMMODATION_REVIEW);
+        setCheckboxListeners(checkboxReservationResponse, NotificationType.RESERVATION_RESPONSE);
+
+        fetchNotificationPreferences();
+    }
+
+    private void fetchNotificationPreferences() {
+        Long userId = Long.valueOf(JWTManager.getUserId());
+        Call<List<NotificationPreferences>> call = ClientUtils.apiService.getNotificationPreferencesByUserId(userId);
+        call.enqueue(new Callback<List<NotificationPreferences>>() {
+            @Override
+            public void onResponse(Call<List<NotificationPreferences>> call, Response<List<NotificationPreferences>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<NotificationPreferences> preferences = response.body();
+                    for (NotificationPreferences preference : preferences) {
+                        switch (preference.getNotificationType()) {
+                            case RESERVATION_REQUEST:
+                                checkboxReservationRequest.setChecked(preference.getIsEnabled());
+                                break;
+                            case RESERVATION_CANCELLATION:
+                                checkboxReservationCancellation.setChecked(preference.getIsEnabled());
+                                break;
+                            case OWNER_REVIEW:
+                                checkboxOwnerReview.setChecked(preference.getIsEnabled());
+                                break;
+                            case ACCOMMODATION_REVIEW:
+                                checkboxAccommodationReview.setChecked(preference.getIsEnabled());
+                                break;
+                            case RESERVATION_RESPONSE:
+                                checkboxReservationResponse.setChecked(preference.getIsEnabled());
+                                break;
+                        }
+                    }
+                } else {
+                    Toast.makeText(getActivity(), "Failed to fetch preferences", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<NotificationPreferences>> call, Throwable t) {
+                Toast.makeText(getActivity(), "Error fetching preferences", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void setUpConfirmCodeDialog() {
@@ -550,7 +620,29 @@ public class AccountFragment extends Fragment {
 
 
         });
+    }
 
+    private void setCheckboxListeners(CheckBox checkBox, NotificationType notificationType) {
+        checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> updateNotificationPreference(notificationType, isChecked));
+    }
 
+    private void updateNotificationPreference(NotificationType notificationType, boolean isEnabled) {
+        Long userId = Long.valueOf(JWTManager.getUserId());
+        Call<ResponseBody> call = ClientUtils.apiService.updateNotificationPreference(userId, notificationType, isEnabled);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(getActivity(), "Preference updated", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getActivity(), "Failed to update preference", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(getActivity(), "Error updating preference", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
