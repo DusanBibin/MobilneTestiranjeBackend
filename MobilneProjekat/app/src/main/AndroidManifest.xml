@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
         android:allowBackup="true"
@@ -68,9 +69,12 @@
             android:exported="false" />
 
         <service
-            android:name=".services.ForegroundService"
-            android:exported="false"
-            android:foregroundServiceType="location" />
+            android:name=".services.MyFirebaseMessagingService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
 
         <receiver
             android:name=".receivers.ConnectionStatusReceiver"
@@ -79,6 +83,7 @@
                 <action android:name="com.example.projekatmobilne.NO_INTERNET" />
             </intent-filter>
         </receiver>
+
     </application>
 
 </manifest>

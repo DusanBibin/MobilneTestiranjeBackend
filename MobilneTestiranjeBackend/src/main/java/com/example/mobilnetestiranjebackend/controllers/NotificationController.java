@@ -1,5 +1,6 @@
 package com.example.mobilnetestiranjebackend.controllers;
 
+import com.example.mobilnetestiranjebackend.DTOs.NotificationDTO;
 import com.example.mobilnetestiranjebackend.DTOs.NotificationListDTO;
 import com.example.mobilnetestiranjebackend.model.Notification;
 import com.example.mobilnetestiranjebackend.model.User;
@@ -33,5 +34,11 @@ public class NotificationController {
         List<Notification> notifications = notificationService.getNotificationsByUserId(user.getId());
         NotificationListDTO notificationListDTO = new NotificationListDTO(notifications);
         return ResponseEntity.ok().body(notificationListDTO);
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<NotificationDTO>> getNotifications(@PathVariable String userId) {
+        List<NotificationDTO> notifications = notificationService.getNotificationsForUser(userId);
+        return ResponseEntity.ok(notifications);
     }
 }
