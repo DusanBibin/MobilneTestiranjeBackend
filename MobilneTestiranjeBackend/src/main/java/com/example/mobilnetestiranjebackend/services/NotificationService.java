@@ -2,8 +2,10 @@ package com.example.mobilnetestiranjebackend.services;
 
 import com.example.mobilnetestiranjebackend.DTOs.NotificationDTO;
 import com.example.mobilnetestiranjebackend.exceptions.NonExistingEntityException;
+import com.example.mobilnetestiranjebackend.model.FcmToken;
 import com.example.mobilnetestiranjebackend.model.Notification;
 import com.example.mobilnetestiranjebackend.model.NotificationType;
+import com.example.mobilnetestiranjebackend.repositories.FcmTokenRepository;
 import com.example.mobilnetestiranjebackend.repositories.NotificationRepository;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
@@ -17,9 +19,11 @@ import java.util.Optional;
 @Service
 public class NotificationService {
     private final NotificationRepository notificationRepository;
+    private final FcmTokenRepository fcmTokenRepository;
 
-    public NotificationService(NotificationRepository notificationRepository) {
+    public NotificationService(NotificationRepository notificationRepository, FcmTokenRepository fcmTokenRepository) {
         this.notificationRepository = notificationRepository;
+        this.fcmTokenRepository = fcmTokenRepository;
     }
 
     public void toggleNotificationReadStatus(Long notificationId) {
@@ -39,7 +43,10 @@ public class NotificationService {
                 .notificationType(notificationType)
                 .createdAt(LocalDateTime.now())
                 .build();
-        return notificationRepository.save(notification);
+        notification = notificationRepository.save(notification);
+        FcmToken fcmToken = fcmTokenRepository.findByUserId(userId).get();
+        sendNotification(fcmToken.getToken(), "You have a new notification!", message);
+        return notification;
     }
 
     public List<Notification> getNotificationsByUserId(Long userId) {
