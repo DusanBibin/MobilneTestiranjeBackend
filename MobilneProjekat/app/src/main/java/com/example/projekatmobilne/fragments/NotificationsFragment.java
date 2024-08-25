@@ -66,6 +66,7 @@ public class NotificationsFragment extends Fragment {
     }
 
     private void fetchNotificationPreferences() {
+        dataList.clear();
         Long userId = Long.valueOf(JWTManager.getUserId());
         Call<List<NotificationPreferences>> call = ClientUtils.apiService.getNotificationPreferencesByUserId(userId);
         call.enqueue(new Callback<List<NotificationPreferences>>() {

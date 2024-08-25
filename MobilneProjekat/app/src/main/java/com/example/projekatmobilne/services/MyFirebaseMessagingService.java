@@ -16,7 +16,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        // Handle FCM messages here.
+        Log.d(TAG, "STIGLA PORUKA From: " + remoteMessage.getFrom());
         if (remoteMessage.getNotification() != null) {
             String title = remoteMessage.getNotification().getTitle();
             String message = remoteMessage.getNotification().getBody();
@@ -28,7 +28,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onNewToken(String token) {
         Log.d(TAG, "Refreshed token: " + token);
-        // Send the token to your backend if needed
     }
 
     private void sendNotification(String title, String messageBody) {

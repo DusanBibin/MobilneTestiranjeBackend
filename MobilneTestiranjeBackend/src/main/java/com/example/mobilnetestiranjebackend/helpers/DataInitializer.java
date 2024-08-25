@@ -51,7 +51,7 @@ private final NotificationPreferencesRepository notificationPreferencesRepositor
         Owner ownerSomeoneElse = Owner.builder()
                 .firstName("Dusan")
                 .lastname("Bibin")
-                .email(" ")
+                .email("mejlmejl@gmail.com")
                 .password(passwordEncoder.encode("123"))
                 .phoneNumber("654653")
                 .address("Neka ulica 123")
@@ -178,39 +178,36 @@ private final NotificationPreferencesRepository notificationPreferencesRepositor
         );
         notificationPreferencesRepository.saveAll(preferences);
 
+        NotificationPreferences guestDusan1Preferences = NotificationPreferences.builder()
+                        .id(5L)
+                        .userId(guestDusan1.getId())
+                        .notificationType(NotificationType.RESERVATION_RESPONSE)
+                        .isEnabled(true)
+                        .build();
+
+        NotificationPreferences guestDusan2Preferences = NotificationPreferences.builder()
+                .id(6L)
+                .userId(guestDusan2.getId())
+                .notificationType(NotificationType.RESERVATION_RESPONSE)
+                .isEnabled(true)
+                .build();
+
+        NotificationPreferences guestDusan3Preferences = NotificationPreferences.builder()
+                .id(7L)
+                .userId(guestDusan3.getId())
+                .notificationType(NotificationType.RESERVATION_RESPONSE)
+                .isEnabled(true)
+                .build();
+
+        notificationPreferencesRepository.save(guestDusan1Preferences);
+        notificationPreferencesRepository.save(guestDusan2Preferences);
+        notificationPreferencesRepository.save(guestDusan3Preferences);
+
         List<Notification> notifications = List.of(
-                Notification.builder()
-                        .id(1L)
-                        .userId(ownerDusan.getId())
-                        .message("Dummy notification for RESERVATION_REQUEST")
-                        .isRead(false)
-                        .notificationType(NotificationType.RESERVATION_REQUEST)
-                        .createdAt(LocalDate.now().atStartOfDay())
-                        .build(),
-                Notification.builder()
-                        .id(2L)
-                        .userId(ownerDusan.getId())
-                        .message("Dummy notification for RESERVATION_CANCELLATION")
-                        .isRead(false)
-                        .notificationType(NotificationType.RESERVATION_CANCELLATION)
-                        .createdAt(LocalDate.now().atStartOfDay())
-                        .build(),
-                Notification.builder()
-                        .id(3L)
-                        .userId(ownerDusan.getId())
-                        .message("Dummy notification for OWNER_REVIEW")
-                        .isRead(false)
-                        .notificationType(NotificationType.OWNER_REVIEW)
-                        .createdAt(LocalDate.now().atStartOfDay())
-                        .build(),
-                Notification.builder()
-                        .id(4L)
-                        .userId(ownerDusan.getId())
-                        .message("Dummy notification for ACCOMMODATION_REVIEW")
-                        .isRead(false)
-                        .notificationType(NotificationType.ACCOMMODATION_REVIEW)
-                        .createdAt(LocalDate.now().atStartOfDay())
-                        .build()
+                new Notification(ownerDusan.getId(), "Dummy notification for RESERVATION_REQUEST", false, LocalDate.now().atStartOfDay(), NotificationType.RESERVATION_REQUEST),
+                new Notification(ownerDusan.getId(), "Dummy notification for RESERVATION_CANCELLATION", false, LocalDate.now().atStartOfDay(), NotificationType.RESERVATION_CANCELLATION),
+                new Notification(ownerDusan.getId(), "Dummy notification for OWNER_REVIEW", false, LocalDate.now().atStartOfDay(), NotificationType.OWNER_REVIEW),
+                new Notification(ownerDusan.getId(), "Dummy notification for ACCOMMODATION_REVIEW", false, LocalDate.now().atStartOfDay(), NotificationType.ACCOMMODATION_REVIEW)
         );
         notificationRepository.saveAll(notifications);
 

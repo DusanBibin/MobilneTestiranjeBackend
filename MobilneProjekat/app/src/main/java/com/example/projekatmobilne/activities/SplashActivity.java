@@ -6,12 +6,16 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.Manifest;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.projekatmobilne.R;
 import com.example.projekatmobilne.databinding.ActivitySplashBinding;
@@ -26,6 +30,7 @@ import java.util.TimerTask;
 public class SplashActivity extends AppCompatActivity {
     private Timer splashTimer;
     private Button btnExit, btnOpenSettings;
+    private static final int REQUEST_NOTIFICATION_PERMISSION = 1;
 
     private Dialog dialog;
     private ActivitySplashBinding binding;
@@ -33,7 +38,10 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            // Request the notification permission
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQUEST_NOTIFICATION_PERMISSION);
+        }
     }
 
     public void stopSplashTimer() {
@@ -53,7 +61,11 @@ public class SplashActivity extends AppCompatActivity {
 
         ConnectionStatusReceiver receiver = new ConnectionStatusReceiver();
         IntentFilter filter = new IntentFilter("com.example.projekatmobilne.NO_INTERNET");
-        registerReceiver(receiver, filter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED);
+        } else {
+            registerReceiver(receiver, filter);
+        }
 
 
 

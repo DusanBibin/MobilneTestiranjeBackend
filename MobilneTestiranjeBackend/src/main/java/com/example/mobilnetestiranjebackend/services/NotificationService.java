@@ -36,13 +36,7 @@ public class NotificationService {
     }
 
     public Notification createNotification(Long userId, String message, NotificationType notificationType) {
-        Notification notification = Notification.builder()
-                .userId(userId)
-                .message(message)
-                .isRead(false)
-                .notificationType(notificationType)
-                .createdAt(LocalDateTime.now())
-                .build();
+        Notification notification = new Notification(userId, message, false, LocalDateTime.now(), notificationType);
         notification = notificationRepository.save(notification);
         FcmToken fcmToken = fcmTokenRepository.findByUserId(userId).get();
         sendNotification(fcmToken.getToken(), "You have a new notification!", message);

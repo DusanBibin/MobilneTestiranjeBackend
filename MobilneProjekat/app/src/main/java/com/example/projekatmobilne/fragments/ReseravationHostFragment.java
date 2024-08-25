@@ -1,12 +1,16 @@
 package com.example.projekatmobilne.fragments;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,92 +18,111 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.DatePicker;
 import android.widget.Toast;
 
-import com.example.projekatmobilne.R;
-import com.example.projekatmobilne.activities.AccommodationDetailsActivity;
-import com.example.projekatmobilne.adapters.AccommodationHostViewAdapter;
-import com.example.projekatmobilne.adapters.AccommodationSearchAdapter;
 import com.example.projekatmobilne.adapters.ReservationHostViewAdapter;
 import com.example.projekatmobilne.clients.ClientUtils;
 import com.example.projekatmobilne.databinding.FragmentReservationsHostBinding;
 import com.example.projekatmobilne.model.Enum.ReservationStatus;
-import com.example.projekatmobilne.model.requestDTO.AvailabilityDTO;
 import com.example.projekatmobilne.model.requestDTO.ReservationDTO;
-import com.example.projekatmobilne.model.responseDTO.AccommodationDifferencesDTO;
-import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.AccommodationHostDTOPagedResponse;
 import com.example.projekatmobilne.model.responseDTO.paging.PagingDTOs.ReservationHostDTOPagedResponse;
 import com.example.projekatmobilne.tools.ResponseParser;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ReseravationHostFragment extends Fragment {
+public class ReseravationHostFragment extends Fragment implements SensorEventListener {
 
     private FragmentReservationsHostBinding binding;
-
     private Integer currentPage = 0;
     private Boolean isLastPage = false;
     private ReservationHostViewAdapter adapter;
     private LocalDate minDate, maxDate;
     private ReservationStatus reservationStatus = null;
     private List<ReservationDTO> dataList;
+    private boolean isSortedAscending = true;
+
+    private SensorManager sensorManager;
+    private Sensor accelerometer;
+    private static final float SHAKE_THRESHOLD = 12.0f;
+    private static final int SHAKE_WAIT_TIME_MS = 250;
+    private long mShakeTime = 0;
 
     public ReseravationHostFragment() {
-
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
+        if (sensorManager != null) {
+            accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentReservationsHostBinding.inflate(inflater, container, false);
-         return binding.getRoot();
+        return binding.getRoot();
     }
 
-    private void loadPage(){
+    @Override
+    public void onResume() {
+        super.onResume();
+        dataList.clear();
+        adapter.notifyDataSetChanged();
+        loadPage();
+        if (accelerometer != null) {
+            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+        }
+    }
 
-        //binding.btnSearch.setVisibility(View.INVISIBLE);
-        //binding.progressBarSearch.setVisibility(View.VISIBLE);
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (accelerometer != null) {
+            sensorManager.unregisterListener(this);
+        }
+    }
+
+    private void loadPage() {
         binding.progressBar.setVisibility(View.VISIBLE);
-
         binding.txtNoItemsReservations.setVisibility(View.GONE);
 
         String search = binding.searchReservations.getQuery().toString();
-
-
         String selectedStatus = (String) binding.spinner.getSelectedItem();
-        if(!selectedStatus.equals("ANY")) reservationStatus = ReservationStatus.valueOf(selectedStatus);
+        if (!selectedStatus.equals("ANY")) reservationStatus = ReservationStatus.valueOf(selectedStatus);
         else reservationStatus = null;
-
 
         Call<ResponseBody> call = ClientUtils.apiService.getReservations(search, minDate, maxDate, reservationStatus, currentPage, 5);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                 ReservationHostDTOPagedResponse responseDTO = ResponseParser.parseResponse(response, ReservationHostDTOPagedResponse.class, false);
+                ReservationHostDTOPagedResponse responseDTO = ResponseParser.parseResponse(response, ReservationHostDTOPagedResponse.class, false);
 
+                List<ReservationDTO> newReservations = responseDTO.getContent();
+                Collections.sort(newReservations, new Comparator<ReservationDTO>() {
+                    @Override
+                    public int compare(ReservationDTO r1, ReservationDTO r2) {
+                        return isSortedAscending ? r1.getReservationStartDate().compareTo(r2.getReservationStartDate()) : r2.getReservationStartDate().compareTo(r1.getReservationStartDate());
+                    }
+                });
 
-                dataList.addAll(responseDTO.getContent());
+                dataList.addAll(newReservations);
                 isLastPage = responseDTO.isLast();
                 adapter.notifyDataSetChanged();
                 binding.recyclerViewReservationsHost.setVisibility(View.VISIBLE);
                 binding.progressBar.setVisibility(View.GONE);
-                if(dataList.isEmpty()) binding.txtNoItemsReservations.setVisibility(View.VISIBLE);
+                if (dataList.isEmpty()) binding.txtNoItemsReservations.setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -110,15 +133,6 @@ public class ReseravationHostFragment extends Fragment {
         });
     }
 
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        dataList.clear();
-        adapter.notifyDataSetChanged();
-        loadPage();
-    }
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -127,19 +141,14 @@ public class ReseravationHostFragment extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         binding.recyclerViewReservationsHost.setLayoutManager(linearLayoutManager);
 
-
         adapter = new ReservationHostViewAdapter(getActivity(), dataList);
         binding.recyclerViewReservationsHost.setAdapter(adapter);
 
-
         binding.inputEditTextMinDate.setOnClickListener(v -> {
-            DatePickerDialog dialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
-                @Override
-                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                    String date = dayOfMonth + "-" + (month+1) + "-" + year;
-                    minDate = LocalDate.of(year, month+1, dayOfMonth);
-                    binding.inputEditTextMinDate.setText(date);
-                }
+            DatePickerDialog dialog = new DatePickerDialog(getActivity(), (view1, year, month, dayOfMonth) -> {
+                String date = dayOfMonth + "-" + (month + 1) + "-" + year;
+                minDate = LocalDate.of(year, month + 1, dayOfMonth);
+                binding.inputEditTextMinDate.setText(date);
             }, LocalDate.now().getYear(), LocalDate.now().getMonthValue() - 1, LocalDate.now().getDayOfMonth());
 
             final Calendar calendar = Calendar.getInstance();
@@ -149,13 +158,10 @@ public class ReseravationHostFragment extends Fragment {
         });
 
         binding.inputEditTextMaxDate.setOnClickListener(v -> {
-            DatePickerDialog dialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
-                @Override
-                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                    String date = dayOfMonth + "-" + (month+1) + "-" + year;
-                    maxDate = LocalDate.of(year, month+1, dayOfMonth);
-                    binding.inputEditTextMaxDate.setText(date);
-                }
+            DatePickerDialog dialog = new DatePickerDialog(getActivity(), (view12, year, month, dayOfMonth) -> {
+                String date = dayOfMonth + "-" + (month + 1) + "-" + year;
+                maxDate = LocalDate.of(year, month + 1, dayOfMonth);
+                binding.inputEditTextMaxDate.setText(date);
             }, LocalDate.now().getYear(), LocalDate.now().getMonthValue() - 1, LocalDate.now().getDayOfMonth());
 
             final Calendar calendar = Calendar.getInstance();
@@ -165,24 +171,16 @@ public class ReseravationHostFragment extends Fragment {
         });
         setupSpinner();
 
-        binding.btnSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-                dataList = new ArrayList<>();
-                isLastPage = false;
-                currentPage = 0;
-                GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 1);
-                binding.recyclerViewReservationsHost.setLayoutManager(gridLayoutManager);
-
-
-                adapter = new ReservationHostViewAdapter(getActivity(), dataList);
-                binding.recyclerViewReservationsHost.setAdapter(adapter);
-                loadPage();
-
-            }
+        binding.btnSearch.setOnClickListener(v -> {
+            dataList = new ArrayList<>();
+            isLastPage = false;
+            currentPage = 0;
+            binding.recyclerViewReservationsHost.setLayoutManager(new LinearLayoutManager(getActivity()));
+            adapter = new ReservationHostViewAdapter(getActivity(), dataList);
+            binding.recyclerViewReservationsHost.setAdapter(adapter);
+            loadPage();
         });
+
         binding.recyclerViewReservationsHost.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -193,20 +191,42 @@ public class ReseravationHostFragment extends Fragment {
                     currentPage++;
                     loadPage();
                 }
-
             }
         });
-
     }
 
     private void setupSpinner() {
-        List<String> options = List.of("ANY", ReservationStatus.ACCEPTED.toString(),
-                ReservationStatus.PENDING.toString(),
-                ReservationStatus.CANCELED.toString(),
-                ReservationStatus.DECLINED.toString());
+        List<String> options = List.of("ANY", ReservationStatus.ACCEPTED.toString(), ReservationStatus.PENDING.toString(), ReservationStatus.CANCELED.toString(), ReservationStatus.DECLINED.toString());
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, options);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
         binding.spinner.setAdapter(adapter);
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            long curTime = System.currentTimeMillis();
+            if ((curTime - mShakeTime) > SHAKE_WAIT_TIME_MS) {
+                float x = event.values[0];
+                float y = event.values[1];
+                float z = event.values[2];
+
+                float shake = (x * x + y * y + z * z) / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
+                if (shake > SHAKE_THRESHOLD) {
+                    mShakeTime = curTime;
+                    isSortedAscending = !isSortedAscending;
+                    String sortOrder = isSortedAscending ? "Sorting by date: Ascending" : "Sorting by date: Descending";
+                    Toast.makeText(getActivity(), sortOrder, Toast.LENGTH_SHORT).show();
+                    dataList.clear();
+                    currentPage = 0;
+                    loadPage();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        // Not used
     }
 }
