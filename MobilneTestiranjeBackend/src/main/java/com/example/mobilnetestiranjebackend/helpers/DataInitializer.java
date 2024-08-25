@@ -51,7 +51,7 @@ private final NotificationPreferencesRepository notificationPreferencesRepositor
         Owner ownerSomeoneElse = Owner.builder()
                 .firstName("Dusan")
                 .lastname("Bibin")
-                .email(" ")
+                .email("mejlmejl@gmail.com")
                 .password(passwordEncoder.encode("123"))
                 .phoneNumber("654653")
                 .address("Neka ulica 123")

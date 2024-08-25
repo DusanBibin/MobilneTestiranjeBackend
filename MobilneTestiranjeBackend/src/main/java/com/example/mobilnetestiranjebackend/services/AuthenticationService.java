@@ -65,6 +65,7 @@ public class AuthenticationService {
 
         Random random = new Random();
         String code = String.format("%05d", random.nextInt(100000));
+        User user = null;
 
         if(request.getRole().equals(Role.OWNER)){
             var owner = Owner.builder()
@@ -84,7 +85,7 @@ public class AuthenticationService {
                     .ownerReviews(new ArrayList<>())
                     .reviewComplaints(new ArrayList<>())
                     .build();
-            ownerRepository.save(owner);
+            user = ownerRepository.save(owner);
 
             List<NotificationPreferences> preferences = List.of(
                     NotificationPreferences.builder()
@@ -129,7 +130,7 @@ public class AuthenticationService {
                     .favorites(new ArrayList<>())
                     .reviewComplaints(new ArrayList<>())
                     .build();
-            guestRepository.save(guest);
+            user = guestRepository.save(guest);
 
             NotificationPreferences preference = NotificationPreferences.builder()
                     .userId(guest.getId())
@@ -139,11 +140,11 @@ public class AuthenticationService {
             notificationPreferencesRepository.save(preference);
         }
 
-//        try {
-//            sendVerificationEmail(user);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+        try {
+            sendVerificationEmail(user, true);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         //sendVerificationSms(user.getPhoneNumber());
 
     }
@@ -186,13 +187,12 @@ public class AuthenticationService {
 
         Mail mail = new Mail();
         mail.setFrom(from);
-        if(!isConfirmationCodeMail) {
+        if(isConfirmationCodeMail) {
             subject = "Verify email Address";
             personalization.addDynamicTemplateData("firstName", user.getFirstName());
             personalization.addDynamicTemplateData("verificationLink", "http://localhost:8080/api/v1/auth/activate/" + user.getVerification().getVerificationCode());
             mail.setTemplateId(VERIFICATION_TEMPLATE_REGISTER_ID);
         }else{
-
             subject = "Verification code for email change";
             personalization.addDynamicTemplateData("email", user.getEmail());
             personalization.addDynamicTemplateData("confirmationCode", user.getEmailChangeVerification().getVerificationCode());
@@ -200,8 +200,6 @@ public class AuthenticationService {
         }
         mail.setSubject(subject);
         mail.addPersonalization(personalization);
-
-
 
         SendGrid sg = new SendGrid(SENDGRID_API_KEY);
 
@@ -380,7 +378,7 @@ public class AuthenticationService {
 
 
             try {
-                sendVerificationEmail(user, true);
+                sendVerificationEmail(user, false);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

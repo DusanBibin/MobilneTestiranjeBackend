@@ -93,7 +93,6 @@ public class AccommodationRequestPreviewAdapter extends RecyclerView.Adapter<Acc
 
                 if(preview.getStatus().equals(RequestStatus.PENDING)){
                     AccommodationRequestPreviewDTO clickedRequest = dataList.get(holder.getAdapterPosition());
-                    Toast.makeText(context, "klik radi", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(context, AccommodationsDifferencesCompareActivity.class);
                     intent.putExtra("requestId", clickedRequest.getRequestId());
                     context.startActivity(intent);

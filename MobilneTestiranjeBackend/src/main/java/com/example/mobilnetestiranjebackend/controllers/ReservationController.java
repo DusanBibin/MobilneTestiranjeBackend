@@ -85,6 +85,8 @@ public class ReservationController {
 
         reservationService.createNewReservation(request, guest, accommodation, avail);
 
+        System.out.println("ID:" + accommodation.getOwner().getId());
+
         notificationService.createNotification(accommodation.getOwner().getId(), "You have a new reservation request.", NotificationType.RESERVATION_REQUEST);
         return ResponseEntity.ok().body("Successfully created new reservation request");
     }
