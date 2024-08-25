@@ -430,11 +430,18 @@ public interface ApiService {
     @GET("/notification-preferences/{userId}")
     Call<List<NotificationPreferences>> getNotificationPreferencesByUserId(@Path("userId") Long userId);
 
-
     @Headers({
             "User-Agent: Mobile-Android",
             "Content-Type:application/json"
     })
     @PUT("/notifications/{id}/toggle-read")
     Call<ResponseBody> toggleNotificationReadStatus(@Path("id") Long id);
+  
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @POST("/api/v1/fcm-token")
+    Call<ResponseBody> saveFcmToken(@Query("userId") Long userId, @Query("token") String token);
+   
 }

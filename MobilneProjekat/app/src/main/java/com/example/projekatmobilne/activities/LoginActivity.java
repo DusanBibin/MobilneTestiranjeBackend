@@ -1,3 +1,4 @@
+// app/src/main/java/com/example/projekatmobilne/activities/LoginActivity.java
 package com.example.projekatmobilne.activities;
 
 import android.content.Intent;
@@ -7,6 +8,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 import com.example.projekatmobilne.clients.ClientUtils;
 import com.example.projekatmobilne.databinding.ActivityLoginBinding;
@@ -30,9 +36,8 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FirebaseApp.initializeApp(this);
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
-        //getSupportActionBar().hide();
-
         setContentView(binding.getRoot());
 
         Intent serviceIntent = new Intent(this, ConnectionCheckService.class);
@@ -74,14 +79,8 @@ public class LoginActivity extends AppCompatActivity {
             call.enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
-
-
-
-
                     if(response.code() == 400){
-
                         Map<String, String> map = ResponseParser.parseResponse(response, Map.class , true);
-
                         if(map.containsKey("message")){
                             String errMessage = map.get("message");
                             binding.emailInputLayout.setError(errMessage);
@@ -101,13 +100,23 @@ public class LoginActivity extends AppCompatActivity {
                         AuthenticationDTOResponse responseDTO =
                                 ResponseParser.parseResponse(response, AuthenticationDTOResponse.class, false);
 
-                          JWTManager.saveJWT(responseDTO.getToken());
+                        JWTManager.saveJWT(responseDTO.getToken());
+                        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
+                            @Override
+                            public void onComplete(@NonNull Task<String> task) {
+                                if (!task.isSuccessful()) {
+                                    return;
+                                }
+                                String token = task.getResult();
+                                System.out.println("FCM Token: " + token);
+                                Long userId = Long.valueOf(JWTManager.getUserId());
+                                sendFcmTokenToServer(userId, token);
+                            }
+                        });
                         Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                         startActivity(intent);
                         finish();
                     }
-
-
                 }
 
                 @Override
@@ -117,6 +126,25 @@ public class LoginActivity extends AppCompatActivity {
                 }
             });
         });
+    }
 
+    private void sendFcmTokenToServer(Long userId, String token) {
+        Call<ResponseBody> call = ClientUtils.apiService.saveFcmToken(userId, token);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    System.out.println("FCM Token saved successfully");
+                } else {
+                    System.out.println("Failed to save FCM Token");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                System.out.println("Error saving FCM Token");
+                t.printStackTrace();
+            }
+        });
     }
 }

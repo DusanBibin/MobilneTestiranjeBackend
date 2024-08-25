@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "166762779117",
+    "project_id": "mobilneaccomodation",
+    "storage_bucket": "mobilneaccomodation.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:166762779117:android:7808ed51fea2487d94d7e4",
+        "android_client_info": {
+          "package_name": "com.example.projekatmobilne"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCq6oMDMI633QxqWRvoZ7vlwgyDFyBmixs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
