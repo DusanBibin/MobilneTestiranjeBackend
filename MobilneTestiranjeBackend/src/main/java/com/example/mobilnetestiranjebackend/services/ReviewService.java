@@ -35,6 +35,7 @@ public class ReviewService {
     private final AccommodationRepository accommodationRepository;
     private final UserRepository userRepository;
     private final ReviewComplaintRepository reviewComplaintRepository;
+    private final NotificationService notificationService;
 
     public ReviewDTO createOwnerReview(ReviewDTO reviewDTO, Long ownerId, Long guestId) {
 
@@ -71,6 +72,7 @@ public class ReviewService {
         owner.getOwnerReviews().add(ownerReview);
         ownerRepository.save(owner);
         reviewDTO.setReviewId(ownerReview.getId());
+        notificationService.createNotification(ownerId, "You have new review", NotificationType.OWNER_REVIEW);
         return reviewDTO;
     }
 
@@ -128,6 +130,8 @@ public class ReviewService {
         accommodationRepository.save(accommodation);
 
         reviewDTO.setReviewId(accommodationReview.getId());
+        notificationService.createNotification(accommodation.getOwner().getId(), "You have a new accomodation review", NotificationType.ACCOMMODATION_REVIEW);
+
         return reviewDTO;
     }
 

@@ -9,6 +9,7 @@ import com.example.mobilnetestiranjebackend.model.User;
 import com.example.mobilnetestiranjebackend.repositories.AccommodationReviewRepository;
 import com.example.mobilnetestiranjebackend.repositories.OwnerRepository;
 import com.example.mobilnetestiranjebackend.repositories.OwnerReviewRepository;
+import com.example.mobilnetestiranjebackend.services.NotificationService;
 import com.example.mobilnetestiranjebackend.services.ReviewService;
 import com.sendgrid.Response;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +56,6 @@ public class ReviewController {
                                                        @RequestBody ReviewDTO reviewDTO,
                                                        @AuthenticationPrincipal Guest guest){
         ReviewDTO review = reviewService.createAccommodationReview(reviewDTO, accommodationId,reservationId, guest.getId());
-
         return ResponseEntity.ok().body(review);
     }
 

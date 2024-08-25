@@ -429,4 +429,12 @@ public interface ApiService {
     })
     @GET("/notification-preferences/{userId}")
     Call<List<NotificationPreferences>> getNotificationPreferencesByUserId(@Path("userId") Long userId);
+
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type:application/json"
+    })
+    @PUT("/notifications/{id}/toggle-read")
+    Call<ResponseBody> toggleNotificationReadStatus(@Path("id") Long id);
 }

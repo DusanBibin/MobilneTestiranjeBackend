@@ -9,6 +9,7 @@ import com.example.mobilnetestiranjebackend.exceptions.*;
 import com.example.mobilnetestiranjebackend.model.*;
 import com.example.mobilnetestiranjebackend.services.AccommodationService;
 import com.example.mobilnetestiranjebackend.services.AvailabilityService;
+import com.example.mobilnetestiranjebackend.services.NotificationService;
 import com.example.mobilnetestiranjebackend.services.ReservationService;
 import com.fasterxml.jackson.databind.node.TextNode;
 import jakarta.validation.constraints.FutureOrPresent;
@@ -34,6 +35,7 @@ public class ReservationController {
     private final AccommodationService accommodationService;
     private final AvailabilityService availabilityService;
     private final ReservationService reservationService;
+    private final NotificationService notificationService;
 
     @PreAuthorize("hasAuthority('GUEST') or hasAuthority('OWNER') or hasAuthority('ADMIN')")
     @GetMapping("/{accommodationId}/reservations/{reservationId}")
@@ -83,7 +85,7 @@ public class ReservationController {
 
         reservationService.createNewReservation(request, guest, accommodation, avail);
 
-
+        notificationService.createNotification(accommodation.getOwner().getId(), "You have a new reservation request.", NotificationType.RESERVATION_REQUEST);
         return ResponseEntity.ok().body("Successfully created new reservation request");
     }
 
@@ -115,8 +117,18 @@ public class ReservationController {
             throw new InvalidEnumValueException("You can only do this action for a pending request reservation");
 
         String response = "";
-        if(status.equals(ReservationStatus.DECLINED)){ response = "Successfully declined reservation"; reservationService.declineRequest(reason, reservation);}
-        else if(status.equals(ReservationStatus.ACCEPTED)) { response = "Successfully accepted reservation"; reservationService.acceptRequest(reservation);}
+        if(status.equals(ReservationStatus.DECLINED)){
+            response = "Successfully declined reservation";
+            reservationService.declineRequest(reason, reservation);
+            notificationService.createNotification(reservationWrapper.get().getGuest().getId(), "Your reservation is declined.", NotificationType.RESERVATION_RESPONSE);
+
+        }
+        else if(status.equals(ReservationStatus.ACCEPTED)) {
+            response = "Successfully accepted reservation";
+            reservationService.acceptRequest(reservation);
+            notificationService.createNotification(reservationWrapper.get().getGuest().getId(), "Your reservation is accepted.", NotificationType.RESERVATION_RESPONSE);
+
+        }
         else throw new InvalidEnumValueException("Unsupported action");
 
 
@@ -149,7 +161,7 @@ public class ReservationController {
             reservationService.cancelReservation(reservation);
         else throw new InvalidDateException("The cancellation deadline has passed");
 
-
+        notificationService.createNotification(accommodationWrapper.get().getOwner().getId(), "You have new canceled reservation.",NotificationType.RESERVATION_CANCELLATION);
         return ResponseEntity.ok().body("Successfully canceled a reservation");
     }
 
