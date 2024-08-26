@@ -200,9 +200,12 @@ public class AccommodationService {
         return dtoPage;
     }
 
-    public Page<AccommodationViewDTO> getOwnerAccommodations(Owner owner, int pageNo, int pageSize) {
+    public Page<AccommodationViewDTO> getOwnerAccommodations(Long ownerId, int pageNo, int pageSize) {
+        var ownerWrapper = ownerRepository.findOwnerById(ownerId);
+        if(ownerWrapper.isEmpty()) throw new InvalidInputException("This user doesn't exist");
 
-        List<Accommodation> accommodations = accommodationRepository.findByOwnerId(owner.getId());
+
+        List<Accommodation> accommodations = accommodationRepository.findByOwnerId(ownerId);
         List<AccommodationViewDTO> convertedList = new ArrayList<>(accommodations.stream().map(a -> {
             AccommodationViewDTO accommodation = new AccommodationViewDTO();
             accommodation.setId(a.getId());

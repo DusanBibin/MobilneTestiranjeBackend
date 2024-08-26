@@ -136,7 +136,7 @@ public class AccommodationController {
                                                     @RequestParam(defaultValue = "0") int pageNo,
                                                     @RequestParam(defaultValue = "10") int pageSize){
 
-        Page<AccommodationViewDTO> accommodations = accommodationService.getOwnerAccommodations(owner, pageNo, pageSize);
+        Page<AccommodationViewDTO> accommodations = accommodationService.getOwnerAccommodations(owner.getId(), pageNo, pageSize);
         return ResponseEntity.ok().body(accommodations);
     }
 

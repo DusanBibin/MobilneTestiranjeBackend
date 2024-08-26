@@ -314,7 +314,7 @@ public class AccountFragment extends Fragment {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     if(response.code() == 200){
-                        Toast.makeText(getActivity(), "Email validated", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "Email validated, we have sent confirmation email to your new email", Toast.LENGTH_SHORT).show();
                         confirmCodeDialog.dismiss();
                     }
 

@@ -41,9 +41,9 @@ public class ComplaintController {
     @PostMapping("/reviews/{reviewId}")
     public ResponseEntity<?> createReviewComplaint(@PathVariable("reviewId") Long reviewId,
                                                    @AuthenticationPrincipal Owner owner,
-                                                   @RequestBody String reason){
+                                                   @RequestBody TextNode reason){
 
-        ComplaintDTO complaint = complaintService.createReviewComplaint(owner.getId(), reviewId, reason);
+        ComplaintDTO complaint = complaintService.createReviewComplaint(owner.getId(), reviewId, reason.asText());
 
         return ResponseEntity.ok().body(complaint);
 

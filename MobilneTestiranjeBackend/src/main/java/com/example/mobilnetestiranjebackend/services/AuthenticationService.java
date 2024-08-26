@@ -141,7 +141,8 @@ public class AuthenticationService {
         }
 
         try {
-            sendVerificationEmail(user, true);
+            sendConfirmationEmail(user, true);
+            //sendVerificationEmail(user, true);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -166,12 +167,85 @@ public class AuthenticationService {
 
     }
 
+    public void sendConfirmationEmail(User user, boolean isRegister)  throws MessagingException, IOException{
+        Email from = new Email("mobilnebackendtest@gmail.com");
+        String subject = "";
+        String toEmail = "";
+
+        if(isRegister){
+            toEmail = user.getEmail();
+        }else{
+            Optional<VerificationEmailChange> verWrapper = verificationEmailChangeRepository.findByUserId(user.getId());
+            var verName = verWrapper.get();
+            toEmail = verName.getNewEmail();
+        }
+
+        Email to = new Email(toEmail);
+        System.out.println("Sent email to: " + toEmail);
+        Personalization personalization = new Personalization();
+        personalization.addTo(to);
+        Mail mail = new Mail();
+        mail.setFrom(from);
+
+        subject = "Verify email Address";
+        personalization.addDynamicTemplateData("firstName", user.getFirstName());
+        personalization.addDynamicTemplateData("verificationLink", "http://localhost:8080/api/v1/auth/activate/" + user.getVerification().getVerificationCode());
+        mail.setTemplateId(VERIFICATION_TEMPLATE_REGISTER_ID);
+
+        mail.setSubject(subject);
+        mail.addPersonalization(personalization);
+        SendGrid sg = new SendGrid(SENDGRID_API_KEY);
+        Request request = new Request();
+        try {
+            request.setMethod(Method.POST);
+            request.setEndpoint("mail/send");
+            request.setBody(mail.build());
+            Response response = sg.api(request);
+        } catch (IOException ex) {
+            throw ex;
+        }
+    }
+
+    public void sendCodeValidationEmail(User user)  throws MessagingException, IOException{
+        Email from = new Email("mobilnebackendtest@gmail.com");
+        String subject = "";
+        String toEmail = "";
+
+        toEmail = user.getEmail();
+
+        Email to = new Email(toEmail);
+        System.out.println("Sent email to: " + toEmail);
+        Personalization personalization = new Personalization();
+        personalization.addTo(to);
+        Mail mail = new Mail();
+        mail.setFrom(from);
+
+        subject = "Verification code for email change";
+        personalization.addDynamicTemplateData("email", user.getEmail());
+        personalization.addDynamicTemplateData("confirmationCode", user.getEmailChangeVerification().getVerificationCode());
+        mail.setTemplateId(VERIFICATION_TEMPLATE_VERIFICATION_CODE_ID);
+
+
+        mail.setSubject(subject);
+        mail.addPersonalization(personalization);
+        SendGrid sg = new SendGrid(SENDGRID_API_KEY);
+        Request request = new Request();
+        try {
+            request.setMethod(Method.POST);
+            request.setEndpoint("mail/send");
+            request.setBody(mail.build());
+            Response response = sg.api(request);
+        } catch (IOException ex) {
+            throw ex;
+        }
+    }
+
     public void sendVerificationEmail(User user, Boolean isConfirmationCodeMail) throws MessagingException, IOException {
         Email from = new Email("mobilnebackendtest@gmail.com");
         String subject = "";
 
         String toEmail = "";
-        if(isConfirmationCodeMail){
+        if(!isConfirmationCodeMail){
             toEmail = user.getEmail();
         }else{
             Optional<VerificationEmailChange> verWrapper = verificationEmailChangeRepository.findByUserId(user.getId());
@@ -180,7 +254,7 @@ public class AuthenticationService {
         }
         Email to = new Email(toEmail);
 
-
+        System.out.println("Sent email to: " + toEmail);
         Personalization personalization = new Personalization();
         personalization.addTo(to);
 
@@ -348,7 +422,8 @@ public class AuthenticationService {
         verificationRepository.delete(ver);
 
         try {
-            sendVerificationEmail(user, false);
+            //sendVerificationEmail(user, true);
+            sendConfirmationEmail(user, false);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -378,7 +453,8 @@ public class AuthenticationService {
 
 
             try {
-                sendVerificationEmail(user, false);
+                //sendVerificationEmail(user, false);
+                sendCodeValidationEmail(user);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
