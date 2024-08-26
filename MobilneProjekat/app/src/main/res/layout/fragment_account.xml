@@ -92,6 +92,19 @@
                         android:text="address"
                         android:textSize="15sp" />
 
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="Phone number"
+                        android:textSize="25sp" />
+
+                    <TextView
+                        android:id="@+id/txtPhoneValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="phone number"
+                        android:textSize="15sp" />
+
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnChangeDetails"
@@ -140,42 +153,6 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardViewPhoneNumber"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardElevation="8dp"
-                app:cardCornerRadius="16dp"
-                app:cardUseCompatPadding="true"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cardViewEmail">
-                <LinearLayout
-                    android:id="@+id/linearLayout3"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="10dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="Phone number"
-                        android:textSize="25sp" />
-
-                    <TextView
-                        android:id="@+id/txtPhoneValue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:text="phone number"
-                        android:textSize="15sp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Change phone number" />
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardViewAccountType"
@@ -186,7 +163,7 @@
                 app:cardUseCompatPadding="true"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cardViewPhoneNumber">
+                app:layout_constraintTop_toBottomOf="@id/cardViewEmail">
                 <LinearLayout
                     android:id="@+id/linearLayout4"
                     android:layout_width="match_parent"

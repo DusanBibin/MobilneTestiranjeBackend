@@ -42,15 +42,6 @@ public class UserController {
 
     }
 
-    @PreAuthorize("hasAuthority('OWNER') or hasAuthority('GUEST')")
-    @PutMapping("/change-phone-number")
-    public ResponseEntity<?> changePhoneNumber(@RequestBody UserDTO userDTO, @AuthenticationPrincipal User user){
-
-
-        return new ResponseEntity<>((userDTO), HttpStatus.OK);
-
-    }
-
     @PutMapping(path = "/change-password")
     public ResponseEntity<?> changeUserPassword(@RequestBody ChangePasswordDTO changePasswordDTO, @AuthenticationPrincipal User user){
 

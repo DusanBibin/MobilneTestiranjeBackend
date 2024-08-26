@@ -39,6 +39,7 @@ public class UserService {
         user.setFirstName(userDTO.getFirstName());
         user.setAddress(userDTO.getAddress());
         user.setLastname(userDTO.getLastName());
+        user.setPhoneNumber(userDTO.getPhone());
 
         userRepository.save(user);
     }

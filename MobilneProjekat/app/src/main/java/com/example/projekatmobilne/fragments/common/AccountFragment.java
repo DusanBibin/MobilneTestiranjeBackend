@@ -43,9 +43,9 @@ import retrofit2.Response;
 public class AccountFragment extends Fragment {
 
     private EditText passwordEdit, newPasswordEdit, repeatPasswordEdit, nameEdit, surnameEdit,
-            addressEdit, confirmDeletionEdit, confirmationCodeEdit, newEmailEdit;
+            addressEdit, confirmDeletionEdit, confirmationCodeEdit, newEmailEdit, phoneEdit;
     private TextInputLayout passwordInput, newPasswordInput, repeatPasswordInput, nameInput,
-            surnameInput, addressInput, confirmDeletionInput, confirmationCodeInput, newEmailInput;
+            surnameInput, addressInput, confirmDeletionInput, confirmationCodeInput, newEmailInput, phoneInput;
     private CheckBox checkboxReservationRequest;
     private CheckBox checkboxReservationCancellation;
     private CheckBox checkboxOwnerReview;
@@ -124,6 +124,7 @@ public class AccountFragment extends Fragment {
                     nameEdit.setText(responseDTO.getFirstName());
                     surnameEdit.setText(responseDTO.getLastName());
                     addressEdit.setText(responseDTO.getAddress());
+                    phoneEdit.setText(responseDTO.getPhoneNumber());
 
                 }
 
@@ -151,9 +152,11 @@ public class AccountFragment extends Fragment {
             nameInput.setError(null);
             surnameInput.setError(null);
             addressInput.setError(null);
+            phoneInput.setError(null);
             nameEdit.setText(data.getFirstName());
             surnameEdit.setText(data.getLastName());
             addressEdit.setText(data.getAddress());
+            phoneEdit.setText(data.getPhoneNumber());
         });
 
 
@@ -534,9 +537,11 @@ public class AccountFragment extends Fragment {
         nameEdit = changeDetailsDialog.findViewById(R.id.inputEditTextName);
         surnameEdit = changeDetailsDialog.findViewById(R.id.inputEditTextSurname);
         addressEdit = changeDetailsDialog.findViewById(R.id.inputEditTextAddress);
+        phoneEdit = changeDetailsDialog.findViewById(R.id.inputEditTextPhone);
         nameInput = changeDetailsDialog.findViewById(R.id.inputLayoutName);
         surnameInput = changeDetailsDialog.findViewById(R.id.inputLayoutSurname);
         addressInput = changeDetailsDialog.findViewById(R.id.inputLayoutAddress);
+        phoneInput = changeDetailsDialog.findViewById(R.id.inputLayoutPhone);
 
         changeDetailsDialog.findViewById(R.id.btnCancelInfo).setOnClickListener(v -> {
             changeDetailsDialog.dismiss();
@@ -547,6 +552,7 @@ public class AccountFragment extends Fragment {
             nameInput.setError(null);
             surnameInput.setError(null);
             addressInput.setError(null);
+            phoneInput.setError(null);
 
             boolean isValid = true;
             if (nameEdit.getText().toString().isEmpty()) {
@@ -558,6 +564,9 @@ public class AccountFragment extends Fragment {
             if (addressEdit.getText().toString().isEmpty()) {
                 addressInput.setError("This field cannot be empty"); isValid = false;
             }
+            if (phoneEdit.getText().toString().isEmpty()) {
+                phoneInput.setError("This field cannot be empty"); isValid = false;
+            }
             if(!isValid) return;
 
             changeDetailsDialog.findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
@@ -567,7 +576,7 @@ public class AccountFragment extends Fragment {
             request.setFirstName(nameEdit.getText().toString());
             request.setLastName(surnameEdit.getText().toString());
             request.setAddress(addressEdit.getText().toString());
-
+            request.setPhone(phoneEdit.getText().toString());
 
             Call<ResponseBody> call = ClientUtils.apiService.changeUserData(request);
 
@@ -588,6 +597,9 @@ public class AccountFragment extends Fragment {
                         if(map.containsKey("address")){
                             addressInput.setError(map.get("address"));
                         }
+                        if(map.containsKey("phone")){
+                            addressInput.setError(map.get("address"));
+                        }
 
                     }
                     if(response.code() == 200) {
@@ -596,14 +608,17 @@ public class AccountFragment extends Fragment {
                         nameEdit.setText(responseDTO.getFirstName());
                         surnameEdit.setText(responseDTO.getLastName());
                         addressEdit.setText(responseDTO.getAddress());
+                        phoneEdit.setText(responseDTO.getPhone());
 
                         data.setFirstName(responseDTO.getFirstName());
                         data.setLastName(responseDTO.getLastName());
                         data.setAddress(responseDTO.getAddress());
+                        data.setPhoneNumber(responseDTO.getPhone());
 
                         binding.txtNameValue.setText(responseDTO.getFirstName());
                         binding.txtSurnameValue.setText(responseDTO.getLastName());
                         binding.txtAddressValue.setText(responseDTO.getAddress());
+                        binding.txtPhoneValue.setText(responseDTO.getPhone());
 
                         Toast.makeText(getActivity(), "Successfully changed user info", Toast.LENGTH_SHORT).show();
                         changeDetailsDialog.dismiss();
