@@ -92,7 +92,7 @@ public class AccommodationService {
             Set<Amenity> tempAmenities = new HashSet<>(amenities);
             for(Accommodation a: temp1){
                 var tempSet = new HashSet<>(a.getAmenities());
-                if(tempSet.equals(tempAmenities)) temp2.add(a);
+                if(tempSet.containsAll(tempAmenities)) temp2.add(a);
             }
         }
         List<Accommodation> foundAccommodations = new ArrayList<>();

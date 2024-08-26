@@ -144,7 +144,6 @@ public class ReseravationHostFragment extends Fragment {
 
             final Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.DAY_OF_MONTH, 1);
-            dialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
             dialog.show();
         });
 
@@ -160,7 +159,6 @@ public class ReseravationHostFragment extends Fragment {
 
             final Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.DAY_OF_MONTH, 1);
-            dialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
             dialog.show();
         });
         setupSpinner();
